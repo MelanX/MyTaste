@@ -1,46 +1,76 @@
-# Getting Started with Create React App
+# MyTaste – Digital Recipe Book
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to **MyTaste**, a lightweight web application for collecting, organising and sharing your favourite recipes.  
+The project consists of a React + TypeScript front-end and a minimal Express back-end that persists the data.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Features
+- Responsive recipe list with client-side search & filter
+- Detail page for every recipe (ingredients, preparation steps, spices, optional image)
+- Recipe creation form with live validation
+- Persisted data via REST API (`/recipes`)
+- Pleasant paper-grain UI theme
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Quick Start
+### Installation
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```bash
+git clone <YOUR_FORK_URL> mytaste cd mytaste npm install # install all dependencies
+```
 
-### `npm test`
+### Environment Variables
+Create a `.env` file in the project root and set the URL where the back-end will be available:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash 
+REACT_APP_API_URL=[http://localhost:5000](http://localhost:5000) # default dev port
+```
 
-### `npm run build`
+### Running the Application
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+# Starts Express on :5000 and React on :3000
+npm run dev
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The UI opens automatically at http://localhost:3000 and proxies API requests to the back-end.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## Available npm Scripts
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+| Script            | Description                                                             |
+|-------------------|-------------------------------------------------------------------------|
+| `npm run dev`     | Start front-end & back-end concurrently (development mode).             |
+| `npm start`       | Start the CRA dev server only.                                          |
+| `npm run server`  | Start the Express API only.                                             |
+| `npm test`        | Run Jest in watch mode.                                                 |
+| `npm run build`   | Create an optimised production build in `build/`.                       |
+| `npm run lint`    | (optional) Run ESLint if configured.                                    |
+| `npm run eject`   | Expose all CRA configuration files (irreversible).                      |
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Deployment
+1. Build the front-end:
+   ```bash
+   npm run build
+   ```
+2. Serve `build/` with any static hosting provider (Netlify, Vercel, GitHub Pages, S3, …).
+3. Deploy the Express server (Render, Fly.io, Railway, your own VPS, …).
+4. Update `REACT_APP_API_URL` to the public API endpoint and rebuild if necessary.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+A one-click Heroku / Docker setup can be added later.
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Contributing
+PRs and issues are welcome!
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. Fork the repository and create a feature branch.
+2. Follow the **Quick Start** guide above.
+3. Adhere to the existing code style (Prettier/ESLint).
+4. Write / update tests where appropriate.
+5. Submit your pull request with a clear description.
