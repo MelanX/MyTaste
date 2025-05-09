@@ -24,7 +24,7 @@ const App: React.FC = () => {
 
     const handleRecipeSubmit = async (
         title: string,
-        description: string,
+        instructions: string[],
         url: string,
         ingredients: Ingredient[],
         spices: string[],
@@ -37,7 +37,7 @@ const App: React.FC = () => {
             },
             body: JSON.stringify({
                 title,
-                description,
+                instructions,
                 url,
                 ingredients,
                 spices,

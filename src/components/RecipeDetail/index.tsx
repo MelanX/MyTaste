@@ -40,7 +40,7 @@ const RecipeDetail: React.FC = () => {
                     <div className={styles.instructionsCard}>
                         <h3 className={styles.instructionsTitle}>Zubereitung</h3>
                         <div className={styles.instructionsList}>
-                            {recipe.description.map((paragraph, index) => (
+                            {recipe.instructions.map((paragraph, index) => (
                                 <div key={index} className={styles.instructionStep}>
                                     <div className={styles.stepNumber}>{index + 1}</div>
                                     <div className={styles.stepText}>{paragraph}</div>
@@ -108,12 +108,17 @@ const RecipeDetail: React.FC = () => {
     );
 };
 
-const formattedAmount = (amount: number | undefined) => {
-    if (amount === undefined) return '1';
+const formattedAmount = (amount: number | string | undefined) => {
+    if (amount === undefined) return '';
+    amount = parseFloat(String(amount).replace(',', '.'));
     if (amount === 0) return '';
-    if (amount === 0.5) return '½';
+    if (amount === 0.2) return '⅕';
     if (amount === 0.25) return '¼';
-    return amount;
-}
+    if (amount === 0.4) return '⅖';
+    if (amount === 0.5) return '½';
+    if (amount === 0.6) return '⅗';
+    if (amount === 0.8) return '⅘';
+    return String(amount).replace('.', ',');
+};
 
 export default RecipeDetail;

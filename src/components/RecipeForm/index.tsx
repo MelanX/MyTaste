@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Ingredient} from '../../types/Recipe';
 import {useNavigate} from 'react-router-dom';
 import styles from './styles.module.css';
@@ -6,7 +6,7 @@ import styles from './styles.module.css';
 interface RecipeFormProps {
     onSubmit: (
         title: string,
-        description: string,
+        instructions: string[],
         url: string,
         ingredients: Ingredient[],
         spices: string[],
@@ -16,7 +16,7 @@ interface RecipeFormProps {
 
 const RecipeForm: React.FC<RecipeFormProps> = ({onSubmit}) => {
     const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+    const [instructions, setInstructions] = useState<string[]>(['']);
     const [url, setUrl] = useState('');
     const [image, setImage] = useState('');
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -25,26 +25,23 @@ const RecipeForm: React.FC<RecipeFormProps> = ({onSubmit}) => {
     const [newSpice, setNewSpice] = useState('');
     const navigate = useNavigate();
 
+    const amountInputRef = useRef<HTMLInputElement>(null);
+
     const handleNewIngredientChange = (field: keyof Ingredient, value: string | number | undefined) => {
-        if (field === 'amount' && typeof value === 'string') {
-            const parsedValue = parseFloat(value.replace(',', '.'));
-            setNewIngredient({
-                ...newIngredient,
-                [field]: isNaN(parsedValue) ? undefined : parsedValue
-            });
-        } else {
-            setNewIngredient({
-                ...newIngredient,
-                // @ts-ignore - we know these values match the field types
-                [field]: value
-            });
-        }
+        setNewIngredient({
+            ...newIngredient,
+            // @ts-ignore - we know these values match the field types
+            [field]: value
+        });
     };
 
     const addIngredient = () => {
         if (newIngredient.name.trim() !== '') {
+            newIngredient.amount === undefined ? newIngredient.amount = 0 : newIngredient.amount = parseFloat(String(newIngredient.amount).replace(',', '.'));
             setIngredients([...ingredients, {...newIngredient}]);
             setNewIngredient({name: '', amount: undefined, unit: '', note: ''});
+
+            if (amountInputRef.current) amountInputRef.current.focus();
         }
     };
 
@@ -70,17 +67,17 @@ const RecipeForm: React.FC<RecipeFormProps> = ({onSubmit}) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // All ingredients should already be valid since we validate them when adding
-        const filteredIngredients = ingredients;
-
         // All spices should already be valid since we validate them when adding
         const filteredSpices = spices;
 
-        await onSubmit(title, description, url, filteredIngredients, filteredSpices, image || undefined);
+        // Filter out empty instruction lines
+        const filteredInstructions = instructions.filter(line => line.trim() !== '');
+
+        await onSubmit(title, filteredInstructions, url, ingredients, filteredSpices, image || undefined);
 
         // Reset form
         setTitle('');
-        setDescription('');
+        setInstructions(['']);
         setUrl('');
         setImage('');
         setIngredients([]);
@@ -92,12 +89,17 @@ const RecipeForm: React.FC<RecipeFormProps> = ({onSubmit}) => {
         navigate('/');
     };
 
-    const formattedAmount = (amount: number | undefined) => {
-        if (amount === undefined) return '1';
+    const formattedAmount = (amount: number | string | undefined) => {
+        if (amount === undefined) return '';
+        amount = parseFloat(String(amount).replace(',', '.'));
         if (amount === 0) return '';
-        if (amount === 0.5) return '½';
+        if (amount === 0.2) return '⅕';
         if (amount === 0.25) return '¼';
-        return amount;
+        if (amount === 0.4) return '⅖';
+        if (amount === 0.5) return '½';
+        if (amount === 0.6) return '⅗';
+        if (amount === 0.8) return '⅘';
+        return String(amount).replace('.', ',');
     };
 
     return (
@@ -116,13 +118,14 @@ const RecipeForm: React.FC<RecipeFormProps> = ({onSubmit}) => {
                 </div>
 
                 <div className={styles.formGroup}>
-                    <label htmlFor="description">Beschreibung</label>
+                    <label htmlFor="instructions">Anleitung</label>
                     <textarea
-                        id="description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        id="instructions"
+                        value={instructions.join('\n')}
+                        onChange={(e) => setInstructions(e.target.value.split('\n'))}
                         rows={6}
                         required
+                        placeholder="Jede Zeile ist ein Schritt der Anleitung"
                     />
                 </div>
 
@@ -191,8 +194,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({onSubmit}) => {
                                 <input
                                     type="text"
                                     id="ingredient-amount"
+                                    ref={amountInputRef}
                                     value={newIngredient.amount === undefined ? '' : newIngredient.amount}
-                                    onChange={(e) => handleNewIngredientChange('amount', e.target.value.replace(',', '.'))}
+                                    onChange={(e) => handleNewIngredientChange('amount', e.target.value)}
                                     step="0.1"
                                     placeholder="1"
                                 />
@@ -251,7 +255,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({onSubmit}) => {
                         ))}
                     </div>
 
-                    <div className={styles.spiceInputRow}>
+                    <form className={styles.spiceInputRow} onSubmit={addSpice}>
                         <div className={styles.formGroup}>
                             <input
                                 type="text"
@@ -264,16 +268,16 @@ const RecipeForm: React.FC<RecipeFormProps> = ({onSubmit}) => {
                             type="submit"
                             className={styles.addButton}
                             onClick={addSpice}
-                            onSubmit={addSpice}
                             disabled={!newSpice.trim()}
                         >
                             +
                         </button>
-                    </div>
+                    </form>
                 </div>
 
                 <div className={styles.formActions}>
-                    <button type="button" className={styles.submitButton}>Rezept speichern</button>
+                    <button type="submit" className={styles.submitButton}>Rezept speichern
+                    </button>
                 </div>
             </form>
         </div>

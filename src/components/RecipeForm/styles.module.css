@@ -52,7 +52,6 @@ label {
     display: flex;
     align-items: flex-start;
     padding: 8px 0;
-    border-bottom: 1px solid var(--color-border-light);
 }
 
 .ingredientRowLeft {
@@ -93,6 +92,10 @@ label {
 .ingredientInputRow, .spiceInputRow {
     display: flex;
     gap: 10px;
+}
+
+.spiceInputRow {
+    padding: 0;
 }
 
 .ingredientInputs {
