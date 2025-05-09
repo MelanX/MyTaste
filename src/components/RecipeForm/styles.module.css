@@ -32,10 +32,66 @@ label {
     margin-bottom: 1rem;
 }
 
-.ingredientRow, .spiceRow {
+.ingredientsTable {
+    margin-bottom: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    box-shadow: 0 2px 6px var(--color-shadow);
+    padding: 10px;
+}
+
+.ingredientsGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+.ingredientRow {
     display: flex;
     align-items: flex-start;
-    margin-bottom: 15px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.ingredientRowLeft {
+    display: flex;
+    align-items: center;
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.ingredientRowRight {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.ingredientAmount {
+    font-weight: 500;
+}
+
+.ingredientName {
+    word-break: break-word;
+}
+
+.ingredientNote {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--color-text-tertiary);
+    font-style: italic;
+    display: flex;
+    align-items: flex-start;
+}
+
+.ingredientNote i {
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
+.ingredientInputRow, .spiceInputRow {
+    display: flex;
     gap: 10px;
 }
 
@@ -53,8 +109,8 @@ label {
 .removeButton {
     background-color: var(--color-deny-button);
     color: var(--color-white);
-    width: 2rem;
-    height: 2rem;
+    width: 1.7rem;
+    height: 1.7rem;
     padding: 0;
     border-radius: 50%;
     border: none;
@@ -64,7 +120,8 @@ label {
     justify-content: center;
     font-size: 1.2rem;
     line-height: 1;
-    margin: auto 0;
+    margin-right: 0.6rem;
+    transition: background-color 0.2s;
 }
 
 .removeButton:disabled {
@@ -72,20 +129,33 @@ label {
     cursor: not-allowed;
 }
 
+.removeButton:hover {
+    background-color: var(--color-deny-button-dark);
+}
+
 .addButton {
     background-color: var(--color-primary);
     color: var(--color-white);
     border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border-radius: 50%;
     cursor: pointer;
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    font-weight: 500;
+    justify-content: center;
+    font-size: 1.2rem;
+    align-self: center;
 }
 
 .addButton:hover {
     background-color: var(--color-primary-dark);
+}
+
+.addButton:disabled {
+    background-color: var(--color-button-disabled);
+    cursor: not-allowed;
 }
 
 .formActions {
@@ -105,6 +175,31 @@ label {
     background-color: var(--color-accent-dark);
 }
 
+.spicesContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.spicesContainer:has(.spiceTag) {
+    margin-bottom: 0.5rem;
+}
+
+.spiceTag {
+    background-color: var(--color-background-alt);
+    border-radius: 16px;
+    padding: 5px 12px;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.spiceTag:hover {
+    background-color: var(--color-deny-button);
+}
+
 @media (max-width: 600px) {
     .ingredientInputs {
         flex-direction: column;
@@ -112,11 +207,10 @@ label {
         width: 100%;
     }
 
-    .ingredientRow, .spiceRow {
+    .ingredientRow {
         flex-direction: column;
         position: relative;
         padding-bottom: 10px;
-        border-bottom: 1px solid var(--color-border);
     }
 
     .removeButton {
@@ -126,8 +220,23 @@ label {
         margin-top: 0;
     }
 
+    .ingredientInputRow, .spiceInputRow {
+        flex-direction: column;
+    }
+
     .smallInput {
         flex: 0 0 auto;
         width: 100%;
+    }
+
+    .addButton {
+        align-self: flex-end;
+    }
+}
+
+@media (min-width: 768px) {
+    .ingredientsGrid {
+        grid-template-columns: 1fr 1fr;
+        column-gap: 20px;
     }
 }

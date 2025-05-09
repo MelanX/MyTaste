@@ -10,7 +10,9 @@ interface RecipeListProps {
 const RecipeList: React.FC<RecipeListProps> = ({recipes}) => {
     return (
         <div>
-            <h2>Rezepte <Link to="/new-recipe"><input className={styles.addRecipeButton} type="button" value="+"/></Link></h2>
+            <h2>Rezepte <Link to="/new-recipe" role="button">
+                <button type="button" className={styles.addRecipeButton}>+</button>
+            </Link></h2>
             <div className={styles.recipeCardsGrid}>
                 {recipes.map((recipe) => (
                     <div key={recipe.id} className={styles.recipeCard}>

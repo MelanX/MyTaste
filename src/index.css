@@ -39,5 +39,6 @@ code {
 
   /* Button colors */
   --color-deny-button: #dc3545;
+  --color-deny-button-dark: #bd2130;
   --color-button-disabled: #6c757d;
 }

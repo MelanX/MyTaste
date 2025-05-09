@@ -1,235 +1,283 @@
-import React, { useState } from 'react';
-import { Ingredient } from '../../types/Recipe';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {Ingredient} from '../../types/Recipe';
+import {useNavigate} from 'react-router-dom';
 import styles from './styles.module.css';
 
 interface RecipeFormProps {
-  onSubmit: (
-    title: string, 
-    description: string, 
-    url: string, 
-    ingredients: Ingredient[], 
-    spices: string[], 
-    image?: string
-  ) => Promise<void>;
+    onSubmit: (
+        title: string,
+        description: string,
+        url: string,
+        ingredients: Ingredient[],
+        spices: string[],
+        image?: string
+    ) => Promise<void>;
 }
 
-const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [url, setUrl] = useState('');
-  const [image, setImage] = useState('');
-  const [ingredients, setIngredients] = useState<Ingredient[]>([{ name: '', amount: undefined, unit: '', note: '' }]);
-  const [spices, setSpices] = useState<string[]>(['']);
-  const navigate = useNavigate();
+const RecipeForm: React.FC<RecipeFormProps> = ({onSubmit}) => {
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [url, setUrl] = useState('');
+    const [image, setImage] = useState('');
+    const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+    const [newIngredient, setNewIngredient] = useState<Ingredient>({name: '', amount: undefined, unit: '', note: ''});
+    const [spices, setSpices] = useState<string[]>([]);
+    const [newSpice, setNewSpice] = useState('');
+    const navigate = useNavigate();
 
-  const handleIngredientChange = (index: number, field: keyof Ingredient, value: string | number | undefined) => {
-    const updatedIngredients = [...ingredients];
+    const handleNewIngredientChange = (field: keyof Ingredient, value: string | number | undefined) => {
+        if (field === 'amount' && typeof value === 'string') {
+            const parsedValue = parseFloat(value.replace(',', '.'));
+            setNewIngredient({
+                ...newIngredient,
+                [field]: isNaN(parsedValue) ? undefined : parsedValue
+            });
+        } else {
+            setNewIngredient({
+                ...newIngredient,
+                // @ts-ignore - we know these values match the field types
+                [field]: value
+            });
+        }
+    };
 
-    if (field === 'amount' && typeof value === 'string') {
-      // @ts-ignore
-      updatedIngredients[index][field] = isNaN(value.replace(',', '.')) ? undefined : value;
-    } else {
-      // @ts-ignore - we know these values match the field types
-      updatedIngredients[index][field] = value;
-    }
+    const addIngredient = () => {
+        if (newIngredient.name.trim() !== '') {
+            setIngredients([...ingredients, {...newIngredient}]);
+            setNewIngredient({name: '', amount: undefined, unit: '', note: ''});
+        }
+    };
 
-    setIngredients(updatedIngredients);
-  };
+    const removeIngredient = (index: number) => {
+        const updatedIngredients = [...ingredients];
+        updatedIngredients.splice(index, 1);
+        setIngredients(updatedIngredients);
+    };
 
-  const addIngredient = () => {
-    setIngredients([...ingredients, { name: '', amount: undefined, unit: '', note: '' }]);
-  };
+    const addSpice = () => {
+        if (newSpice.trim() !== '') {
+            setSpices([...spices, newSpice]);
+            setNewSpice('');
+        }
+    };
 
-  const removeIngredient = (index: number) => {
-    if (ingredients.length > 1) {
-      const updatedIngredients = [...ingredients];
-      updatedIngredients.splice(index, 1);
-      setIngredients(updatedIngredients);
-    }
-  };
+    const removeSpice = (index: number) => {
+        const updatedSpices = [...spices];
+        updatedSpices.splice(index, 1);
+        setSpices(updatedSpices);
+    };
 
-  const handleSpiceChange = (index: number, value: string) => {
-    const updatedSpices = [...spices];
-    updatedSpices[index] = value;
-    setSpices(updatedSpices);
-  };
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
 
-  const addSpice = () => {
-    setSpices([...spices, '']);
-  };
+        // All ingredients should already be valid since we validate them when adding
+        const filteredIngredients = ingredients;
 
-  const removeSpice = (index: number) => {
-    if (spices.length > 1) {
-      const updatedSpices = [...spices];
-      updatedSpices.splice(index, 1);
-      setSpices(updatedSpices);
-    }
-  };
+        // All spices should already be valid since we validate them when adding
+        const filteredSpices = spices;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+        await onSubmit(title, description, url, filteredIngredients, filteredSpices, image || undefined);
 
-    // Filter out empty ingredients
-    const filteredIngredients = ingredients.filter(ing => ing.name.trim() !== '');
+        // Reset form
+        setTitle('');
+        setDescription('');
+        setUrl('');
+        setImage('');
+        setIngredients([]);
+        setNewIngredient({name: '', amount: undefined, unit: '', note: ''});
+        setSpices([]);
+        setNewSpice('');
 
-    // Filter out empty spices
-    const filteredSpices = spices.filter(spice => spice.trim() !== '');
+        // Navigate back to the recipe list
+        navigate('/');
+    };
 
-    console.log(filteredIngredients);
+    const formattedAmount = (amount: number | undefined) => {
+        if (amount === undefined) return '1';
+        if (amount === 0) return '';
+        if (amount === 0.5) return '½';
+        if (amount === 0.25) return '¼';
+        return amount;
+    };
 
-    await onSubmit(title, description, url, filteredIngredients, filteredSpices, image || undefined);
-
-    // Reset form
-    setTitle('');
-    setDescription('');
-    setUrl('');
-    setImage('');
-    setIngredients([{ name: '', amount: undefined, unit: '', note: '' }]);
-    setSpices(['']);
-
-    // Navigate back to the recipe list
-    navigate('/');
-  };
-
-  return (
-    <div className={styles.recipeFormContainer}>
-      <h2>Neues Rezept hinzufügen</h2>
-      <form onSubmit={handleSubmit}>
-        <div className={styles.formGroup}>
-          <label htmlFor="title">Titel</label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="description">Beschreibung</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={6}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="url">URL</label>
-          <input
-            type="url"
-            id="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="image">Bild URL (optional)</label>
-          <input
-            type="url"
-            id="image"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-          />
-        </div>
-        <div className={styles.formSection}>
-          <h3>Zutaten</h3>
-          {ingredients.map((ingredient, index) => (
-              <div key={index} className={styles.ingredientRow}>
-                <div className={styles.ingredientInputs}>
-                  <div className={styles.formGroup}>
-                    <label htmlFor={`ingredient-name-${index}`}>Name</label>
-                    <input
-                        type="text"
-                        id={`ingredient-name-${index}`}
-                        value={ingredient.name}
-                        onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
-                        required={index === 0}
-                    />
-                  </div>
-                  <div className={`${styles.formGroup} ${styles.smallInput}`}>
-                    <label htmlFor={`ingredient-amount-${index}`}>Menge</label>
-                    <input
-                        type="text"
-                        id={`ingredient-amount-${index}`}
-                        value={ingredient.amount === undefined ? '' : ingredient.amount}
-                        onChange={(e) => handleIngredientChange(index, 'amount', e.target.value.replace(',', '.'))}
-                        step="0.1"
-                        placeholder="1"
-                    />
-                  </div>
-                  <div className={`${styles.formGroup} ${styles.smallInput}`}>
-                    <label htmlFor={`ingredient-unit-${index}`}>Einheit</label>
-                    <input
-                        type="text"
-                        id={`ingredient-unit-${index}`}
-                        value={ingredient.unit || ''}
-                        onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label htmlFor={`ingredient-note-${index}`}>Anmerkung</label>
-                    <input
-                        type="text"
-                        id={`ingredient-note-${index}`}
-                        value={ingredient.note || ''}
-                        onChange={(e) => handleIngredientChange(index, 'note', e.target.value)}
-                    />
-                  </div>
-                </div>
-                <button
-                    type="button"
-                    className={styles.removeButton}
-                    onClick={() => removeIngredient(index)}
-                    disabled={ingredients.length === 1}
-                >
-                  -
-                </button>
-              </div>
-          ))}
-          <button type="button" className={styles.addButton} onClick={addIngredient}>
-            + Zutat hinzufügen
-          </button>
-        </div>
-
-        <div className={styles.formSection}>
-          <h3>Gewürze (optional)</h3>
-          {spices.map((spice, index) => (
-              <div key={index} className={styles.spiceRow}>
+    return (
+        <div className={styles.recipeFormContainer}>
+            <h2>Neues Rezept hinzufügen</h2>
+            <form onSubmit={handleSubmit}>
                 <div className={styles.formGroup}>
-                  <input
-                      type="text"
-                      value={spice}
-                      onChange={(e) => handleSpiceChange(index, e.target.value)}
-                  />
+                    <label htmlFor="title">Titel</label>
+                    <input
+                        type="text"
+                        id="title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        required
+                    />
                 </div>
-                <button
-                    type="button"
-                    className={styles.removeButton}
-                    onClick={() => removeSpice(index)}
-                    disabled={spices.length === 1}
-                >
-                  -
-                </button>
-              </div>
-          ))}
-          <button type="button" className={styles.addButton} onClick={addSpice}>
-            + Gewürz hinzufügen
-          </button>
-        </div>
 
-        <div className={styles.formActions}>
-          <button type="submit" className={styles.submitButton}>Rezept speichern</button>
+                <div className={styles.formGroup}>
+                    <label htmlFor="description">Beschreibung</label>
+                    <textarea
+                        id="description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        rows={6}
+                        required
+                    />
+                </div>
+
+                <div className={styles.formGroup}>
+                    <label htmlFor="url">URL</label>
+                    <input
+                        type="url"
+                        id="url"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        required
+                    />
+                </div>
+
+                <div className={styles.formGroup}>
+                    <label htmlFor="image">Bild URL (optional)</label>
+                    <input
+                        type="url"
+                        id="image"
+                        value={image}
+                        onChange={(e) => setImage(e.target.value)}
+                    />
+                </div>
+
+                <div className={styles.formSection}>
+                    <h3>Zutaten</h3>
+
+                    {ingredients.length > 0 && (
+                        <div className={styles.ingredientsTable}>
+                            <div className={styles.ingredientsGrid}>
+                                {ingredients.map((ingredient, index) => (
+                                    <div key={index} className={styles.ingredientRow}>
+                                        <div className={styles.ingredientRowLeft}>
+                                            <button
+                                                type="button"
+                                                className={styles.removeButton}
+                                                onClick={() => removeIngredient(index)}
+                                            >
+                                                -
+                                            </button>
+                                            <div className={styles.ingredientAmount}>
+                                                {formattedAmount(ingredient.amount)}{ingredient.unit ? ` ${ingredient.unit}` : ''}
+                                            </div>
+                                        </div>
+                                        <div className={styles.ingredientRowRight}>
+                                            <div className={styles.ingredientName}>
+                                                {ingredient.name}
+                                            </div>
+                                            {ingredient.note && (
+                                                <div className={styles.ingredientNote}>
+                                                    <i className="fa-solid fa-circle-exclamation"/>
+                                                    <span>{ingredient.note}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className={styles.ingredientInputRow}>
+                        <div className={styles.ingredientInputs}>
+                            <div className={`${styles.formGroup} ${styles.smallInput}`}>
+                                <label htmlFor="ingredient-amount">Menge</label>
+                                <input
+                                    type="text"
+                                    id="ingredient-amount"
+                                    value={newIngredient.amount === undefined ? '' : newIngredient.amount}
+                                    onChange={(e) => handleNewIngredientChange('amount', e.target.value.replace(',', '.'))}
+                                    step="0.1"
+                                    placeholder="1"
+                                />
+                            </div>
+                            <div className={`${styles.formGroup} ${styles.smallInput}`}>
+                                <label htmlFor="ingredient-unit">Einheit</label>
+                                <input
+                                    type="text"
+                                    id="ingredient-unit"
+                                    value={newIngredient.unit || ''}
+                                    onChange={(e) => handleNewIngredientChange('unit', e.target.value)}
+                                    placeholder="g"
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="ingredient-name">Name</label>
+                                <input
+                                    type="text"
+                                    id="ingredient-name"
+                                    value={newIngredient.name}
+                                    onChange={(e) => handleNewIngredientChange('name', e.target.value)}
+                                    placeholder="Zutat"
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="ingredient-note">Anmerkung</label>
+                                <input
+                                    type="text"
+                                    id="ingredient-note"
+                                    value={newIngredient.note || ''}
+                                    onChange={(e) => handleNewIngredientChange('note', e.target.value)}
+                                    placeholder="Optional"
+                                />
+                            </div>
+                        </div>
+                        <button
+                            type="submit"
+                            className={styles.addButton}
+                            onClick={addIngredient}
+                            onSubmit={addIngredient}
+                            disabled={!newIngredient.name.trim()}
+                        >
+                            +
+                        </button>
+                    </div>
+                </div>
+
+                <div className={styles.formSection}>
+                    <h3>Gewürze</h3>
+
+                    <div className={styles.spicesContainer}>
+                        {spices.map((spice, index) => (
+                            <div key={index} className={styles.spiceTag} onClick={() => removeSpice(index)}>
+                                {spice}
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className={styles.spiceInputRow}>
+                        <div className={styles.formGroup}>
+                            <input
+                                type="text"
+                                value={newSpice}
+                                onChange={(e) => setNewSpice(e.target.value)}
+                                placeholder="Neues Gewürz"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className={styles.addButton}
+                            onClick={addSpice}
+                            onSubmit={addSpice}
+                            disabled={!newSpice.trim()}
+                        >
+                            +
+                        </button>
+                    </div>
+                </div>
+
+                <div className={styles.formActions}>
+                    <button type="button" className={styles.submitButton}>Rezept speichern</button>
+                </div>
+            </form>
         </div>
-      </form>
-    </div>
-  );
+    );
 };
 
 export default RecipeForm;

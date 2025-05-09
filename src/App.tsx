@@ -63,13 +63,14 @@ const App: React.FC = () => {
                 maxGrainSize={1.5}
             />
             <div className="content">
-                <img
-                    src="/text.png"
-                    alt="My Taste"
-                    className="logo-image"
-                    onClick={() => window.location.href = '/'}
-                    style={{cursor: 'pointer'}}
-                />
+                <a href="/">
+                    <img
+                        src="/text.png"
+                        alt="My Taste"
+                        className="logo-image"
+                        style={{cursor: 'pointer'}}
+                    />
+                </a>
                 <Routes>
                     <Route path="/" element={<RecipeList recipes={recipes}/>}/>
                     <Route path="/new-recipe" element={<RecipeForm onSubmit={handleRecipeSubmit}/>}/>
