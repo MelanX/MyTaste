@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Ingredient } from '../../types/Recipe';
 import { useNavigate } from 'react-router-dom';
-import './custom.css';
+import styles from './styles.module.css';
 
 interface RecipeFormProps {
   onSubmit: (
@@ -93,10 +93,10 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
   };
 
   return (
-    <div className="recipe-form-container">
+    <div className={styles.recipeFormContainer}>
       <h2>Neues Rezept hinzufügen</h2>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <label htmlFor="title">Titel</label>
           <input
             type="text"
@@ -107,7 +107,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
           />
         </div>
 
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <label htmlFor="description">Beschreibung</label>
           <textarea
             id="description"
@@ -118,7 +118,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
           />
         </div>
 
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <label htmlFor="url">URL</label>
           <input
             type="url"
@@ -129,7 +129,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
           />
         </div>
 
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <label htmlFor="image">Bild URL (optional)</label>
           <input
             type="url"
@@ -138,95 +138,94 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onSubmit }) => {
             onChange={(e) => setImage(e.target.value)}
           />
         </div>
-
-        <div className="form-section">
+        <div className={styles.formSection}>
           <h3>Zutaten</h3>
           {ingredients.map((ingredient, index) => (
-            <div key={index} className="ingredient-row">
-              <div className="ingredient-inputs">
-                <div className="form-group">
-                  <label htmlFor={`ingredient-name-${index}`}>Name</label>
-                  <input
-                    type="text"
-                    id={`ingredient-name-${index}`}
-                    value={ingredient.name}
-                    onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
-                    required={index === 0}
-                  />
+              <div key={index} className={styles.ingredientRow}>
+                <div className={styles.ingredientInputs}>
+                  <div className={styles.formGroup}>
+                    <label htmlFor={`ingredient-name-${index}`}>Name</label>
+                    <input
+                        type="text"
+                        id={`ingredient-name-${index}`}
+                        value={ingredient.name}
+                        onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
+                        required={index === 0}
+                    />
+                  </div>
+                  <div className={`${styles.formGroup} ${styles.smallInput}`}>
+                    <label htmlFor={`ingredient-amount-${index}`}>Menge</label>
+                    <input
+                        type="text"
+                        id={`ingredient-amount-${index}`}
+                        value={ingredient.amount === undefined ? '' : ingredient.amount}
+                        onChange={(e) => handleIngredientChange(index, 'amount', e.target.value.replace(',', '.'))}
+                        step="0.1"
+                        placeholder="1"
+                    />
+                  </div>
+                  <div className={`${styles.formGroup} ${styles.smallInput}`}>
+                    <label htmlFor={`ingredient-unit-${index}`}>Einheit</label>
+                    <input
+                        type="text"
+                        id={`ingredient-unit-${index}`}
+                        value={ingredient.unit || ''}
+                        onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label htmlFor={`ingredient-note-${index}`}>Anmerkung</label>
+                    <input
+                        type="text"
+                        id={`ingredient-note-${index}`}
+                        value={ingredient.note || ''}
+                        onChange={(e) => handleIngredientChange(index, 'note', e.target.value)}
+                    />
+                  </div>
                 </div>
-                <div className="form-group small-input">
-                  <label htmlFor={`ingredient-amount-${index}`}>Menge</label>
-                  <input
-                    type="text"
-                    id={`ingredient-amount-${index}`}
-                    value={ingredient.amount === undefined ? '' : ingredient.amount}
-                    onChange={(e) => handleIngredientChange(index, 'amount', e.target.value.replace(',', '.'))}
-                    step="0.1"
-                    placeholder="1"
-                  />
-                </div>
-                <div className="form-group small-input">
-                  <label htmlFor={`ingredient-unit-${index}`}>Einheit</label>
-                  <input
-                    type="text"
-                    id={`ingredient-unit-${index}`}
-                    value={ingredient.unit || ''}
-                    onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor={`ingredient-note-${index}`}>Anmerkung</label>
-                  <input
-                    type="text"
-                    id={`ingredient-note-${index}`}
-                    value={ingredient.note || ''}
-                    onChange={(e) => handleIngredientChange(index, 'note', e.target.value)}
-                  />
-                </div>
+                <button
+                    type="button"
+                    className={styles.removeButton}
+                    onClick={() => removeIngredient(index)}
+                    disabled={ingredients.length === 1}
+                >
+                  -
+                </button>
               </div>
-              <button
-                type="button"
-                className="remove-button"
-                onClick={() => removeIngredient(index)}
-                disabled={ingredients.length === 1}
-              >
-                -
-              </button>
-            </div>
           ))}
-          <button type="button" className="add-button" onClick={addIngredient}>
+          <button type="button" className={styles.addButton} onClick={addIngredient}>
             + Zutat hinzufügen
           </button>
         </div>
 
-        <div className="form-section">
+        <div className={styles.formSection}>
           <h3>Gewürze (optional)</h3>
           {spices.map((spice, index) => (
-            <div key={index} className="spice-row">
-              <div className="form-group">
-                <input
-                  type="text"
-                  value={spice}
-                  onChange={(e) => handleSpiceChange(index, e.target.value)}
-                />
+              <div key={index} className={styles.spiceRow}>
+                <div className={styles.formGroup}>
+                  <input
+                      type="text"
+                      value={spice}
+                      onChange={(e) => handleSpiceChange(index, e.target.value)}
+                  />
+                </div>
+                <button
+                    type="button"
+                    className={styles.removeButton}
+                    onClick={() => removeSpice(index)}
+                    disabled={spices.length === 1}
+                >
+                  -
+                </button>
               </div>
-              <button
-                type="button"
-                className="remove-button"
-                onClick={() => removeSpice(index)}
-                disabled={spices.length === 1}
-              >
-                -
-              </button>
-            </div>
           ))}
-          <button type="button" className="add-button" onClick={addSpice}>
+          <button type="button" className={styles.addButton} onClick={addSpice}>
             + Gewürz hinzufügen
           </button>
         </div>
 
-        <div className="form-actions">
-          <button type="submit" className="submit-button">Rezept speichern</button>
+        <div className={styles.formActions}>
+          <button type="submit" className={styles.submitButton}>Rezept speichern</button>
         </div>
       </form>
     </div>

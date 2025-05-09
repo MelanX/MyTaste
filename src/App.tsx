@@ -6,7 +6,6 @@ import {Ingredient, Recipe} from './types/Recipe';
 import './App.css';
 import PaperGrain from "./components/PaperGrain";
 import RecipeDetail from "./components/RecipeDetail";
-import {Link} from "react-router-dom";
 
 const App: React.FC = () => {
     const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -64,13 +63,17 @@ const App: React.FC = () => {
                 maxGrainSize={1.5}
             />
             <div className="content">
-                <Link to="/">
-                  <img src="/text.png" alt="My Taste" className="logo-image" />
-                </Link>
+                <img
+                    src="/text.png"
+                    alt="My Taste"
+                    className="logo-image"
+                    onClick={() => window.location.href = '/'}
+                    style={{cursor: 'pointer'}}
+                />
                 <Routes>
-                    <Route path="/" element={<RecipeList recipes={recipes} />} />
-                    <Route path="/new-recipe" element={<RecipeForm onSubmit={handleRecipeSubmit} />} />
-                    <Route path="/recipe/:id" element={<RecipeDetail />} />
+                    <Route path="/" element={<RecipeList recipes={recipes}/>}/>
+                    <Route path="/new-recipe" element={<RecipeForm onSubmit={handleRecipeSubmit}/>}/>
+                    <Route path="/recipe/:id" element={<RecipeDetail/>}/>
                 </Routes>
             </div>
         </div>

@@ -1,0 +1,262 @@
+/* Recipe Detail Page Styles */
+.recipeDetail {
+    padding: 10px 0;
+}
+
+.contentWrapper {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 20px;
+}
+
+/* Mobile-first approach */
+.mainContent {
+    flex: 1;
+}
+
+.recipeDetail h1 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+    color: var(--color-text);
+}
+
+/* Sidebar Styles */
+.sidebar {
+    flex: 1;
+}
+
+.sidebarCard {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px var(--color-shadow);
+    background-color: var(--color-white);
+}
+
+/* Responsive image container using aspect ratio */
+.sidebarImageContainer {
+    width: 100%;
+    height: 0;
+    padding-bottom: 66.67%; /* 2:3 aspect ratio */
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebarImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sidebarContent {
+    padding: 12px;
+}
+
+/* Ingredients Styles */
+.ingredientsCard {
+    margin-bottom: 20px;
+}
+
+.ingredientsTitle {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.ingredientsTable {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ingredientRow {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 0.5rem;
+    align-items: baseline;
+}
+
+.ingredientAmount {
+    font-weight: 500;
+    color: var(--color-text-secondary);
+}
+
+.ingredientName {
+    color: var(--color-text);
+    word-break: break-word;
+}
+
+.ingredientNote {
+    grid-column: 1 / span 2;
+    margin-top: 2px;
+    font-size: 0.9rem;
+    color: var(--color-text-tertiary);
+    font-style: italic;
+    display: flex;
+    align-items: flex-start;
+}
+
+.ingredientNote i {
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Spices Styles */
+.spicesCard {
+    margin-top: 20px;
+}
+
+.spicesTitle {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.spicesContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.spiceTag {
+    padding: 6px 12px;
+    background-color: var(--color-background-alt);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    display: inline-block;
+}
+
+/* Instructions Styles */
+.instructionsCard {
+    margin-bottom: 20px;
+    background-color: var(--color-white);
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 4px 8px var(--color-shadow);
+}
+
+.instructionsTitle {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.instructionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.instructionStep {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.stepNumber {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.stepText {
+    padding: 4px 0;
+    color: var(--color-primary-text);
+    word-break: break-word;
+}
+
+.originalRecipeButton {
+    display: inline-block;
+    padding: 10px 16px;
+    margin-top: 16px;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    text-align: center;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.originalRecipeButton:hover {
+    background-color: var(--color-primary-dark);
+    text-decoration: none;
+}
+
+/* Desktop adjustments */
+@media (min-width: 768px) {
+    .recipeDetail {
+        padding: 0;
+    }
+
+    .contentWrapper {
+        flex-direction: row;
+        gap: 30px;
+    }
+
+    .mainContent {
+        flex: 2;
+    }
+
+    .mainContent h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+
+    .instructionsCard {
+        padding: 16px;
+    }
+
+    .instructionStep {
+        grid-template-columns: 40px 1fr;
+        gap: 12px;
+    }
+
+    .stepNumber {
+        width: 34px;
+        height: 34px;
+        font-size: 1rem;
+    }
+
+    .sidebarImageContainer {
+        height: 18rem;
+        padding-bottom: 0;
+    }
+
+    .sidebarImage {
+        position: static;
+    }
+
+    .sidebarContent {
+        padding: 16px;
+    }
+
+    .ingredientRow {
+        grid-template-columns: 80px 1fr;
+        gap: 10px;
+    }
+
+    .originalRecipeButton {
+        width: auto;
+    }
+}

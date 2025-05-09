@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {Recipe} from '../../types/Recipe';
-import './custom.css';
+import styles from './styles.module.css';
 
 interface RecipeListProps {
     recipes: Recipe[];
@@ -10,20 +10,20 @@ interface RecipeListProps {
 const RecipeList: React.FC<RecipeListProps> = ({recipes}) => {
     return (
         <div>
-            <h2>Rezepte</h2>
-            <div className="recipe-cards-grid">
+            <h2>Rezepte <Link to="/new-recipe"><input className={styles.addRecipeButton} type="button" value="+"/></Link></h2>
+            <div className={styles.recipeCardsGrid}>
                 {recipes.map((recipe) => (
-                    <div key={recipe.id} className="recipe-card">
-                        <div className="recipe-card-image-container">
+                    <div key={recipe.id} className={styles.recipeCard}>
+                        <div className={styles.recipeCardImageContainer}>
                             <img
                                 src={recipe.image}
                                 alt={recipe.title}
-                                className="recipe-card-image"
+                                className={styles.recipeCardImage}
                             />
                         </div>
-                        <div className="recipe-card-content">
-                            <h3 className="recipe-card-title">{recipe.title}</h3>
-                            <Link to={`/recipe/${recipe.id}`} className="recipe-card-button">
+                        <div className={styles.recipeCardContent}>
+                            <h3 className={styles.recipeCardTitle}>{recipe.title}</h3>
+                            <Link to={`/recipe/${recipe.id}`} className={styles.recipeCardButton}>
                                 Rezept ansehen
                             </Link>
                         </div>

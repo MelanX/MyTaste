@@ -1,0 +1,133 @@
+.recipeFormContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--color-white);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px var(--color-shadow);
+}
+
+.formGroup {
+    /*margin-bottom: 15px;*/
+}
+
+form {
+    padding: 1.25rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.formSection {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--color-border);
+}
+
+.formSection h3 {
+    margin-bottom: 1rem;
+}
+
+.ingredientRow, .spiceRow {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.ingredientInputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    flex: 1;
+}
+
+.smallInput {
+    flex: 0 0 100px;
+}
+
+.removeButton {
+    background-color: var(--color-deny-button);
+    color: var(--color-white);
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    line-height: 1;
+    margin: auto 0;
+}
+
+.removeButton:disabled {
+    background-color: var(--color-button-disabled);
+    cursor: not-allowed;
+}
+
+.addButton {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+.addButton:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.formActions {
+    margin-top: 30px;
+    text-align: right;
+}
+
+.submitButton {
+    background-color: var(--color-accent);
+    color: var(--color-white);
+    font-weight: 600;
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+.submitButton:hover {
+    background-color: var(--color-accent-dark);
+}
+
+@media (max-width: 600px) {
+    .ingredientInputs {
+        flex-direction: column;
+        gap: 5px;
+        width: 100%;
+    }
+
+    .ingredientRow, .spiceRow {
+        flex-direction: column;
+        position: relative;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .removeButton {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin-top: 0;
+    }
+
+    .smallInput {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+}
