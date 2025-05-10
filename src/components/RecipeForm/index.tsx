@@ -2,6 +2,7 @@ import React, {useRef, useState} from 'react';
 import {Ingredient} from '../../types/Recipe';
 import {useNavigate} from 'react-router-dom';
 import styles from './styles.module.css';
+import { formatAmount } from '../../utils/formatters';
 
 interface RecipeFormProps {
     onSubmit: (
@@ -89,19 +90,6 @@ const RecipeForm: React.FC<RecipeFormProps> = ({onSubmit}) => {
         navigate('/');
     };
 
-    const formattedAmount = (amount: number | string | undefined) => {
-        if (amount === undefined) return '';
-        amount = parseFloat(String(amount).replace(',', '.'));
-        if (amount === 0) return '';
-        if (amount === 0.2) return '⅕';
-        if (amount === 0.25) return '¼';
-        if (amount === 0.4) return '⅖';
-        if (amount === 0.5) return '½';
-        if (amount === 0.6) return '⅗';
-        if (amount === 0.8) return '⅘';
-        return String(amount).replace('.', ',');
-    };
-
     return (
         <div className={styles.recipeFormContainer}>
             <h2>Neues Rezept hinzufügen</h2>
@@ -167,7 +155,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({onSubmit}) => {
                                                 -
                                             </button>
                                             <div className={styles.ingredientAmount}>
-                                                {formattedAmount(ingredient.amount)}{ingredient.unit ? ` ${ingredient.unit}` : ''}
+                                                {formatAmount(ingredient.amount)}{ingredient.unit ? ` ${ingredient.unit}` : ''}
                                             </div>
                                         </div>
                                         <div className={styles.ingredientRowRight}>
