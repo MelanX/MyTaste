@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './styles.module.css';
 
 interface BringButtonProps {
-    recipeId: number;
+    recipeId: string;
 }
 
 const BringButton: React.FC<BringButtonProps> = ({ recipeId }) => {

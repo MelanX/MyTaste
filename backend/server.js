@@ -29,7 +29,7 @@ app.get('/api/recipes', (req, res) => {
 
 // GET: Get a specific recipe by ID
 app.get('/api/recipe/:id', (req, res) => {
-    const recipeId = parseInt(req.params.id);
+    const recipeId = req.params.id;
     
     fs.readFile(RECIPE_FILE, 'utf8', (err, data) => {
         if (err) {
@@ -62,7 +62,7 @@ app.get('/api/recipe/:id', (req, res) => {
 
 // GET: Get a specific recipe by ID
 app.get('/api/bring-recipe/:id', (req, res) => {
-    const recipeId = parseInt(req.params.id);
+    const recipeId = req.params.id;
 
     const convertRecipe = (recipe) => {
         return {
@@ -113,13 +113,14 @@ app.get('/api/bring-recipe/:id', (req, res) => {
 });
 
 // POST: Add a new recipe
-app.post('/api/recipes', (req, res) => {
+app.post('/api/recipes', async (req, res) => {
+    const { nanoid } = await import('nanoid');
     const newRecipe = req.body;
 
     fs.readFile(RECIPE_FILE, 'utf8', (err, data) => {
         if (err) return res.status(500).send(err);
         const jsonData = JSON.parse(data);
-        newRecipe.id = jsonData.recipes.length + 1; // todo better id configuration
+        newRecipe.id = nanoid(10);
         jsonData.recipes.push(newRecipe);
 
         fs.writeFile(RECIPE_FILE, JSON.stringify(jsonData, null, 2), (err) => {
