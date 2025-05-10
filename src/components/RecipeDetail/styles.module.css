@@ -183,10 +183,15 @@
     word-break: break-word;
 }
 
+.buttonsRow {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 .originalRecipeButton {
     display: inline-block;
     padding: 10px 16px;
-    margin-top: 16px;
     background-color: var(--color-primary);
     color: var(--color-white);
     text-align: center;
@@ -196,6 +201,10 @@
     transition: background-color 0.3s ease;
     width: 100%;
     box-sizing: border-box;
+}
+
+.bringButton {
+    width: 100%;
 }
 
 .originalRecipeButton:hover {
@@ -256,7 +265,13 @@
         gap: 10px;
     }
 
-    .originalRecipeButton {
+    .buttonsRow {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .originalRecipeButton,
+    .bringButton {
         width: auto;
     }
 }

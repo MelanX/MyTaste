@@ -1,13 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {useParams} from 'react-router-dom';
 import {Recipe} from '../../types/Recipe';
 import styles from './styles.module.css';
+import BringButton from "../BringButton";
 
 const RecipeDetail: React.FC = () => {
     const [recipe, setRecipe] = useState<Recipe | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const {id} = useParams<{ id: string }>();
+    const buttonsRowRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -27,6 +29,31 @@ const RecipeDetail: React.FC = () => {
 
         fetchRecipe();
     }, [id]);
+
+    useEffect(() => {
+        if (buttonsRowRef.current && window.innerWidth >= 768) {
+            const buttonElements = buttonsRowRef.current.querySelectorAll<HTMLElement>(
+                `.${styles.originalRecipeButton}, .${styles.bringButton} > *`
+            );
+
+            if (buttonElements.length > 0) {
+                // Find the widest button
+                let maxWidth = 0;
+                buttonElements.forEach(button => {
+                    const width = button.offsetWidth;
+                    console.log(width);
+                    if (width > maxWidth) {
+                        maxWidth = width;
+                    }
+                });
+
+                // Apply the maximum width to all buttons
+                buttonElements.forEach(button => {
+                    button.style.width = `${maxWidth + 1}px`;
+                });
+            }
+        }
+    }, [recipe]); // Run this effect when recipe data is loaded
 
     if (loading) return <div>Lade Rezept...</div>;
     if (error) return <div>Fehler: {error}</div>;
@@ -48,9 +75,12 @@ const RecipeDetail: React.FC = () => {
                             ))}
                         </div>
                     </div>
-                    <div>
+                    <div className={styles.buttonsRow} ref={buttonsRowRef}>
                         <a href={recipe.url} className={styles.originalRecipeButton} target="_blank"
                            rel="noopener noreferrer">Zum Originalrezept</a>
+                        <div className={styles.bringButton}>
+                            <BringButton recipeId={recipe.id}/>
+                        </div>
                     </div>
                 </div>
                 <div className={styles.sidebar}>

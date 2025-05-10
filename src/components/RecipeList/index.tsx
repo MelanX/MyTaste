@@ -2,6 +2,7 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {Recipe} from '../../types/Recipe';
 import styles from './styles.module.css';
+import BringButton from "../BringButton";
 
 interface RecipeListProps {
     recipes: Recipe[];
@@ -11,7 +12,9 @@ const RecipeList: React.FC<RecipeListProps> = ({recipes}) => {
     return (
         <div>
             <h2>Rezepte <Link to="/new-recipe" role="button">
-                <button type="button" className={styles.addRecipeButton}>+</button>
+                <button type="button" className={styles.addRecipeButton}>
+                    <i className="fa-solid fa-plus"/>
+                </button>
             </Link></h2>
             <div className={styles.recipeCardsGrid}>
                 {recipes.map((recipe) => (
@@ -28,6 +31,7 @@ const RecipeList: React.FC<RecipeListProps> = ({recipes}) => {
                             <Link to={`/recipe/${recipe.id}`} className={styles.recipeCardButton}>
                                 Rezept ansehen
                             </Link>
+                            <BringButton recipeId={recipe.id} />
                         </div>
                     </div>
                 ))}

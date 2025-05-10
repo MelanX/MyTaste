@@ -239,7 +239,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({onSubmit}) => {
                             onSubmit={addIngredient}
                             disabled={!newIngredient.name.trim()}
                         >
-                            +
+                            <i className="fa-solid fa-plus"/>
                         </button>
                     </div>
                 </div>
@@ -270,7 +270,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({onSubmit}) => {
                             onClick={addSpice}
                             disabled={!newSpice.trim()}
                         >
-                            +
+                            <i className="fa-solid fa-plus"/>
                         </button>
                     </form>
                 </div>

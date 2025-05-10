@@ -60,6 +60,58 @@ app.get('/api/recipe/:id', (req, res) => {
     });
 });
 
+// GET: Get a specific recipe by ID
+app.get('/api/bring-recipe/:id', (req, res) => {
+    const recipeId = parseInt(req.params.id);
+
+    const convertRecipe = (recipe) => {
+        return {
+            author: 'MelanX',
+            linkOutUrl: recipe.url,
+            imageUrl: recipe.image || '',
+            name: recipe.title,
+            items: [
+                ...recipe.ingredients.map(ingredient => ({
+                    itemId: ingredient.name,
+                    spec: `${String(ingredient.amount || '').replace('.', ',')} ${ingredient.unit || ''}`
+                })),
+                ...recipe.spices.map(spice => ({
+                    itemId: spice,
+                    stock: true
+                }))
+            ]
+        }
+    }
+
+    fs.readFile(RECIPE_FILE, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading recipe file:', err);
+            return res.status(500).send('Error reading recipe database');
+        }
+
+        try {
+            const jsonData = JSON.parse(data);
+
+            // Check if the structure contains a recipes array
+            if (!jsonData.recipes || !Array.isArray(jsonData.recipes)) {
+                console.error('Invalid recipe data structure');
+                return res.status(500).send('Invalid recipe data structure');
+            }
+
+            const recipe = jsonData.recipes.find(recipe => recipe.id === recipeId);
+
+            if (recipe) {
+                return res.json(convertRecipe(recipe));
+            } else {
+                return res.status(404).send('Recipe not found');
+            }
+        } catch (parseError) {
+            console.error('Error parsing recipe data:', parseError);
+            return res.status(500).send('Error processing recipe data');
+        }
+    });
+});
+
 // POST: Add a new recipe
 app.post('/api/recipes', (req, res) => {
     const newRecipe = req.body;
