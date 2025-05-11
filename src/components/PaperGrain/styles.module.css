@@ -1,0 +1,5 @@
+@media print {
+    .paperGrain {
+        display: none !important;
+    }
+}

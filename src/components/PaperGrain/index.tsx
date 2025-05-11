@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import styles from './styles.module.css';
 
 interface PaperGrainProps {
     backgroundColor?: string;
@@ -59,6 +60,7 @@ const PaperGrain: React.FC<PaperGrainProps> = ({
     return (
         <canvas
             ref={canvasRef}
+            className={styles.paperGrain}
             style={{
                 position: 'fixed',
                 top: 0,

@@ -96,3 +96,10 @@ a:hover {
     display: block;
     margin: 0 auto 1rem auto;
 }
+
+@media print {
+    .logo-image {
+        height: 2rem;
+        margin: 0 auto;
+    }
+}

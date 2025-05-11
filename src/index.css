@@ -1,44 +1,50 @@
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
 :root {
-  /* Brand colors */
-  --color-primary: #e6b17e;           /* Primary brand color (orange) */
-  --color-primary-dark: #d99c5e;      /* Darker version for hover states */
-  --color-primary-text: #372101;      /* Text that goes with primary brand colors */
-  
-  /* Neutral colors */
-  --color-white: #ffffff;
-  --color-background: #f8f4e9;        /* Light cream background from PaperGrain */
-  --color-background-alt: #f3f3f3;    /* Alternate light background */
-  
-  /* Text colors - simplified to just a few */
-  --color-text: #333333;              /* Main text color */
-  --color-text-secondary: #555555;    /* Secondary, slightly lighter text */
-  --color-text-tertiary: #6c757d;     /* Muted text for less important content */
-  
-  /* UI colors */
-  --color-border: #ced4da;
-  --color-shadow: rgba(0, 0, 0, 0.1);
-  --color-shadow-hover: rgba(0, 0, 0, 0.15);
+    /* Brand colors */
+    --color-primary: #e6b17e; /* Primary brand color (orange) */
+    --color-primary-dark: #d99c5e; /* Darker version for hover states */
+    --color-primary-text: #372101; /* Text that goes with primary brand colors */
 
-  /* Accent colors */
-  --color-accent: #007bff;           /* Blue accent for buttons, links */
-  --color-accent-dark: #0056b3;      /* Darker blue for hover states */
+    /* Neutral colors */
+    --color-white: #ffffff;
+    --color-background: #f8f4e9; /* Light cream background from PaperGrain */
+    --color-background-alt: #f3f3f3; /* Alternate light background */
 
-  /* Button colors */
-  --color-deny-button: #dc3545;
-  --color-deny-button-dark: #bd2130;
-  --color-button-disabled: #6c757d;
+    /* Text colors - simplified to just a few */
+    --color-text: #333333; /* Main text color */
+    --color-text-secondary: #555555; /* Secondary, slightly lighter text */
+    --color-text-tertiary: #6c757d; /* Muted text for less important content */
+
+    /* UI colors */
+    --color-border: #ced4da;
+    --color-shadow: rgba(0, 0, 0, 0.1);
+    --color-shadow-hover: rgba(0, 0, 0, 0.15);
+
+    /* Accent colors */
+    --color-accent: #007bff; /* Blue accent for buttons, links */
+    --color-accent-dark: #0056b3; /* Darker blue for hover states */
+
+    /* Button colors */
+    --color-deny-button: #dc3545;
+    --color-deny-button-dark: #bd2130;
+    --color-button-disabled: #6c757d;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
 }

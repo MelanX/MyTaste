@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { Recipe } from '../../types/Recipe';
 import styles from './styles.module.css';
 import BringButton from "../BringButton";
 import RecipeSidebar from './Sidebar';
 import RecipeInstructions from './Instructions';
+import { QRCodeSVG } from 'qrcode.react';
 
 const RecipeDetail: React.FC = () => {
     const [recipe, setRecipe] = useState<Recipe | null>(null);
@@ -12,6 +13,8 @@ const RecipeDetail: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const { id } = useParams<{ id: string }>();
     const buttonsRowRef = useRef<HTMLDivElement>(null);
+    const location = useLocation();
+    const currentUrl = window.location.origin + location.pathname;
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -62,11 +65,17 @@ const RecipeDetail: React.FC = () => {
 
     return (
         <div className={styles.recipeDetail}>
-            <h1>{recipe.title}</h1>
+            <div className={styles.titleContainer}>
+                <h1>{recipe.title}</h1>
+                <div className={styles.qrCode}>
+                    Im Browser aufrufen:
+                    <QRCodeSVG value={currentUrl} size={50} fgColor={'#d99c5e'} />
+                </div>
+            </div>
             <div className={styles.contentWrapper}>
                 <div className={styles.mainContent}>
                     <RecipeInstructions instructions={recipe.instructions} />
-                    <div className={styles.buttonsRow} ref={buttonsRowRef}>
+                    <div className={`${styles.buttonsRow} no-print`} ref={buttonsRowRef}>
                         <a href={recipe.url} className={styles.originalRecipeButton} target="_blank"
                            rel="noopener noreferrer">Zum Originalrezept</a>
                         <div className={styles.bringButton}>
