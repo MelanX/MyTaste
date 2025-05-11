@@ -1,0 +1,7 @@
+.idea
+backend/data
+backend/node_modules
+node_modules
+private
+.env
+*.iml

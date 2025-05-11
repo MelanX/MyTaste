@@ -6,11 +6,7 @@ interface BringButtonProps {
 }
 
 const BringButton: React.FC<BringButtonProps> = ({ recipeId }) => {
-    // For testing, using the gist URL
-    const recipeDataUrl = 'https://gist.githubusercontent.com/MelanX/b65ab0e21dab205ea2f67c4e30c4153b/raw/6878415002308aae665bab2893e4738e45985519/test.json';
-
-    // todo In production, use this:
-    // const recipeDataUrl = `${process.env.REACT_APP_API_URL}/api/bring-recipe/${recipeId}`;
+    const recipeDataUrl = `${process.env.REACT_APP_API_URL}/bring-recipe/${recipeId}`;
 
     // Generate the link manually
     const bringLink = generateBringImportLink(recipeDataUrl);
