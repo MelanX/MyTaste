@@ -1,6 +1,6 @@
 # MyTaste – Digital Recipe Book
 
-Welcome to **MyTaste**, a lightweight web application for collecting, organising and sharing your favourite recipes.  
+Welcome to **MyTaste**, a lightweight web application for collecting, organizing and sharing your favourite recipes.  
 The project consists of a React + TypeScript front-end and a minimal Express back-end that persists the data.
 
 ---

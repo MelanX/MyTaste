@@ -11,7 +11,6 @@ const App: React.FC = () => {
     const [recipes, setRecipes] = useState<Recipe[]>([]);
 
     const fetchRecipes = async () => {
-        console.log('Fetching from:', `${process.env.REACT_APP_API_URL}/recipes`);
         const response = await fetch(`${process.env.REACT_APP_API_URL}/recipes`);
 
         if (!response.ok) {
