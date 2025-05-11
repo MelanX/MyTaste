@@ -16,6 +16,18 @@ const corsOptions = {
 
 const RECIPE_FILE = 'data/recipes.json';
 
+// Function to create initial recipe file
+const createInitialRecipeFile = () => {
+    const dir = 'data';
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
+    const initialData = {
+        recipes: []
+    };
+    fs.writeFileSync(RECIPE_FILE, JSON.stringify(initialData, null, 2));
+};
+
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
@@ -129,6 +141,10 @@ app.post('/api/recipes', async (req, res) => {
         });
     });
 });
+
+if (!fs.existsSync(RECIPE_FILE)) {
+    createInitialRecipeFile();
+}
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server läuft auf http://localhost:${PORT}`);
