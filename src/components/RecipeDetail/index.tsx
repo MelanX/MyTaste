@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import {useParams, useLocation, Link} from 'react-router-dom';
 import { Recipe } from '../../types/Recipe';
 import styles from './styles.module.css';
 import BringButton from "../BringButton";
 import RecipeSidebar from './Sidebar';
 import RecipeInstructions from './Instructions';
 import { QRCodeSVG } from 'qrcode.react';
+import {useAuth} from "../../context/AuthContext";
 
 const RecipeDetail: React.FC = () => {
+    const { isAuthenticated } = useAuth();
     const [recipe, setRecipe] = useState<Recipe | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -66,7 +68,13 @@ const RecipeDetail: React.FC = () => {
     return (
         <div className={styles.recipeDetail}>
             <div className={styles.titleContainer}>
-                <h1>{recipe.title}</h1>
+                <h1>{recipe.title}
+                    {isAuthenticated && (
+                        <Link to={`/edit/${recipe.id}`} className={styles.editRecipeButton}>
+                            <i className="fa-solid fa-pen" />
+                        </Link>
+                    )}
+                </h1>
                 <div className={styles.qrCode}>
                     Im Browser aufrufen:
                     <QRCodeSVG value={currentUrl} size={50} fgColor={'#d99c5e'} />

@@ -3,13 +3,15 @@ import { Link, Route, Routes } from 'react-router-dom';
 import RecipeList from './components/RecipeList';
 import RecipeForm from './components/RecipeForm';
 import RecipeDetail from './components/RecipeDetail';
+import EditRecipe from './components/EditRecipe';
 import Login from './components/Login';
 import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import PaperGrain from './components/PaperGrain';
 import Sidebar from './components/Sidebar';
 import './App.css';
-import { Ingredient, Recipe } from './types/Recipe';
+import { Recipe } from './types/Recipe';
+import {RecipeFormValues} from "./components/RecipeForm/RecipeFormBase";
 
 const App: React.FC = () => {
     const { token } = useAuth();
@@ -22,14 +24,7 @@ const App: React.FC = () => {
             .catch(err => console.error('Failed to fetch recipes:', err));
     }, []);
 
-    const handleRecipeSubmit = async (
-        title: string,
-        instructions: string[],
-        url: string,
-        ingredients: Ingredient[],
-        spices: string[],
-        image?: string
-    ) => {
+    const handleRecipeSubmit = async (recipeFormValues: RecipeFormValues) => {
         try {
             await fetch('/api/recipes', {
                 method: 'POST',
@@ -37,7 +32,7 @@ const App: React.FC = () => {
                     'Content-Type': 'application/json',
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
-                body: JSON.stringify({ title, instructions, url, ingredients, spices, image }),
+                body: JSON.stringify(recipeFormValues),
             });
             const res = await fetch('/api/recipes');
             if (res.ok) {
@@ -71,6 +66,14 @@ const App: React.FC = () => {
                         element={
                             <ProtectedRoute>
                                 <RecipeForm onSubmit={handleRecipeSubmit} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/edit/:id"
+                        element={
+                            <ProtectedRoute>
+                                <EditRecipe />
                             </ProtectedRoute>
                         }
                     />

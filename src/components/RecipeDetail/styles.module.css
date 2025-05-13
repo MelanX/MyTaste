@@ -227,6 +227,18 @@
     text-decoration: none;
 }
 
+/* New: edit button */
+.editRecipeButton {
+    color: var(--color-primary);
+    padding: 8px;
+    transition: color 0.3s ease;
+}
+
+.editRecipeButton:hover {
+    color: var(--color-primary-dark);
+    text-decoration: none;
+}
+
 /* Desktop adjustments */
 @media (min-width: 768px) {
     .recipeDetail {

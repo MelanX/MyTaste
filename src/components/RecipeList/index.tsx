@@ -14,7 +14,8 @@ const RecipeList: React.FC<RecipeListProps> = ({ recipes }) => {
     return (
         <div>
             <h2>
-                Rezepte {isAuthenticated && (
+                Rezepte{' '}
+                {isAuthenticated && (
                     <Link to="/new-recipe" role="button">
                         <button type="button" className={styles.addRecipeButton}>
                             <i className="fa-solid fa-plus" />
