@@ -235,9 +235,10 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                                 />
                             </div>
                         </div>
-                        <button type="button"
+                        <button type="submit"
                                 className={styles.addButton}
                                 onClick={handleAddIngredient}
+                                onSubmit={handleAddIngredient}
                                 disabled={!newIngredient.name.trim()}>
                             <i className="fa-solid fa-plus"/>
                         </button>
@@ -253,19 +254,19 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                                  onClick={() => handleRemoveSpice(i)}>{s}</div>
                         ))}
                     </div>
-                    <div className={styles.spiceInputRow}>
+                    <form className={styles.spiceInputRow} onSubmit={handleAddSpice}>
                         <div className={styles.formGroup}>
                             <input type="text" value={newSpice}
                                    onChange={e => setNewSpice(e.target.value)}
                                    placeholder="Neues Gewürz"/>
                         </div>
-                        <button type="button"
+                        <button type="submit"
                                 className={styles.addButton}
                                 onClick={handleAddSpice}
                                 disabled={!newSpice.trim()}>
                             <i className="fa-solid fa-plus"/>
                         </button>
-                    </div>
+                    </form>
                 </div>
 
                 <div className={styles.formActions}>
