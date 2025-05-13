@@ -1,25 +1,26 @@
-import React, {useEffect, useState} from 'react';
-import {Route, Routes} from 'react-router-dom';
+import React from 'react';
+import { Link, Route, Routes } from 'react-router-dom';
 import RecipeList from './components/RecipeList';
 import RecipeForm from './components/RecipeForm';
-import {Ingredient, Recipe} from './types/Recipe';
+import RecipeDetail from './components/RecipeDetail';
+import Login from './components/Login';
+import { useAuth } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import PaperGrain from './components/PaperGrain';
+import Sidebar from './components/Sidebar';
 import './App.css';
-import PaperGrain from "./components/PaperGrain";
-import RecipeDetail from "./components/RecipeDetail";
+import { Ingredient, Recipe } from './types/Recipe';
 
 const App: React.FC = () => {
-    const [recipes, setRecipes] = useState<Recipe[]>([]);
+    const { token } = useAuth();
+    const [recipes, setRecipes] = React.useState<Recipe[]>([]);
 
-    const fetchRecipes = async () => {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/recipes`);
-
-        if (!response.ok) {
-            console.error('Error fetching recipes:', response.statusText);
-            return;
-        }
-        const data = await response.json();
-        setRecipes(data.recipes);
-    };
+    React.useEffect(() => {
+        fetch('/api/recipes')
+            .then((res) => res.json())
+            .then((data) => setRecipes(data.recipes))
+            .catch(err => console.error('Failed to fetch recipes:', err));
+    }, []);
 
     const handleRecipeSubmit = async (
         title: string,
@@ -29,51 +30,51 @@ const App: React.FC = () => {
         spices: string[],
         image?: string
     ) => {
-        await fetch(`${process.env.REACT_APP_API_URL}/recipes`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                title,
-                instructions,
-                url,
-                ingredients,
-                spices,
-                image
-            }),
-        });
-
-        fetchRecipes();
+        try {
+            await fetch('/api/recipes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({ title, instructions, url, ingredients, spices, image }),
+            });
+            const res = await fetch('/api/recipes');
+            if (res.ok) {
+                const data = await res.json();
+                setRecipes(data.recipes);
+            }
+        } catch (error) {
+            console.error('Error submitting recipe:', error);
+        }
     };
-
-
-    useEffect(() => {
-        fetchRecipes();
-    }, []);
 
     return (
         <div className="app-container">
-            <PaperGrain
-                backgroundColor="#f8f4e9"
-                grainColor="#FF0000"
-                grainDensity={15000}
-                grainOpacity={0.08}
-                maxGrainSize={1.5}
-            />
+            <Sidebar />
             <div className="content">
-                <a href="/">
-                    <img
-                        src="/text.png"
-                        alt="My Taste"
-                        className="logo-image"
-                        style={{cursor: 'pointer'}}
-                    />
-                </a>
+                <PaperGrain
+                    backgroundColor="#f8f4e9"
+                    grainColor="#FF0000"
+                    grainDensity={15000}
+                    grainOpacity={0.08}
+                    maxGrainSize={1.5}
+                />
+                <Link to="/">
+                    <img src="/text.png" alt="My Taste" className="logo-image" style={{ cursor: 'pointer' }} />
+                </Link>
                 <Routes>
-                    <Route path="/" element={<RecipeList recipes={recipes}/>}/>
-                    <Route path="/new-recipe" element={<RecipeForm onSubmit={handleRecipeSubmit}/>}/>
-                    <Route path="/recipe/:id" element={<RecipeDetail/>}/>
+                    <Route path="/" element={<RecipeList recipes={recipes} />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route
+                        path="/new-recipe"
+                        element={
+                            <ProtectedRoute>
+                                <RecipeForm onSubmit={handleRecipeSubmit} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="/recipe/:id" element={<RecipeDetail />} />
                 </Routes>
             </div>
         </div>

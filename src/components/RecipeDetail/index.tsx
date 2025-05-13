@@ -19,7 +19,7 @@ const RecipeDetail: React.FC = () => {
     useEffect(() => {
         const fetchRecipe = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/recipe/${id}`);
+                const response = await fetch(`/api/recipe/${id}`);
                 if (!response.ok) {
                     throw new Error('Rezept konnte nicht geladen werden');
                 }

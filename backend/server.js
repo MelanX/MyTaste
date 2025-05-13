@@ -1,20 +1,16 @@
-// server.js
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const app = express();
-const PORT = 5000;
-
-const corsOptions = {
-    origin: '*', // In production, specify exact origins
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-    optionsSuccessStatus: 204
-};
-
+const PORT = process.env.PORT || 5000;
 const RECIPE_FILE = 'data/recipes.json';
+
+app.use(cors({ origin: '*', methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', credentials: true }));
+app.use(bodyParser.json());
 
 // Function to create initial recipe file
 const createInitialRecipeFile = () => {
@@ -28,8 +24,29 @@ const createInitialRecipeFile = () => {
     fs.writeFileSync(RECIPE_FILE, JSON.stringify(initialData, null, 2));
 };
 
-app.use(cors(corsOptions));
-app.use(bodyParser.json());
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.sendStatus(401);
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+};
+
+// Login endpoint
+app.post('/api/login', (req, res) => {
+    const { ADMIN_USER, ADMIN_PASS } = process.env;
+    const { username, password } = req.body;
+    console.log(username, password);
+    console.log(ADMIN_USER, ADMIN_PASS);
+    if (username === ADMIN_USER && password === ADMIN_PASS) {
+        const token = jwt.sign({ user: username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        return res.json({ token });
+    }
+    return res.status(401).json({ message: 'Invalid credentials' });
+});
 
 // GET: Fetch all recipes
 app.get('/api/recipes', (req, res) => {
@@ -125,19 +142,17 @@ app.get('/api/bring-recipe/:id', (req, res) => {
 });
 
 // POST: Add a new recipe
-app.post('/api/recipes', async (req, res) => {
+app.post('/api/recipes', authenticateToken, async (req, res) => {
     const { nanoid } = await import('nanoid');
     const newRecipe = req.body;
-
     fs.readFile(RECIPE_FILE, 'utf8', (err, data) => {
         if (err) return res.status(500).send(err);
         const jsonData = JSON.parse(data);
         newRecipe.id = nanoid(10);
         jsonData.recipes.push(newRecipe);
-
         fs.writeFile(RECIPE_FILE, JSON.stringify(jsonData, null, 2), (err) => {
             if (err) return res.status(500).send(err);
-            res.status(201).send(newRecipe);
+            res.status(201).json(newRecipe);
         });
     });
 });
