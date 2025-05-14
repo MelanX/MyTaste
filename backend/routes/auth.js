@@ -7,9 +7,12 @@ router.post('/login', (req, res) => {
     const {username, password} = req.body;
 
     if (username === ADMIN_USER && password === ADMIN_PASS) {
-        const token = jwt.sign({user: username}, JWT_SECRET, {expiresIn: '1h'});
-        return res.json({token});
+        const expirationTime = new Date();
+        expirationTime.setHours(expirationTime.getHours() + 8);
+        const token = jwt.sign({user: username}, JWT_SECRET, {expiresIn: '8h'});
+        return res.json({token, expirationTime: expirationTime.getTime()});
     }
+
     return res.status(401).json({message: 'Invalid credentials'});
 });
 
