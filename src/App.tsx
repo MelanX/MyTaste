@@ -3,8 +3,8 @@ import { Link, Route, Routes } from 'react-router-dom';
 import RecipeList from './components/RecipeList';
 import RecipeForm from './components/RecipeForm';
 import RecipeDetail from './components/RecipeDetail';
-import EditRecipe from './components/EditRecipe';
 import Login from './components/Login';
+import ImportRecipe from './components/ImportRecipe';
 import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import PaperGrain from './components/PaperGrain';
@@ -12,6 +12,7 @@ import Sidebar from './components/Sidebar';
 import './App.css';
 import { Recipe } from './types/Recipe';
 import {RecipeFormValues} from "./components/RecipeForm/RecipeFormBase";
+import EditRecipe from "./components/EditRecipe";
 
 const App: React.FC = () => {
     const { token } = useAuth();
@@ -66,6 +67,14 @@ const App: React.FC = () => {
                         element={
                             <ProtectedRoute>
                                 <RecipeForm onSubmit={handleRecipeSubmit} />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/import-recipe"
+                        element={
+                            <ProtectedRoute>
+                                <ImportRecipe />
                             </ProtectedRoute>
                         }
                     />

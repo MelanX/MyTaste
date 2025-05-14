@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const authRouter = require('./routes/auth');
 const recipesRouter = require('./routes/recipes');
+const importRouter = require('./routes/import');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,6 +16,7 @@ app.use(bodyParser.json());
 // Mount routers
 app.use('/api', authRouter);
 app.use('/api', recipesRouter);
+app.use('/api', importRouter)
 
 // Default error handler
 app.use((err, req, res, next) => {

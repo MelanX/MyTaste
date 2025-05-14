@@ -1,11 +1,10 @@
-// src/components/Sidebar/index.tsx
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import React, {useEffect, useRef, useState} from 'react';
+import {Link} from 'react-router-dom';
+import {useAuth} from '../../context/AuthContext';
 import styles from './styles.module.css';
 
 const Sidebar: React.FC = () => {
-    const { isAuthenticated, logout } = useAuth();
+    const {isAuthenticated, logout} = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const sidebarRef = useRef<HTMLDivElement>(null);
     const toggleButtonRef = useRef<HTMLButtonElement>(null);
@@ -59,15 +58,25 @@ const Sidebar: React.FC = () => {
                                 <Link to="/" onClick={() => setIsOpen(false)}>Home</Link>
                             </li>
                             {isAuthenticated && (
-                                <li>
-                                    <Link to="/new-recipe" onClick={() => setIsOpen(false)}>Rezept hinzufügen</Link>
-                                </li>
+                                <>
+                                    <li>
+                                        <Link to="/new-recipe" onClick={() => setIsOpen(false)}>Rezept hinzufügen</Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/import-recipe" onClick={() => setIsOpen(false)}>Importiere Rezept</Link>
+                                    </li>
+                                </>
                             )}
                             <li>
                                 {isAuthenticated ? (
-                                    <button onClick={() => { logout(); setIsOpen(false); }}>Logout</button>
+                                    <button onClick={() => {
+                                        logout();
+                                        setIsOpen(false);
+                                    }}>Logout</button>
                                 ) : (
-                                    <Link to="/login" onClick={() => setIsOpen(false)}><button>Login</button></Link>
+                                    <Link to="/login" onClick={() => setIsOpen(false)}>
+                                        <button>Login</button>
+                                    </Link>
                                 )}
                             </li>
                         </ul>

@@ -1,0 +1,54 @@
+.importContainer {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: var(--color-white);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px var(--color-shadow);
+}
+
+.importContainer h2 {
+    margin-bottom: 1rem;
+    color: var(--color-text);
+}
+
+.importForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.importForm label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.importForm select,
+.importForm input {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.importForm .error {
+    color: var(--color-deny-button);
+}
+
+.importForm button {
+    width: fit-content;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color-accent);
+    color: var(--color-white);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.importForm button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
