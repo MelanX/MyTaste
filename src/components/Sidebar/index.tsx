@@ -41,7 +41,7 @@ const Sidebar: React.FC = () => {
         <>
             <button
                 ref={toggleButtonRef}
-                className={styles.toggleButton}
+                className={`${styles.toggleButton} no-print`}
                 onClick={toggleSidebar}
             >
                 {isOpen ? <i className="fa-solid fa-times"/> : <i className="fa-solid fa-bars"/>}
