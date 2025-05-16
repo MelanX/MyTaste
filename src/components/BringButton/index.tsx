@@ -6,9 +6,8 @@ interface BringButtonProps {
 }
 
 const BringButton: React.FC<BringButtonProps> = ({ recipeId }) => {
-    const recipeDataUrl = `${process.env.REACT_APP_API_URL}/bring-recipe/${recipeId}`;
-
-    // Generate the link manually
+    const baseUrl = process.env.REACT_APP_API_URL || '';
+    const recipeDataUrl = `${baseUrl}/api/bring-recipe/${recipeId}`;
     const bringLink = generateBringImportLink(recipeDataUrl);
 
     const handleClick = () => {

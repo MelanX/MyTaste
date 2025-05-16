@@ -7,6 +7,7 @@ import RecipeSidebar from './Sidebar';
 import RecipeInstructions from './Instructions';
 import { QRCodeSVG } from 'qrcode.react';
 import {useAuth} from "../../context/AuthContext";
+import {apiFetch} from "../../utils/api_service";
 
 const RecipeDetail: React.FC = () => {
     const { isAuthenticated } = useAuth();
@@ -21,7 +22,7 @@ const RecipeDetail: React.FC = () => {
     useEffect(() => {
         const fetchRecipe = async () => {
             try {
-                const response = await fetch(`/api/recipe/${id}`);
+                const response = await apiFetch(`/api/recipe/${id}`);
                 if (!response.ok) {
                     throw new Error('Rezept konnte nicht geladen werden');
                 }

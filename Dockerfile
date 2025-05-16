@@ -13,7 +13,7 @@ COPY src/ ./src/
 COPY tsconfig.json ./
 
 # Set environment variables for React build
-ENV REACT_APP_API_URL=/api
+ENV REACT_APP_API_URL=/
 ENV PORT=5000
 ENV NODE_ENV=production
 ENV GENERATE_SOURCEMAP=false
@@ -51,7 +51,7 @@ RUN echo 'const path = require("path");' > temp.js && \
 RUN sed -i '/app.use(bodyParser.json());/a app.use(express.static("public"));' server.js
 
 # Add route handler for SPA routing
-RUN sed -i '/app.use("\/api", importRouter)/a app.use("*", (req, res) => { res.sendFile(path.join(__dirname, "public/index.html")); });' server.js
+RUN sed -i '/app.use(".", importRouter)/a app.use("*", (req, res) => { res.sendFile(path.join(__dirname, "public/index.html")); });' server.js
 
 # Environment variables
 ENV PORT=5000

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import RecipeFormBase, { RecipeFormValues } from '../RecipeForm/RecipeFormBase';
 import styles from './styles.module.css';
+import { apiFetch } from '../../utils/api_service';
 
 const ImportRecipe: React.FC = () => {
     const [provider, setProvider] = useState<'chefkoch'>('chefkoch');
@@ -15,7 +16,6 @@ const ImportRecipe: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // only allow chefkoch.de URLs for now
         const chefRegex = /^https?:\/\/(www\.)?chefkoch\.de\/rezepte\/\d+\/.*$/;
         if (!chefRegex.test(url)) {
             setError('Bitte geben Sie eine gültige chefkoch.de-Rezept-URL ein');
@@ -25,7 +25,7 @@ const ImportRecipe: React.FC = () => {
         setLoading(true);
 
         try {
-            const res = await fetch('/api/import', {
+            const res = await apiFetch('/api/import', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ const ImportRecipe: React.FC = () => {
                 initial={imported}
                 submitLabel="Importiertes Rezept speichern"
                 onSubmit={async (vals) => {
-                    await fetch('/api/recipes', {
+                    await apiFetch('/api/recipes', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

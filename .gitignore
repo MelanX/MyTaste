@@ -25,6 +25,9 @@ yarn-error.log*
 
 private/
 .env
+.env.production
 *.iml
 *.tar
 *.sh
+android
+ios

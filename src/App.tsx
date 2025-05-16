@@ -13,13 +13,14 @@ import './App.css';
 import { Recipe } from './types/Recipe';
 import {RecipeFormValues} from "./components/RecipeForm/RecipeFormBase";
 import EditRecipe from "./components/EditRecipe";
+import {apiFetch} from "./utils/api_service";
 
 const App: React.FC = () => {
     const { token } = useAuth();
     const [recipes, setRecipes] = React.useState<Recipe[]>([]);
 
     React.useEffect(() => {
-        fetch('/api/recipes')
+        apiFetch('/api/recipes')
             .then((res) => res.json())
             .then((data) => setRecipes(data.recipes))
             .catch(err => console.error('Failed to fetch recipes:', err));
@@ -27,7 +28,7 @@ const App: React.FC = () => {
 
     const handleRecipeSubmit = async (recipeFormValues: RecipeFormValues) => {
         try {
-            await fetch('/api/recipes', {
+            await apiFetch('/api/recipes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -35,7 +36,7 @@ const App: React.FC = () => {
                 },
                 body: JSON.stringify(recipeFormValues),
             });
-            const res = await fetch('/api/recipes');
+            const res = await apiFetch('/api/recipes');
             if (res.ok) {
                 const data = await res.json();
                 setRecipes(data.recipes);
@@ -57,7 +58,7 @@ const App: React.FC = () => {
                     maxGrainSize={1.5}
                 />
                 <Link to="/">
-                    <img src="/text.png" alt="My Taste" className="logo-image" style={{ cursor: 'pointer' }} />
+                    <img src={`${process.env.PUBLIC_URL}/text.png`} alt="My Taste" className="logo-image" style={{ cursor: 'pointer' }} />
                 </Link>
                 <Routes>
                     <Route path="/" element={<RecipeList recipes={recipes} />} />

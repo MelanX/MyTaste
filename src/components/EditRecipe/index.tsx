@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import RecipeFormBase, { RecipeFormValues } from '../RecipeForm/RecipeFormBase';
 import { Recipe } from '../../types/Recipe';
+import {apiFetch} from "../../utils/api_service";
 
 const EditRecipe: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -11,7 +12,7 @@ const EditRecipe: React.FC = () => {
     const [initial, setInitial] = useState<RecipeFormValues | null>(null);
 
     useEffect(() => {
-        fetch(`/api/recipe/${id}`)
+        apiFetch(`/api/recipe/${id}`)
             .then(r => r.json())
             .then((recipe: Recipe) => {
                 setInitial({
@@ -26,7 +27,7 @@ const EditRecipe: React.FC = () => {
     }, [id]);
 
     const handleUpdate = async (values: RecipeFormValues) => {
-        await fetch(`/api/recipe/${id}`, {
+        await apiFetch(`/api/recipe/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
