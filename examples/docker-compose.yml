@@ -2,13 +2,13 @@ version: '3.8'
 
 services:
   backend:
-    image: ghcr.io/melanx/backend:latest
+    image: ghcr.io/melanx/mytaste-backend:latest
     ports:
       - "5000:5000"
     restart: always
 
   frontend:
-    image: ghcr.io/melanx/frontend:latest
+    image: ghcr.io/melanx/mytaste-frontend:latest
     ports:
       - "3000:3000"
     environment:
