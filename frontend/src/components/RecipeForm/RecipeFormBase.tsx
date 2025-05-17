@@ -1,7 +1,7 @@
-import React, {FormEvent, useRef, useState} from 'react';
-import {Ingredient} from '../../types/Recipe';
+import React, { FormEvent, useRef, useState } from 'react';
+import { Ingredient } from '../../types/Recipe';
 import styles from './styles.module.css';
-import {formatAmount} from '../../utils/formatters';
+import { formatAmount } from '../../utils/formatters';
 
 export interface RecipeFormValues {
     title: string;
@@ -43,18 +43,16 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
 
     const handleAddIngredient = () => {
         if (!newIngredient.name.trim()) return;
-        const amt = newIngredient.amount == null
-            ? 0
-            : parseFloat(String(newIngredient.amount).replace(',', '.'));
+        const amt = parseFloat(String(newIngredient.amount).replace(',', '.')) || 0;
         const entry: Ingredient = {...newIngredient, amount: amt};
 
         let updated: Ingredient[];
         if (editingIndex !== null) {
-            // re-insert at original position
+            // replace
             updated = [...ingredients];
-            updated.splice(editingIndex, 0, entry);
+            updated.splice(editingIndex, 1, entry);
         } else {
-            // append new
+            // add
             updated = [...ingredients, entry];
         }
 
@@ -74,11 +72,8 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
     };
 
     const handleEditIngredient = (index: number) => {
-        const ing = ingredients[index];
-        setNewIngredient(ing);
         setEditingIndex(index);
-        // remove it so that it'll be re-inserted
-        setIngredients(ings => ings.filter((_, idx) => idx !== index));
+        setNewIngredient(ingredients[index]);
         amountInputRef.current?.focus();
     };
 
