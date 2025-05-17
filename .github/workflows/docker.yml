@@ -28,5 +28,5 @@ jobs:
 
       - name: Build and push frontend image
         run: |
-          docker build -f ./frontend/Dockerfile -t ghcr.io/melanx/mytaste-frontend .
+          docker build -t ghcr.io/melanx/mytaste-frontend ./frontend
           docker push ghcr.io/melanx/mytaste-frontend

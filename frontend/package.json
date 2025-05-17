@@ -33,7 +33,7 @@
     "workbox-streams": "^6.4.2"
   },
   "scripts": {
-    "backend-start": "cd backend && node server.js",
+    "backend-start": "cd ../backend && node server.js",
     "frontend-start": "react-scripts start",
     "start": "npx concurrently \"npm run backend-start\" \"npm run frontend-start\"",
     "build": "react-scripts build",
