@@ -11,12 +11,12 @@ import PaperGrain from './components/PaperGrain';
 import Sidebar from './components/Sidebar';
 import './App.css';
 import { Recipe } from './types/Recipe';
-import {RecipeFormValues} from "./components/RecipeForm/RecipeFormBase";
+import { RecipeFormValues } from "./components/RecipeForm/RecipeFormBase";
 import EditRecipe from "./components/EditRecipe";
-import {apiFetch} from "./utils/api_service";
+import { apiFetch } from "./utils/api_service";
 
 const App: React.FC = () => {
-    const { token } = useAuth();
+    const {token} = useAuth();
     const [recipes, setRecipes] = React.useState<Recipe[]>([]);
 
     React.useEffect(() => {
@@ -32,7 +32,7 @@ const App: React.FC = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    ...(token ? {Authorization: `Bearer ${token}`} : {}),
                 },
                 body: JSON.stringify(recipeFormValues),
             });
@@ -46,9 +46,16 @@ const App: React.FC = () => {
         }
     };
 
+    const updateRecipes = async () => {
+        apiFetch('/api/recipes')
+            .then(res => res.json())
+            .then(data => setRecipes(data.recipes))
+            .catch(err => console.error('Failed to fetch recipes:', err));
+    };
+
     return (
         <div className="app-container">
-            <Sidebar />
+            <Sidebar/>
             <div className="content">
                 <PaperGrain
                     backgroundColor="#f8f4e9"
@@ -58,16 +65,17 @@ const App: React.FC = () => {
                     maxGrainSize={1.5}
                 />
                 <Link to="/">
-                    <img src={`${process.env.PUBLIC_URL}/text.png`} alt="My Taste" className="logo-image" style={{ cursor: 'pointer' }} />
+                    <img src={`${process.env.PUBLIC_URL}/text.png`} alt="My Taste" className="logo-image"
+                         style={{cursor: 'pointer'}}/>
                 </Link>
                 <Routes>
-                    <Route path="/" element={<RecipeList recipes={recipes} />} />
-                    <Route path="/login" element={<Login />} />
+                    <Route path="/" element={<RecipeList recipes={recipes}/>}/>
+                    <Route path="/login" element={<Login/>}/>
                     <Route
                         path="/new-recipe"
                         element={
                             <ProtectedRoute>
-                                <RecipeForm onSubmit={handleRecipeSubmit} />
+                                <RecipeForm onSubmit={handleRecipeSubmit}/>
                             </ProtectedRoute>
                         }
                     />
@@ -75,7 +83,7 @@ const App: React.FC = () => {
                         path="/import-recipe"
                         element={
                             <ProtectedRoute>
-                                <ImportRecipe />
+                                <ImportRecipe onSubmit={updateRecipes}/>
                             </ProtectedRoute>
                         }
                     />
@@ -83,11 +91,11 @@ const App: React.FC = () => {
                         path="/edit/:id"
                         element={
                             <ProtectedRoute>
-                                <EditRecipe />
+                                <EditRecipe/>
                             </ProtectedRoute>
                         }
                     />
-                    <Route path="/recipe/:id" element={<RecipeDetail />} />
+                    <Route path="/recipe/:id" element={<RecipeDetail/>}/>
                 </Routes>
             </div>
         </div>

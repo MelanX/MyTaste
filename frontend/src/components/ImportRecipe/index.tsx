@@ -5,7 +5,11 @@ import RecipeFormBase, { RecipeFormValues } from '../RecipeForm/RecipeFormBase';
 import styles from './styles.module.css';
 import { apiFetch } from '../../utils/api_service';
 
-const ImportRecipe: React.FC = () => {
+interface Props {
+    onSubmit: () => Promise<void>;
+}
+
+const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
     const [provider, setProvider] = useState<'chefkoch'>('chefkoch');
     const [url, setUrl] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -49,7 +53,7 @@ const ImportRecipe: React.FC = () => {
                 initial={imported}
                 submitLabel="Importiertes Rezept speichern"
                 onSubmit={async (vals) => {
-                    await apiFetch('/api/recipes', {
+                    const response = await apiFetch('/api/recipes', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -57,7 +61,10 @@ const ImportRecipe: React.FC = () => {
                         },
                         body: JSON.stringify(vals),
                     });
-                    navigate('/');
+
+                    const json = await response.json();
+                    navigate(`/recipe/${json.id}`);
+                    await onSubmit();
                 }}
             />
         );
