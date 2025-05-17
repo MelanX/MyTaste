@@ -1,4 +1,3 @@
-// backend/routes/recipes.js
 const express = require('express');
 const authenticateToken = require('../middleware/auth');
 const { readData, writeData } = require('../utils/fileService');
