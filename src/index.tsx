@@ -6,17 +6,22 @@ import {AuthProvider} from './context/AuthContext';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
+import {loadConfig} from "./config";
 
-const root = ReactDOM.createRoot(document.getElementById('root')!);
-root.render(
-    <React.StrictMode>
-        <AuthProvider>
-            <BrowserRouter>
-                <App/>
-            </BrowserRouter>
-        </AuthProvider>
-    </React.StrictMode>
-);
+loadConfig().then(() => {
+    const root = ReactDOM.createRoot(document.getElementById('root')!);
+    root.render(
+        <React.StrictMode>
+            <AuthProvider>
+                <BrowserRouter>
+                    <App/>
+                </BrowserRouter>
+            </AuthProvider>
+        </React.StrictMode>
+    );
 
-serviceWorkerRegistration.register();
-reportWebVitals();
+    serviceWorkerRegistration.register();
+    reportWebVitals();
+}).catch(error => {
+    console.error('Failed to load config:', error);
+});

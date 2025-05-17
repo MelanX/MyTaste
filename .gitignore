@@ -29,5 +29,4 @@ private/
 *.iml
 *.tar
 *.sh
-android
-ios
+!*/*.sh
