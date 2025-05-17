@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: ghcr.io/melanx/frontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=https://example.com  # public backend URL
+    restart: always

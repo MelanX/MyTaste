@@ -1,0 +1,9 @@
+node_modules
+build
+.env
+*.log
+.idea
+.DS_Store
+private
+*.iml
+data

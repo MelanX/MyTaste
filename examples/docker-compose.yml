@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  backend:
+    image: ghcr.io/melanx/backend:latest
+    ports:
+      - "5000:5000"
+    restart: always
+
+  frontend:
+    image: ghcr.io/melanx/frontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://backend:5000
+      - ADMIN_USER=admin
+      - ADMIN_PASS=adm1n
+      - JWT_SECRET=abaWyk9m2GfUr0gy9Q9keZan5kjfRSxnRlrQYCt3NnDDc7Fu5aVRy3f92No42mPN
+    depends_on:
+      - backend
+    restart: always
