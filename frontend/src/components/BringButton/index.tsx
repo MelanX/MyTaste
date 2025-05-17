@@ -1,29 +1,33 @@
 import React from 'react';
 import styles from './styles.module.css';
+import {Link} from "react-router-dom";
+import {getConfig} from "../../config";
 
 interface BringButtonProps {
     recipeId: string;
 }
 
-const BringButton: React.FC<BringButtonProps> = ({ recipeId }) => {
-    const baseUrl = process.env.REACT_APP_API_URL || '';
+const BringButton: React.FC<BringButtonProps> = ({recipeId}) => {
+    let baseUrl = getConfig().API_URL;
+    if (baseUrl.endsWith('/')) {
+        baseUrl = baseUrl.slice(0, -1);
+    }
+
     const recipeDataUrl = `${baseUrl}/api/bring-recipe/${recipeId}`;
     const bringLink = generateBringImportLink(recipeDataUrl);
 
-    const handleClick = () => {
-        window.open(bringLink, '_blank');
-    };
-
+    console.log(recipeDataUrl);
     return (
-        <button
-            onClick={handleClick}
-            className={styles.bringButton}
-        >
-            <img src={bringLogo} alt="Bring Logo"
-                 className={styles.bringLogo}
-            />
-            Zur Einkaufsliste
-        </button>
+        <Link to={bringLink}>
+            <button
+                className={styles.bringButton}
+            >
+                <img src={bringLogo} alt="Bring Logo"
+                     className={styles.bringLogo}
+                />
+                Zur Einkaufsliste
+            </button>
+        </Link>
     );
 };
 
