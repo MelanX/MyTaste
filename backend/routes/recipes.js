@@ -1,6 +1,7 @@
 const express = require('express');
 const authenticateToken = require('../middleware/auth');
 const { readData, writeData } = require('../utils/fileService');
+const nanoid = require("../utils/id");
 
 const router = express.Router();
 
@@ -43,7 +44,7 @@ router.get('/bring-recipe/:id', async (req, res, next) => {
             items: [
                 ...recipe.ingredients.map(i => ({
                     itemId: i.name,
-                    spec: `${String(i.amount || '').replace('.', ',')} ${i.unit || ''}`.trim()
+                    spec: `${ String(i.amount || '').replace('.', ',') } ${ i.unit || '' }`.trim()
                 })),
                 ...(recipe.spices || []).map(s => ({ itemId: s, stock: true }))
             ]
@@ -57,10 +58,13 @@ router.get('/bring-recipe/:id', async (req, res, next) => {
 // POST create a new recipe
 router.post('/recipes', authenticateToken, async (req, res, next) => {
     try {
-        const newRecipe = req.body;
-        const { nanoid } = await import('nanoid');
+        const newRecipe = req.body || {};
+        if (!newRecipe.title || typeof newRecipe.title !== 'string') {
+            return res.status(400).json({ message: 'title is required' });
+        }
+
         const data = await readData();
-        newRecipe.id = nanoid(10);
+        newRecipe.id = nanoid();
         data.recipes.push(newRecipe);
         await writeData(data);
         res.status(201).json(newRecipe);

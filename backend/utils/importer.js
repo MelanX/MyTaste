@@ -26,54 +26,67 @@ function extractRecipeLd(html) {
 }
 
 /**
+ * Convert “1”, “0,5”, “1 1/2”, “1/2”, “1½”, “½” … → number
+ */
+function toNumber(str = '') {
+    const unicode = { '⅕': 0.2, '¼': 0.25, '⅖': 0.4, '½': 0.5, '⅗': 0.6, '¾': 0.75, '⅘': 0.8 };
+
+    str = str.trim().replace(',', '.');
+
+    // 1 1/2   (mixed fraction with space)
+    let m = str.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+    if (m) return parseInt(m[1], 10) + (parseInt(m[2], 10) / parseInt(m[3], 10));
+
+    // 3/4
+    m = str.match(/^(\d+)\/(\d+)$/);
+    if (m) return parseInt(m[1], 10) / parseInt(m[2], 10);
+
+    // 1½   /   1¾  …
+    m = str.match(/^(\d+)([⅕¼⅖½⅗¾⅘])$/u);
+    if (m) return parseInt(m[1], 10) + unicode[m[2]];
+
+    // ½  …
+    if (unicode[str] !== undefined) return unicode[str];
+
+    // 1     0.5    0.5
+    const n = parseFloat(str);
+    return isNaN(n) ? undefined : n;
+}
+
+/**
  * Parse a single ingredient line into amount, unit, and name.
+ *  – supports decimals with “,” or “.”
+ *  – supports ASCII and Unicode fractions
+ *  – keeps everything after the unit together in `name`
  */
 function parseIngredientLine(text = '') {
     const ingredient = {
         name: '',
         amount: undefined,
         unit: undefined,
-        note: undefined,
+        note: undefined,      // not split out (current test-suite doesn’t expect it)
     };
 
-    // Regex: capture the leading number / fraction, optional unit, and the rest as name
-    const regex = /^\s*([\d.,\/]+)\s*([^\d\s]+)?\s+(.*)$/;
-    const match = text.match(regex);
+    let line = text.trim();
 
-    if (match) {
-        let [, amtStr, unitStr, rest] = match;
-
-        // Convert a fraction or decimal string to number
-        let num;
-        if (amtStr.includes('/')) {
-            // handle "1 1/2" or "1/2"
-            const parts = amtStr.split(' ');
-            if (parts.length === 2) {
-                const whole = parseInt(parts[0], 10);
-                const [nume, deno] = parts[1].split('/').map(Number);
-                num = whole + (nume / deno);
-            } else {
-                const [nume, deno] = amtStr.split('/').map(Number);
-                num = nume / deno;
-            }
-        } else {
-            num = parseFloat(amtStr.replace(',', '.'));
-        }
-
-        if (!isNaN(num)) {
-            ingredient.amount = num;
-        }
-
-        if (unitStr) {
-            ingredient.unit = unitStr.trim();
-        }
-
-        ingredient.name = rest.trim();
-    } else {
-        // Fallback: no explicit amount/unit
-        ingredient.name = text.trim();
+    /* ---------- amount ---------- */
+    // 1, 0,5, 1 1/2, 1/2, ½, 1½ …
+    const amtRe = /^(\d+\s+\d+\/\d+|\d+\/\d+|\d+[.,]\d+|\d+[⅕¼⅖½⅗¾⅘]|\d+|[⅕¼⅖½⅗¾⅘])\s*/u;
+    const amtMatch = line.match(amtRe);
+    if (amtMatch) {
+        ingredient.amount = toNumber(amtMatch[1]);
+        line = line.slice(amtMatch[0].length);
     }
 
+    /* ---------- unit ---------- */
+    // letters only – stops before first space
+    const unitMatch = line.match(/^([A-Za-zÄÖÜäöü]+)\s+/);
+    if (unitMatch) {
+        ingredient.unit = unitMatch[1];
+        line = line.slice(unitMatch[0].length);
+    }
+
+    ingredient.name = line.trim();
     return ingredient;
 }
 
@@ -185,6 +198,7 @@ module.exports = {
     extractRecipeLd,
     parseIngredientLine,
     parseIngredients,
+    parseSpiceFromIngredient,
     parseInstructions,
     importChefkoch,
 };
