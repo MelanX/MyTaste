@@ -10,7 +10,7 @@ const importRouter = require('./routes/import');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({origin: '*', methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', credentials: true}));
+app.use(cors({ origin: '*', methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', credentials: true }));
 app.use(bodyParser.json());
 
 // Mount routers
@@ -25,5 +25,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${ PORT }`);
 });

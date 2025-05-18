@@ -97,12 +97,12 @@ function parseSpiceFromIngredient(ingredient) {
     if (ingredient.unit !== undefined) return;
     if (ingredient.note !== undefined) return;
 
-    const spices = ['Salz', 'Pfeffer', 'Muskat'];
+    const spices = [ 'Salz', 'Pfeffer', 'Muskat' ];
     const spiceMap = {
-        'Salz und Pfeffer': ['Salz', 'Pfeffer'],
-        'Pfeffer und Salz': ['Salz', 'Pfeffer'],
-        'Pfeffer, Salz': ['Salz', 'Pfeffer'],
-        'Salz, Pfeffer': ['Salz', 'Pfeffer'],
+        'Salz und Pfeffer': [ 'Salz', 'Pfeffer' ],
+        'Pfeffer und Salz': [ 'Salz', 'Pfeffer' ],
+        'Pfeffer, Salz': [ 'Salz', 'Pfeffer' ],
+        'Salz, Pfeffer': [ 'Salz', 'Pfeffer' ],
     }
 
     const isSpice = spices.includes(ingredient.name);

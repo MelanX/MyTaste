@@ -2,6 +2,7 @@ const express = require('express');
 const authenticateToken = require('../middleware/auth');
 const { readData, writeData } = require('../utils/fileService');
 const nanoid = require("../utils/id");
+const { recipeSchema } = require("../utils/schemes");
 
 const router = express.Router();
 
@@ -58,9 +59,16 @@ router.get('/bring-recipe/:id', async (req, res, next) => {
 // POST create a new recipe
 router.post('/recipes', authenticateToken, async (req, res, next) => {
     try {
-        const newRecipe = req.body || {};
-        if (!newRecipe.title || typeof newRecipe.title !== 'string') {
-            return res.status(400).json({ message: 'title is required' });
+        const { value: newRecipe, error } = recipeSchema.validate(req.body, {
+            abortEarly: false,
+            stripUnknown: true,
+        });
+
+        if (error) {
+            return res.status(400).json({
+                message: 'Validation failed',
+                details: error.details.map(d => d.message)
+            });
         }
 
         const data = await readData();
