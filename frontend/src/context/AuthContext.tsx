@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { apiFetch } from '../utils/api_service';
 
 interface AuthContextType {
@@ -11,7 +11,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({children}) => {
     const [token, setToken] = useState<string | null>(() => localStorage.getItem('authToken'));
     const [tokenExpirationTime, setTokenExpirationTime] = useState<number | null>(() => {
         const stored = localStorage.getItem('tokenExpirationTime');
@@ -21,10 +21,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const login = async (username: string, password: string) => {
         const response = await apiFetch('/api/login', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username, password}),
         });
-        if (!response.ok) throw new Error('Login failed');
+
+        if (!response.ok) {
+            throw new Error('Login failed');
+        }
+
         const authentication = await response.json();
 
         setToken(authentication.token);
@@ -45,7 +49,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const isAuthenticated = hasValidToken(token, tokenExpirationTime);
 
     return (
-        <AuthContext.Provider value={{ token, tokenExpirationTime, login, logout, isAuthenticated }}>
+        <AuthContext.Provider value={{token, tokenExpirationTime, login, logout, isAuthenticated}}>
             {children}
         </AuthContext.Provider>
     );

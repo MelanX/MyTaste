@@ -11,9 +11,9 @@ interface PaperGrainProps {
 const PaperGrain: React.FC<PaperGrainProps> = ({
                                                    backgroundColor = '#f8f4e9',  // Cream paper color
                                                    grainColor = '#000000',       // Black grain dots
-                                                   grainDensity = 12000,         // Number of grain dots
+                                                   grainDensity = 15000,         // Number of grain dots
                                                    grainOpacity = 0.08,          // Opacity of the grain
-                                                    maxGrainSize = 2,            // Maximum size of grain dots in pixels
+                                                   maxGrainSize = 1.5,           // Maximum size of grain dots in pixels
                                                }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -45,7 +45,7 @@ const PaperGrain: React.FC<PaperGrainProps> = ({
             for (let i = 0; i < grainDensity; i++) {
                 const x = Math.random() * canvas.width;
                 const y = Math.random() * canvas.height;
-                const size = Math.random() * (maxGrainSize - 0.5) + 0.5; // Random size between 0.5 and 2px
+                const size = Math.random() * (maxGrainSize - 0.5) + 0.5; // Random size between 0.5 and {maxGrainSize}px
 
                 context.beginPath();
                 context.arc(x, y, size, 0, Math.PI * 2);

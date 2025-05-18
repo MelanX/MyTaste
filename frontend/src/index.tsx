@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {BrowserRouter} from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-import {AuthProvider} from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
-import {loadConfig} from "./config";
+import { loadConfig } from "./config";
 
 loadConfig().then(() => {
     const root = ReactDOM.createRoot(document.getElementById('root')!);
@@ -14,7 +14,7 @@ loadConfig().then(() => {
         <React.StrictMode>
             <AuthProvider>
                 <BrowserRouter>
-                    <App/>
+                    <App />
                 </BrowserRouter>
             </AuthProvider>
         </React.StrictMode>

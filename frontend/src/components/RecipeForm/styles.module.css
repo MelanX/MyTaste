@@ -1,3 +1,7 @@
+.recipeFormContainer h2 {
+    padding-left: 20px;
+}
+
 .recipeFormContainer {
     max-width: 800px;
     margin: 0 auto;
@@ -24,7 +28,7 @@ label {
     border-top: 1px solid var(--color-border);
 }
 
-.formSection h3 {
+.firstFormGroup div {
     margin-bottom: 1rem;
 }
 
@@ -90,7 +94,11 @@ label {
     gap: 10px;
 }
 
-.spiceInputRow {
+.ingredientInputRow {
+    padding: 1rem 0;
+}
+
+.recipeFormContainer .spiceInputRow {
     padding: 0;
 }
 
@@ -133,8 +141,6 @@ label {
 }
 
 .addButton {
-    background-color: var(--color-primary);
-    color: var(--color-white);
     border: none;
     width: 2rem;
     height: 2rem;
@@ -147,30 +153,15 @@ label {
     align-self: center;
 }
 
-.addButton:hover {
-    background-color: var(--color-primary-dark);
-}
-
-.addButton:disabled {
-    background-color: var(--color-button-disabled);
-    cursor: not-allowed;
-}
-
 .formActions {
     margin-top: 30px;
     text-align: right;
 }
 
 .submitButton {
-    background-color: var(--color-accent);
-    color: var(--color-white);
     font-weight: 600;
     padding: 10px 20px;
     font-size: 1rem;
-}
-
-.submitButton:hover {
-    background-color: var(--color-accent-dark);
 }
 
 .spicesContainer {
@@ -180,6 +171,7 @@ label {
 }
 
 .spicesContainer:has(.spiceTag) {
+    margin-top: 1rem;
     margin-bottom: 0.5rem;
 }
 

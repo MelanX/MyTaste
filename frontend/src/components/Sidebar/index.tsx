@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Link} from 'react-router-dom';
-import {useAuth} from '../../context/AuthContext';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import styles from './styles.module.css';
 
 const Sidebar: React.FC = () => {
@@ -44,7 +44,7 @@ const Sidebar: React.FC = () => {
                 className={`${styles.toggleButton} no-print`}
                 onClick={toggleSidebar}
             >
-                {isOpen ? <i className="fa-solid fa-times"/> : <i className="fa-solid fa-bars"/>}
+                <i className={`fa-solid fa-${isOpen ? 'xmark' : 'bars'}`} />
             </button>
 
             <div
@@ -55,7 +55,7 @@ const Sidebar: React.FC = () => {
                     <nav>
                         <ul>
                             <li>
-                                <Link to="/" onClick={() => setIsOpen(false)}>Home</Link>
+                                <Link to="/" reloadDocument onClick={() => setIsOpen(false)}>Home</Link>
                             </li>
                             {isAuthenticated && (
                                 <>
@@ -63,7 +63,8 @@ const Sidebar: React.FC = () => {
                                         <Link to="/new-recipe" onClick={() => setIsOpen(false)}>Rezept hinzufügen</Link>
                                     </li>
                                     <li>
-                                        <Link to="/import-recipe" onClick={() => setIsOpen(false)}>Importiere Rezept</Link>
+                                        <Link to="/import-recipe" onClick={() => setIsOpen(false)}>Importiere
+                                            Rezept</Link>
                                     </li>
                                 </>
                             )}

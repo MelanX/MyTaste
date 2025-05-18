@@ -9,8 +9,9 @@ interface RecipeListProps {
     recipes: Recipe[];
 }
 
-const RecipeList: React.FC<RecipeListProps> = ({ recipes }) => {
-    const { isAuthenticated } = useAuth();
+const RecipeList: React.FC<RecipeListProps> = ({recipes}) => {
+    const {isAuthenticated} = useAuth();
+
     return (
         <div>
             <h2>

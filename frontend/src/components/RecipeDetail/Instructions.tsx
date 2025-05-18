@@ -5,7 +5,7 @@ interface RecipeInstructionsProps {
     instructions: string[];
 }
 
-const RecipeInstructions: React.FC<RecipeInstructionsProps> = ({ instructions }) => {
+const RecipeInstructions: React.FC<RecipeInstructionsProps> = ({instructions}) => {
     return (
         <div className={styles.instructionsCard}>
             <h3 className={styles.instructionsTitle}>Zubereitung</h3>

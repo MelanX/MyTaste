@@ -15,7 +15,7 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [imported, setImported] = useState<RecipeFormValues | null>(null);
-    const { token } = useAuth();
+    const {token} = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -33,9 +33,9 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    ...(token ? {Authorization: `Bearer ${token}`} : {}),
                 },
-                body: JSON.stringify({ provider, url }),
+                body: JSON.stringify({provider, url}),
             });
             if (!res.ok) throw new Error('Import fehlgeschlagen');
             const data: RecipeFormValues = await res.json();
@@ -57,7 +57,7 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                            ...(token ? {Authorization: `Bearer ${token}`} : {}),
                         },
                         body: JSON.stringify(vals),
                     });
@@ -76,7 +76,9 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
             <form onSubmit={handleSubmit} className={styles.importForm}>
                 <label>
                     Anbieter
-                    <select value={provider} onChange={e => setProvider(e.target.value as any)}>
+                    <select value={provider} onChange={e => setProvider(e.target.value as any)}
+                            disabled={true} /* todo remove this once we have more providers */
+                    >
                         <option value="chefkoch">chefkoch.de</option>
                     </select>
                 </label>

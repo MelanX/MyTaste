@@ -5,6 +5,7 @@ body {
     sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    color: var(--color-text);
 }
 
 code {
@@ -32,10 +33,6 @@ code {
     --color-border: #ced4da;
     --color-shadow: rgba(0, 0, 0, 0.1);
     --color-shadow-hover: rgba(0, 0, 0, 0.15);
-
-    /* Accent colors */
-    --color-accent: #007bff; /* Blue accent for buttons, links */
-    --color-accent-dark: #0056b3; /* Darker blue for hover states */
 
     /* Button colors */
     --color-deny-button: #dc3545;

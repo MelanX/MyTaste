@@ -1,20 +1,20 @@
-import React, { useEffect, useState, useRef } from 'react';
-import {useParams, useLocation, Link} from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { Recipe } from '../../types/Recipe';
 import styles from './styles.module.css';
 import BringButton from "../BringButton";
-import RecipeSidebar from './Sidebar';
+import RecipeSidebar from './RecipeSidebar';
 import RecipeInstructions from './Instructions';
 import { QRCodeSVG } from 'qrcode.react';
-import {useAuth} from "../../context/AuthContext";
-import {apiFetch} from "../../utils/api_service";
+import { useAuth } from "../../context/AuthContext";
+import { apiFetch } from "../../utils/api_service";
 
 const RecipeDetail: React.FC = () => {
-    const { isAuthenticated } = useAuth();
+    const {isAuthenticated} = useAuth();
     const [recipe, setRecipe] = useState<Recipe | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const { id } = useParams<{ id: string }>();
+    const {id} = useParams<{ id: string }>();
     const buttonsRowRef = useRef<HTMLDivElement>(null);
     const location = useLocation();
     const currentUrl = window.location.origin + location.pathname;
@@ -88,7 +88,7 @@ const RecipeDetail: React.FC = () => {
                         <a href={recipe.url} className={styles.originalRecipeButton} target="_blank"
                            rel="noopener noreferrer">Zum Originalrezept</a>
                         <div className={styles.bringButton}>
-                            <BringButton recipeId={recipe.id}/>
+                            <BringButton recipeId={recipe.id} />
                         </div>
                     </div>
                 </div>

@@ -36,11 +36,7 @@ const App: React.FC = () => {
                 },
                 body: JSON.stringify(recipeFormValues),
             });
-            const res = await apiFetch('/api/recipes');
-            if (res.ok) {
-                const data = await res.json();
-                setRecipes(data.recipes);
-            }
+            await updateRecipes();
         } catch (error) {
             console.error('Error submitting recipe:', error);
         }
@@ -55,27 +51,26 @@ const App: React.FC = () => {
 
     return (
         <div className="app-container">
-            <Sidebar/>
+            <Sidebar />
             <div className="content">
                 <PaperGrain
-                    backgroundColor="#f8f4e9"
-                    grainColor="#FF0000"
-                    grainDensity={15000}
-                    grainOpacity={0.08}
-                    maxGrainSize={1.5}
+                    grainColor={'#ff0000'}
                 />
-                <Link to="/">
-                    <img src={`${process.env.PUBLIC_URL}/text.png`} alt="My Taste" className="logo-image"
-                         style={{cursor: 'pointer'}}/>
+                <Link to="/" reloadDocument className="logo-link">
+                    <img
+                        src={`${process.env.PUBLIC_URL}/text.png`}
+                        alt="MyTaste"
+                        className="logo-image"
+                    />
                 </Link>
                 <Routes>
-                    <Route path="/" element={<RecipeList recipes={recipes}/>}/>
-                    <Route path="/login" element={<Login/>}/>
+                    <Route path="/" element={<RecipeList recipes={recipes} />} />
+                    <Route path="/login" element={<Login />} />
                     <Route
                         path="/new-recipe"
                         element={
                             <ProtectedRoute>
-                                <RecipeForm onSubmit={handleRecipeSubmit}/>
+                                <RecipeForm onSubmit={handleRecipeSubmit} />
                             </ProtectedRoute>
                         }
                     />
@@ -83,7 +78,7 @@ const App: React.FC = () => {
                         path="/import-recipe"
                         element={
                             <ProtectedRoute>
-                                <ImportRecipe onSubmit={updateRecipes}/>
+                                <ImportRecipe onSubmit={updateRecipes} />
                             </ProtectedRoute>
                         }
                     />
@@ -91,11 +86,11 @@ const App: React.FC = () => {
                         path="/edit/:id"
                         element={
                             <ProtectedRoute>
-                                <EditRecipe/>
+                                <EditRecipe />
                             </ProtectedRoute>
                         }
                     />
-                    <Route path="/recipe/:id" element={<RecipeDetail/>}/>
+                    <Route path="/recipe/:id" element={<RecipeDetail />} />
                 </Routes>
             </div>
         </div>

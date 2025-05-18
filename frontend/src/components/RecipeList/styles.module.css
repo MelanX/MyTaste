@@ -58,8 +58,14 @@
     background-color: var(--color-primary);
     color: var(--color-white);
     text-align: center;
-    text-decoration: none;
     transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.addRecipeButton:hover,
+.recipeCardButton:hover {
+    background-color: var(--color-primary-dark);
+    text-decoration: none;
 }
 
 .recipeCardButton {
@@ -73,13 +79,7 @@
     font-size: 1.2rem;
     width: 1.6rem;
     height: 1.6rem;
-    border-radius: 8px;
+    border-radius: 25%;
     border-color: transparent;
     padding: 0;
-}
-
-.addRecipeButton:hover,
-.recipeCardButton:hover {
-    background-color: var(--color-primary-dark);
-    text-decoration: none;
 }

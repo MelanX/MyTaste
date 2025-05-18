@@ -1,7 +1,9 @@
 {
   "name": "mytaste",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "The frontend of MyTaste - Digital Recipe Book",
+  "author": "MelanX",
+  "license": "MIT",
   "proxy": "http://localhost:5000",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",

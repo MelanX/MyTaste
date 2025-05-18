@@ -96,52 +96,54 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
         <div className={styles.recipeFormContainer}>
             <h2>{submitLabel}</h2>
             <form onSubmit={handleSubmit}>
-                {/* Title */}
-                <div className={styles.formGroup}>
-                    <label htmlFor="title">Titel</label>
-                    <input
-                        id="title"
-                        type="text"
-                        value={title}
-                        onChange={e => setTitle(e.target.value)}
-                        required
-                    />
-                </div>
+                <div className={styles.firstFormGroup}>
+                    {/* Title */}
+                    <div className={styles.formGroup}>
+                        <label htmlFor="title">Titel</label>
+                        <input
+                            id="title"
+                            type="text"
+                            value={title}
+                            onChange={e => setTitle(e.target.value)}
+                            required
+                        />
+                    </div>
 
-                {/* Instructions */}
-                <div className={styles.formGroup}>
-                    <label htmlFor="instructions">Anleitung</label>
-                    <textarea
-                        id="instructions"
-                        rows={6}
-                        value={instructions.join('\n')}
-                        onChange={e => setInstructions(e.target.value.split('\n'))}
-                        placeholder="Jede Zeile ist ein Schritt der Anleitung"
-                        required
-                    />
-                </div>
+                    {/* Instructions */}
+                    <div className={styles.formGroup}>
+                        <label htmlFor="instructions">Anleitung</label>
+                        <textarea
+                            id="instructions"
+                            rows={6}
+                            value={instructions.join('\n')}
+                            onChange={e => setInstructions(e.target.value.split('\n'))}
+                            placeholder="Jede Zeile ist ein Schritt der Anleitung"
+                            required
+                        />
+                    </div>
 
-                {/* URL */}
-                <div className={styles.formGroup}>
-                    <label htmlFor="url">URL</label>
-                    <input
-                        id="url"
-                        type="url"
-                        value={url}
-                        onChange={e => setUrl(e.target.value)}
-                        required
-                    />
-                </div>
+                    {/* URL */}
+                    <div className={styles.formGroup}>
+                        <label htmlFor="url">URL</label>
+                        <input
+                            id="url"
+                            type="url"
+                            value={url}
+                            onChange={e => setUrl(e.target.value)}
+                            required
+                        />
+                    </div>
 
-                {/* Image */}
-                <div className={styles.formGroup}>
-                    <label htmlFor="image">Bild URL (optional)</label>
-                    <input
-                        id="image"
-                        type="url"
-                        value={image}
-                        onChange={e => setImage(e.target.value)}
-                    />
+                    {/* Image */}
+                    <div className={styles.formGroup}>
+                        <label htmlFor="image">Bild URL (optional)</label>
+                        <input
+                            id="image"
+                            type="url"
+                            value={image}
+                            onChange={e => setImage(e.target.value)}
+                        />
+                    </div>
                 </div>
 
                 {/* Ingredients */}
@@ -177,7 +179,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                                             <div className={styles.ingredientName}>{ing.name}</div>
                                             {ing.note && (
                                                 <div className={styles.ingredientNote}>
-                                                    <i className="fa-solid fa-circle-exclamation"/> {ing.note}
+                                                    <i className="fa-solid fa-circle-exclamation" /> {ing.note}
                                                 </div>
                                             )}
                                         </div>
@@ -235,13 +237,11 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                                 onClick={handleAddIngredient}
                                 onSubmit={handleAddIngredient}
                                 disabled={!newIngredient.name.trim()}>
-                            <i className="fa-solid fa-plus"/>
+                            <i className="fa-solid fa-plus" />
                         </button>
                     </div>
-                </div>
 
-                {/* Spices */}
-                <div className={styles.formSection}>
+                    {/* Spices */}
                     <h3>Gewürze</h3>
                     <div className={styles.spicesContainer}>
                         {spices.map((s, i) => (
@@ -253,13 +253,13 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                         <div className={styles.formGroup}>
                             <input type="text" value={newSpice}
                                    onChange={e => setNewSpice(e.target.value)}
-                                   placeholder="Neues Gewürz"/>
+                                   placeholder="Neues Gewürz" />
                         </div>
                         <button type="submit"
                                 className={styles.addButton}
                                 onClick={handleAddSpice}
                                 disabled={!newSpice.trim()}>
-                            <i className="fa-solid fa-plus"/>
+                            <i className="fa-solid fa-plus" />
                         </button>
                     </form>
                 </div>

@@ -16,7 +16,7 @@
     .app-container {
         padding: 2rem;
     }
-    
+
     .content {
         max-width: 80%;
     }
@@ -33,9 +33,7 @@ body {
     padding: 20px;
 }
 
-input[type="text"],
-input[type="url"],
-input[type="password"],
+input,
 textarea {
     width: 100%;
     padding: 10px;
@@ -48,12 +46,21 @@ textarea {
 }
 
 button {
-    background-color: var(--color-accent);
+    background-color: var(--color-primary);
     color: var(--color-white);
     border: none;
     padding: 10px 15px;
     border-radius: 0.4rem;
     cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--color-primary-dark);
+}
+
+button:disabled {
+    background-color: var(--color-button-disabled);
+    cursor: not-allowed;
 }
 
 nav button {
@@ -65,10 +72,6 @@ nav button {
     color: var(--color-white);
     border: none;
     border-radius: 4px;
-}
-
-button:hover {
-    background-color: var(--color-accent-dark);
 }
 
 ul {
@@ -94,19 +97,19 @@ p {
     color: var(--color-text-tertiary);
 }
 
-a {
-    color: var(--color-accent);
-    text-decoration: none;
-}
-
 a:hover {
     text-decoration: underline;
+}
+
+.logo-link {
+    display: block;
+    width: fit-content;
+    margin: 0 auto 1rem;
 }
 
 .logo-image {
     height: 4rem;
     display: block;
-    margin: 0 auto 1rem auto;
 }
 
 @media print {

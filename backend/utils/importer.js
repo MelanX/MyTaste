@@ -1,4 +1,3 @@
-// backend/utils/importer.js
 const axios = require('axios');
 const cheerio = require('cheerio');
 
@@ -37,14 +36,14 @@ function parseIngredientLine(text = '') {
         note: undefined,
     };
 
-    // Regex: capture leading number/fraction, optional unit, and the rest as name
+    // Regex: capture the leading number / fraction, optional unit, and the rest as name
     const regex = /^\s*([\d.,\/]+)\s*([^\d\s]+)?\s+(.*)$/;
     const match = text.match(regex);
 
     if (match) {
         let [, amtStr, unitStr, rest] = match;
 
-        // Convert fraction or decimal string to number
+        // Convert a fraction or decimal string to number
         let num;
         if (amtStr.includes('/')) {
             // handle "1 1/2" or "1/2"

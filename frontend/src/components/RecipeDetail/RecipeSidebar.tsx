@@ -8,7 +8,7 @@ interface RecipeSidebarProps {
     hideImage?: boolean;
 }
 
-const RecipeSidebar: React.FC<RecipeSidebarProps> = ({ recipe, hideImage = false }) => {
+const RecipeSidebar: React.FC<RecipeSidebarProps> = ({recipe, hideImage = false}) => {
     return (
         <div className={styles.sidebar}>
             <div className={styles.sidebarCard}>
@@ -36,7 +36,7 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({ recipe, hideImage = false
                                     </div>
                                     {ingredient.note && (
                                         <div className={styles.ingredientNote}>
-                                            <i className="fa-solid fa-circle-exclamation"/>
+                                            <i className="fa-solid fa-circle-exclamation" />
                                             <span>{ingredient.note}</span>
                                         </div>
                                     )}

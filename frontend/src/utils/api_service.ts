@@ -1,4 +1,4 @@
-import {getConfig} from "../config";
+import { getConfig } from "../config";
 
 export async function apiFetch(path: string, options: RequestInit = {}) {
     const baseUrl = getConfig().API_URL;
@@ -7,6 +7,6 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
     }
 
     const url = `${baseUrl}${path}`;
-    console.log('API URL:', url);
+    console.debug('API URL:', url);
     return fetch(url, options);
 }
