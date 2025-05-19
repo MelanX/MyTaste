@@ -22,7 +22,8 @@ export async function loadConfig() {
 
     let requireLogin = false;
     try {
-        const res = await apiFetch('/api/config');
+        // We need to call fetch instead of apiFetch because the config isn't loaded yet
+        const res = await fetch(`${apiUrl}/api/config`);
         const json = await res.json();
         requireLogin = !!json.requireLogin;
     } catch { }
