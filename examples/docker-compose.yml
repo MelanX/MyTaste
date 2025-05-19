@@ -5,6 +5,8 @@ services:
     image: ghcr.io/melanx/mytaste-backend:latest
     ports:
       - "5000:5000"
+    environment:
+      REQUIRE_LOGIN: "false"
     restart: always
 
   frontend:

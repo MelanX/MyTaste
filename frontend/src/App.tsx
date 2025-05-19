@@ -6,7 +6,6 @@ import RecipeDetail from './components/RecipeDetail';
 import Login from './components/Login';
 import ImportRecipe from './components/ImportRecipe';
 import { useAuth } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
 import PaperGrain from './components/PaperGrain';
 import Sidebar from './components/Sidebar';
 import './App.css';
@@ -14,6 +13,7 @@ import { Recipe } from './types/Recipe';
 import { RecipeFormValues } from "./components/RecipeForm/RecipeFormBase";
 import EditRecipe from "./components/EditRecipe";
 import { apiFetch } from "./utils/api_service";
+import RequireLogin from "./components/RequireLogin";
 
 const App: React.FC = () => {
     const {token} = useAuth();
@@ -24,7 +24,7 @@ const App: React.FC = () => {
             .then((res) => res.json())
             .then((data) => setRecipes(data.recipes))
             .catch(err => console.error('Failed to fetch recipes:', err));
-    }, []);
+    }, [token]);
 
     const handleRecipeSubmit = async (recipeFormValues: RecipeFormValues) => {
         try {
@@ -64,33 +64,41 @@ const App: React.FC = () => {
                     />
                 </Link>
                 <Routes>
-                    <Route path="/" element={<RecipeList recipes={recipes} />} />
+                    <Route path="/" element={
+                        <RequireLogin>
+                            <RecipeList recipes={recipes} />
+                        </RequireLogin>
+                    } />
                     <Route path="/login" element={<Login />} />
                     <Route
                         path="/new-recipe"
                         element={
-                            <ProtectedRoute>
+                            <RequireLogin>
                                 <RecipeForm onSubmit={handleRecipeSubmit} />
-                            </ProtectedRoute>
+                            </RequireLogin>
                         }
                     />
                     <Route
                         path="/import-recipe"
                         element={
-                            <ProtectedRoute>
+                            <RequireLogin>
                                 <ImportRecipe onSubmit={updateRecipes} />
-                            </ProtectedRoute>
+                            </RequireLogin>
                         }
                     />
                     <Route
                         path="/edit/:id"
                         element={
-                            <ProtectedRoute>
+                            <RequireLogin>
                                 <EditRecipe />
-                            </ProtectedRoute>
+                            </RequireLogin>
                         }
                     />
-                    <Route path="/recipe/:id" element={<RecipeDetail />} />
+                    <Route path="/recipe/:id" element={
+                        <RequireLogin>
+                            <RecipeDetail />
+                        </RequireLogin>
+                    } />
                 </Routes>
             </div>
         </div>

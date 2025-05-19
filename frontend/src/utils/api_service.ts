@@ -1,7 +1,17 @@
 import { getConfig } from "../config";
 
 export async function apiFetch(path: string, options: RequestInit = {}) {
-    const baseUrl = getConfig().API_URL;
+    const {API_URL: baseUrl, requireLogin} = getConfig();
+
+    if (requireLogin && !!localStorage.getItem('authToken')) {
+        const token = localStorage.getItem('authToken')!;
+
+        options.headers = {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+            ...(options.headers || {})
+        };
+    }
     if (baseUrl.endsWith('/') && path.startsWith('/')) {
         path = path.substring(1);
     }

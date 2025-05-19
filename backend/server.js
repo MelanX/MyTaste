@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const authenticateToken = require('./middleware/auth');
 require('dotenv').config();
 
 const authRouter = require('./routes/auth');
+const configRouter = require('./routes/config');
 const recipesRouter = require('./routes/recipes');
 const importRouter = require('./routes/import');
 
@@ -15,8 +17,14 @@ app.use(bodyParser.json());
 
 // Mount routers
 app.use('/api', authRouter);
+app.use('/api', configRouter);
+
+if (process.env.REQUIRE_LOGIN === 'true') {
+    app.use('/api', authenticateToken);
+}
+
 app.use('/api', recipesRouter);
-app.use('/api', importRouter)
+app.use('/api', importRouter);
 
 // Default error handler
 app.use((err, req, res, next) => {
