@@ -1,3 +1,5 @@
+import { apiFetch } from "./utils/api_service";
+
 let config: {
     API_URL: string;
     requireLogin: boolean
@@ -20,7 +22,7 @@ export async function loadConfig() {
 
     let requireLogin = false;
     try {
-        const res = await fetch('/api/config');
+        const res = await apiFetch('/api/config');
         const json = await res.json();
         requireLogin = !!json.requireLogin;
     } catch { }
