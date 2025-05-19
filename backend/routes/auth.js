@@ -13,6 +13,21 @@ const loginLimiter = rateLimit({
     legacyHeaders: false,
 });
 
+function safeEqual(a, b) {
+    if (typeof a !== 'string' || typeof b !== 'string') {
+        return false;
+    }
+
+    const bufferA = Buffer.from(a);
+    const bufferB = Buffer.from(b);
+
+    if (bufferA.length !== bufferB.length) {
+        return false;
+    }
+
+    return timingSafeEqual(bufferA, bufferB);
+}
+
 router.post('/login', loginLimiter, async (req, res, next) => {
     try {
         const { value, error } = loginSchema.validate(req.body, { abortEarly: false });
@@ -24,14 +39,8 @@ router.post('/login', loginLimiter, async (req, res, next) => {
 
         const { ADMIN_USER, ADMIN_PASS, JWT_SECRET } = process.env;
 
-        const userOk = timingSafeEqual(
-            Buffer.from(value.username),
-            Buffer.from(ADMIN_USER),
-        );
-        const passwordOk = timingSafeEqual(
-            Buffer.from(value.password),
-            Buffer.from(ADMIN_PASS),
-        );
+        const userOk = safeEqual(value.username, ADMIN_USER);
+        const passwordOk = safeEqual(value.password, ADMIN_PASS);
 
         if (!userOk || !passwordOk) {
             await new Promise(resolve => setTimeout(resolve, 1000)); // Delay to prevent brute force attacks

@@ -29,6 +29,8 @@ const recipeSchema = Joi.object({
             note: Joi.string().optional(),
         })
     )
+        .min(1)
+        .max(256)
         .required()
         .messages({
             'any.required': 'Ingredients are required.',

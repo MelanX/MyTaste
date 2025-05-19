@@ -104,9 +104,9 @@ describe('Recipes endpoints', () => {
         const body = {
             title: 'Test-Recipe',
             url: 'https://ex.com',
-            ingredients: [],
+            ingredients: [ { name: 'Schokolade' } ],
             spices: [],
-            instructions: [],
+            instructions: [ 'Iss die Schokolade' ],
         };
         const res = await request(app)
             .post('/api/recipes')
