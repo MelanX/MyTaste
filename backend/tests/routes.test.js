@@ -9,7 +9,24 @@ const importRouter = require('../routes/import');
 
 // Mock fileService so tests never touch the real recipes.json
 jest.mock('../utils/fileService', () => {
-    let data = require('../data/recipes.json');
+    let data;
+    try {
+        data = require('../data/recipes.json')
+    } catch {
+        data = {
+            recipes: [ {
+                id: '1',
+                title: 'Dummy',
+                url: 'https://example.com',
+                image: '',
+                ingredients: [ { name: 'Schokolade' } ],
+                spices: [ 'Salz' ],
+                instructions: [],
+                author: 'MelanX',
+                linkOutUrl: 'https://ex.com',
+            } ]
+        };
+    }
     return {
         readData: jest.fn(async () => JSON.parse(JSON.stringify(data))),
         writeData: jest.fn(async (newData) => {
