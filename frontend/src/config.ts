@@ -1,5 +1,3 @@
-import { apiFetch } from "./utils/api_service";
-
 let config: {
     API_URL: string;
     requireLogin: boolean
@@ -23,7 +21,7 @@ export async function loadConfig() {
     let requireLogin = false;
     try {
         // We need to call fetch instead of apiFetch because the config isn't loaded yet
-        const res = await fetch(`${apiUrl}/api/config`);
+        const res = await fetch(`${apiUrl}${apiUrl.endsWith('/') ? '' : '/'}api/config`);
         const json = await res.json();
         requireLogin = !!json.requireLogin;
     } catch { }
