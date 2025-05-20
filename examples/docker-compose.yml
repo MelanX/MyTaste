@@ -6,18 +6,18 @@ services:
     ports:
       - "5000:5000"
     environment:
-      REQUIRE_LOGIN: "false"
+      - REQUIRE_LOGIN=true
+      - ADMIN_USER=admin
+      - ADMIN_PASS=adm1n
+      - JWT_SECRET=abaWyk9m2GfUr0gy9Q9keZan5kjfRSxnRlrQYCt3NnDDc7Fu5aVRy3f92No42mPN
     restart: always
 
   frontend:
     image: ghcr.io/melanx/mytaste-frontend:latest
     ports:
-      - "3000:3000"
+      - "3000:80"
     environment:
       - REACT_APP_API_URL=http://backend:5000
-      - ADMIN_USER=admin
-      - ADMIN_PASS=adm1n
-      - JWT_SECRET=abaWyk9m2GfUr0gy9Q9keZan5kjfRSxnRlrQYCt3NnDDc7Fu5aVRy3f92No42mPN
     depends_on:
       - backend
     restart: always
