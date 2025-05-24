@@ -223,6 +223,10 @@ async function importGeneric(url) {
         }
     }
 
+    if (typeof ld.image === 'object' && ld.image['@type'] === 'ImageObject') {
+        ld.image = ld.image.url;
+    }
+
     return {
         title: ld.name || '',
         url,
