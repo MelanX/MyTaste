@@ -71,7 +71,7 @@ const RecipeDetail: React.FC = () => {
             <div className={styles.titleContainer}>
                 <h1>{recipe.title}
                     {isAuthenticated && (
-                        <Link to={`/edit/${recipe.id}`} className={styles.editRecipeButton}>
+                        <Link to={`/edit/${recipe.id}`} className={`${styles.editRecipeButton} no-print`}>
                             <i className="fa-solid fa-pen" />
                         </Link>
                     )}

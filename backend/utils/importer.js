@@ -9,13 +9,29 @@ function extractRecipeLd(html) {
     let recipeData = null;
 
     $('script[type="application/ld+json"]').each((_, el) => {
+        if (recipeData) return false;
+
         try {
             const payload = JSON.parse($(el).html());
+            if (Array.isArray(payload['@graph'])) {
+                const found = payload['@graph'].find(item => item['@type'] === 'Recipe');
+                if (found) {
+                    recipeData = found;
+                    return false;
+                }
+            }
+
             if (Array.isArray(payload)) {
                 const found = payload.find(item => item['@type'] === 'Recipe');
-                if (found) recipeData = found;
-            } else if (payload['@type'] === 'Recipe') {
+                if (found) {
+                    recipeData = found;
+                    return false;
+                }
+            }
+
+            if (payload['@type'] === 'Recipe') {
                 recipeData = payload;
+                return false;
             }
         } catch {
             // ignore non-JSON or parse errors
@@ -53,6 +69,18 @@ function toNumber(str = '') {
     return isNaN(n) ? undefined : n;
 }
 
+function formatIngredientName(raw = '') {
+    // Text in brackets as specification
+    const matchArray = raw.match(/^\s*(.+?)\s+\(+\s*([^)]+?)\s*\)+\s*$/);
+    if (matchArray) {
+        const base = matchArray[1].trim();
+        const note = matchArray[2].trim();
+        return base ? `${ base }, ${ note }` : note;
+    }
+
+    return raw.trim();
+}
+
 /**
  * Parse a single ingredient line into amount, unit, and name.
  *  – supports decimals with “,” or “.”
@@ -86,7 +114,7 @@ function parseIngredientLine(text = '') {
         line = line.slice(unitMatch[0].length);
     }
 
-    ingredient.name = line.trim();
+    ingredient.name = formatIngredientName(line);
     return ingredient;
 }
 

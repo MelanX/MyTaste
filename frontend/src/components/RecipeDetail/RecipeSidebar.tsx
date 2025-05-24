@@ -26,22 +26,31 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({recipe, hideImage = false}
                     <div className={styles.ingredientsCard}>
                         <h3 className={styles.ingredientsTitle}>Zutaten</h3>
                         <div className={styles.ingredientsTable}>
-                            {recipe.ingredients.map((ingredient, index) => (
-                                <div key={index} className={styles.ingredientRow}>
-                                    <div className={styles.ingredientAmount}>
-                                        {formatAmount(ingredient.amount)}{ingredient.unit ? ` ${ingredient.unit}` : ''}
-                                    </div>
-                                    <div className={styles.ingredientName}>
-                                        {ingredient.name}
-                                    </div>
-                                    {ingredient.note && (
-                                        <div className={styles.ingredientNote}>
-                                            <i className="fa-solid fa-circle-exclamation" />
-                                            <span>{ingredient.note}</span>
+                            {recipe.ingredients.map((ingredient, index) => {
+                                    const [primaryName, ...rest] = ingredient.name.split(',');
+                                    const nameSpecification = rest.length > 0 ? rest.join(',') : '';
+
+                                    return (
+                                        <div key={index} className={styles.ingredientRow}>
+                                            <div className={styles.ingredientAmount}>
+                                                {formatAmount(ingredient.amount)}{ingredient.unit ? ` ${ingredient.unit}` : ''}
+                                            </div>
+                                            <div className={styles.ingredientName}>
+                                                <span>{primaryName}</span>
+                                                {nameSpecification && (
+                                                    <span className={styles.nameSpecification}>{nameSpecification}</span>
+                                                )}
+                                            </div>
+                                            {ingredient.note && (
+                                                <div className={styles.ingredientNote}>
+                                                    <i className="fa-solid fa-circle-exclamation" />
+                                                    <span>{ingredient.note}</span>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-                            ))}
+                                    )
+                                }
+                            )}
                         </div>
                     </div>
 

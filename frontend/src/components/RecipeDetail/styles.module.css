@@ -108,6 +108,13 @@
     hyphens: auto;
 }
 
+.nameSpecification {
+    color: var(--color-text-tertiary);
+    font-weight: 300;
+    margin-left: 0.5rem;
+    font-style: italic;
+}
+
 .ingredientNote {
     grid-column: 1 / span 2;
     margin-top: 2px;
@@ -293,6 +300,10 @@
     .ingredientRow {
         grid-template-columns: 80px 1fr;
         gap: 10px;
+    }
+
+    .ingredientName {
+        display: inline-flex;
     }
 
     .buttonsRow {
