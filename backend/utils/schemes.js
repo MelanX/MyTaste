@@ -26,10 +26,10 @@ const recipeSchema = Joi.object({
         .allow(null, ''),
     ingredients: Joi.array().items(
         Joi.object({
-            name: Joi.string().min(3).max(256).required(),
+            name: Joi.string().max(256).required(),
             amount: Joi.number().min(0).optional(),
-            unit: Joi.string().min(1).max(16).optional(),
-            note: Joi.string().optional(),
+            unit: Joi.string().min(1).max(16).optional().allow(null, ''),
+            note: Joi.string().optional().allow(null, '')
         })
     )
         .min(1)

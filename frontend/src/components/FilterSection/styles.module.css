@@ -1,0 +1,55 @@
+.filterSection {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.titleFilter {
+    width: 100%;
+}
+
+.titleInput {
+    width: 100%;
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+}
+
+.ingFilter {
+    display: flex;
+    flex-direction: column;
+}
+
+.ingLabel {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.ingList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.ingButton {
+    padding: 6px 12px;
+    background-color: var(--color-background-alt);
+    border-color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 5rem;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    display: inline-block;
+}
+
+.ingButton:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.selected {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border-color: var(--color-primary-dark);
+}
