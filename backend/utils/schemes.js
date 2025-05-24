@@ -13,11 +13,11 @@ const recipeSchema = Joi.object({
         }),
     url: Joi.string()
         .uri()
-        .required()
         .messages({
             'string.uri': 'URL must be a valid URL.',
             'any.required': 'URL is required.',
-        }),
+        })
+        .allow(null, ''),
     image: Joi.alternatives()
         .try(
             Joi.string().uri({ scheme: [ 'http', 'https' ] }),

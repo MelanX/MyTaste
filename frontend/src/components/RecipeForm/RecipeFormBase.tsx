@@ -9,7 +9,7 @@ import { apiFetch } from "../../utils/api_service";
 export interface RecipeFormValues {
     title: string;
     instructions: string[];
-    url: string;
+    url?: string;
     image?: string;
     ingredients: Ingredient[];
     spices: string[];
@@ -120,7 +120,6 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                 }
 
                 const {url: uploadedUrl} = await response.json();
-                console.log(response);
                 imgUrl = uploadedUrl;
             } catch (err) {
                 console.error(err);
@@ -178,21 +177,20 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                         />
                     </div>
 
-                    {/* URL */}
+                    {/* Original URL */}
                     <div className={styles.formGroup}>
-                        <label htmlFor="url">URL</label>
+                        <label htmlFor="url">Originalrezept-URL</label>
                         <input
                             id="url"
                             type="url"
                             value={url}
                             onChange={e => setUrl(e.target.value)}
-                            required
                         />
                     </div>
 
                     {/* Image */}
                     <div className={styles.formGroup}>
-                        <label>Bild</label>
+                        <label>Vorschaubild</label>
                         <ImageUpload file={imageFile} onFile={setImageFile} url={image} onUrl={setImage} />
                         <small>…oder externe URL eingeben:</small>
                         <input

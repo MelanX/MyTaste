@@ -85,8 +85,10 @@ const RecipeDetail: React.FC = () => {
                 <div className={styles.mainContent}>
                     <RecipeInstructions instructions={recipe.instructions} />
                     <div className={`${styles.buttonsRow} no-print`} ref={buttonsRowRef}>
-                        <a href={recipe.url} className={styles.originalRecipeButton} target="_blank"
-                           rel="noopener noreferrer">Zum Originalrezept</a>
+                        {recipe.url && (
+                            <a href={recipe.url} className={styles.originalRecipeButton} target="_blank"
+                               rel="noopener noreferrer">Zum Originalrezept</a>
+                        )}
                         <div className={styles.bringButton}>
                             <BringButton recipeId={recipe.id} />
                         </div>

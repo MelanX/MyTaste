@@ -2,7 +2,7 @@ export interface Recipe {
     id: string;
     title: string;
     instructions: string[];
-    url: string;
+    url?: string;
     ingredients: Ingredient[];
     spices?: string[];
     image?: string;
