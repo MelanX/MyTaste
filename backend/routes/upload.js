@@ -32,6 +32,11 @@ router.post('/upload-image', (req, res, next) => {
             details: [],
         }
         if (err) {
+            if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+                validationError.details.push('No file uploaded');
+                return res.status(400).send(validationError);
+            }
+
             if (err.code === 'LIMIT_FILE_SIZE') {
                 const bytes = Number(req.headers['content-length'] || 0);
                 const maxMB = (upload.limits.fileSize / 1024 / 1024).toFixed(0);
