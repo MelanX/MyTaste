@@ -153,9 +153,9 @@ function parseInstructions(rawInstructions = []) {
 }
 
 /**
- * Imports a chefkoch.de recipe by URL, scraping JSON-LD
+ * Tries importing using JSON-LD, falling back to custom parsing.
  */
-async function importChefkoch(url) {
+async function importGeneric(url) {
     const res = await axios.get(url, {
         headers: {
             'User-Agent': 'MelanX/MyTaste',
@@ -165,7 +165,7 @@ async function importChefkoch(url) {
     const html = res.data;
     const ld = extractRecipeLd(html);
     if (!ld) {
-        throw new Error('Kein Recipe-JSON-LD auf der Seite gefunden');
+        return importCustom(url, html);
     }
 
     let ingredients = parseIngredients(ld.recipeIngredient);
@@ -194,11 +194,16 @@ async function importChefkoch(url) {
     };
 }
 
+async function importCustom(url, html) {
+    // Fill with domains not using recipe-json-ld
+    throw new Error('Unsupported Website');
+}
+
 module.exports = {
     extractRecipeLd,
     parseIngredientLine,
     parseIngredients,
     parseSpiceFromIngredient,
     parseInstructions,
-    importChefkoch,
+    importGeneric,
 };

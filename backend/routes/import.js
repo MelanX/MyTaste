@@ -1,5 +1,5 @@
 const express = require('express');
-const { importChefkoch } = require('../utils/importer');
+const { importGeneric } = require('../utils/importer');
 const authenticateToken = require('../middleware/auth');
 const { importSchema } = require("../utils/schemes");
 const router = express.Router();
@@ -19,7 +19,7 @@ router.post('/import', authenticateToken, async (req, res, next) => {
         }
 
         const { url } = value;
-        const recipe = await importChefkoch(url);
+        const recipe = await importGeneric(url);
         res.json(recipe);
     } catch (err) {
         next(err);

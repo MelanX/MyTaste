@@ -10,7 +10,6 @@ interface Props {
 }
 
 const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
-    const [provider, setProvider] = useState<'chefkoch'>('chefkoch');
     const [url, setUrl] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -20,11 +19,6 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const chefRegex = /^https?:\/\/(www\.)?chefkoch\.de\/rezepte\/\d+\/.*$/;
-        if (!chefRegex.test(url)) {
-            setError('Bitte geben Sie eine gültige chefkoch.de-Rezept-URL ein');
-            return;
-        }
         setError(null);
         setLoading(true);
 
@@ -35,7 +29,7 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
                     'Content-Type': 'application/json',
                     ...(token ? {Authorization: `Bearer ${token}`} : {}),
                 },
-                body: JSON.stringify({provider, url}),
+                body: JSON.stringify({url}),
             });
             if (!res.ok) throw new Error('Import fehlgeschlagen');
             const data: RecipeFormValues = await res.json();
@@ -78,14 +72,6 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
         <div className={styles.importContainer}>
             <h2>Rezept importieren</h2>
             <form onSubmit={handleSubmit} className={styles.importForm}>
-                <label>
-                    Anbieter
-                    <select value={provider} onChange={e => setProvider(e.target.value as any)}
-                            disabled={true} /* todo remove this once we have more providers */
-                    >
-                        <option value="chefkoch">chefkoch.de</option>
-                    </select>
-                </label>
                 <label>
                     Rezept-URL
                     <input

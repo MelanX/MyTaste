@@ -37,7 +37,7 @@ jest.mock('../utils/fileService', () => {
 
 // Mock importer to avoid real HTTP calls
 jest.mock('../utils/importer', () => ({
-    importChefkoch: jest.fn(async (url) => ({
+    importGeneric: jest.fn(async (url) => ({
         title: 'Dummy',
         url,
         image: '',
@@ -138,16 +138,6 @@ describe('Recipes endpoints', () => {
             .post('/api/recipes')
             .set(authHeader())
             .send({ url: 'https://ex.com' });
-        expect(res.status).toBe(400);
-    });
-});
-
-describe('Import route', () => {
-    it('only supports provider=chefkoch', async () => {
-        const res = await request(app)
-            .post('/api/import')
-            .set('Authorization', `Bearer ${ jwt.sign({ user: 'admin' }, process.env.JWT_SECRET) }`)
-            .send({ url: 'https://ex.com', provider: 'something-else' });
         expect(res.status).toBe(400);
     });
 });

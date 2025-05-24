@@ -66,15 +66,12 @@ const loginSchema = Joi.object({
     password: Joi.string().min(1).max(1024).required(),
 });
 
-const allowedDomains = [ 'chefkoch.de' ];
+const unallowedDomains = [];
 const importSchema = Joi.object({
     url: Joi.string().trim().uri().custom((value, helpers) => {
         const { hostname } = new URL(value);
 
-        /** allow exact match or sub-domain, e.g.
-         *  chefkoch.de, www.chefkoch.de, api.v2.chefkoch.de
-         */
-        const isAllowed = allowedDomains.some((base) =>
+        const isAllowed = !unallowedDomains.some((base) =>
             hostname === base || hostname.endsWith(`.${ base }`)
         );
 
@@ -85,15 +82,8 @@ const importSchema = Joi.object({
         .required()
         .messages({
             'string.uri': 'URL must be a valid URL.',
-            'any.invalid': 'Only URLs from chefkoch.de are supported for now.',
+            'any.invalid': 'This URL is not allowed.',
             'any.required': 'URL is required.',
-        }),
-    provider: Joi.string()
-        .valid('chefkoch')
-        .required()
-        .messages({
-            'any.only': 'Only chefkoch is supported for now.',
-            'any.required': 'Provider is required.',
         })
 });
 
