@@ -1,5 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { readImportConfig } = require("./fileService");
 
 /**
  * Extracts the JSON-LD Recipe object from HTML
@@ -199,7 +200,7 @@ async function importGeneric(url) {
         },
     });
 
-    let renameRules = loadRenameRules();
+    let renameRules = await loadRenameRules();
 
     const html = res.data;
     const ld = extractRecipeLd(html);
@@ -237,22 +238,17 @@ async function importGeneric(url) {
     };
 }
 
-function loadRenameRules() {
+async function loadRenameRules() {
     const rules = {};
-    const fs = require('fs');
-    const path = require('path');
-    const importerConfig = path.join(__dirname, '..', 'data', 'config.json');
-    if (fs.existsSync(importerConfig)) {
-        const data = fs.readFileSync(importerConfig, 'utf8');
-        let lel = JSON.parse(data);
-        let renameRules = lel['rename_rules'];
 
-        for (let i = 0; i < renameRules.length; i++) {
-            let rule = renameRules[i];
-            rule.from.forEach(from => {
-                rules[from] = rule.to;
-            });
-        }
+    const config = await readImportConfig()
+    let renameRules = config['rename_rules'];
+
+    for (let i = 0; i < renameRules.length; i++) {
+        let rule = renameRules[i];
+        rule.from.forEach(from => {
+            rules[from] = rule.to;
+        });
     }
 
     return rules;
