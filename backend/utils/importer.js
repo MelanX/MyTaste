@@ -2,7 +2,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 /**
- * Extracts the JSON-LD Recipe object from chefkoch.de HTML
+ * Extracts the JSON-LD Recipe object from HTML
  */
 function extractRecipeLd(html) {
     const $ = cheerio.load(html);

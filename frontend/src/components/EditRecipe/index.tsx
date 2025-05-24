@@ -43,6 +43,21 @@ const EditRecipe: React.FC = () => {
         return response;
     };
 
+    const handleDeletion = async (): Promise<Response> => {
+        const response = await apiFetch(`/api/recipe/${id}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            navigate('/');
+        }
+
+        return response;
+    }
+
     if (!initial) return <div>Lade Rezept…</div>;
 
     return (
@@ -50,6 +65,7 @@ const EditRecipe: React.FC = () => {
             initial={initial}
             submitLabel="Rezept bearbeiten"
             onSubmit={handleUpdate}
+            onDelete={handleDeletion}
         />
     );
 };

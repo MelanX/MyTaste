@@ -19,6 +19,7 @@ interface RecipeFormBaseProps {
     initial?: RecipeFormValues;
     submitLabel: string;
     onSubmit: (values: RecipeFormValues) => Promise<Response>;
+    onDelete?: () => Promise<Response>;
     redirectTo?: string;
 }
 
@@ -33,6 +34,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                                                            },
                                                            submitLabel,
                                                            onSubmit,
+                                                           onDelete,
                                                            redirectTo
                                                        }) => {
     const navigate = useNavigate();
@@ -98,6 +100,12 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
     const handleRemoveSpice = (index: number) => {
         setSpices(s => s.filter((_, idx) => idx !== index));
     };
+
+    const handleDelete = () => {
+        if (window.confirm('Bist du sicher, dass du dieses Rezept löschen möchtest?')) {
+            onDelete!();
+        }
+    }
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -330,6 +338,14 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                     </div>
                 )}
                 <div className={styles.formActions}>
+                    {onDelete && (
+                        <button type="button"
+                                className={styles.deleteButton}
+                                onClick={handleDelete}
+                        >
+                            <i className="fa-solid fa-trash-can" /> Lösche Rezept
+                        </button>
+                    )}
                     <button type="submit" className={styles.submitButton}>
                         {submitLabel}
                     </button>

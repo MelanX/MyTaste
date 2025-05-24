@@ -99,4 +99,20 @@ router.put('/recipe/:id', authenticateToken, async (req, res, next) => {
     }
 });
 
+// DELETE an existing recipe
+router.delete('/recipe/:id', authenticateToken, async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const data = await readData();
+        const idx = data.recipes.findIndex(r => r.id === id);
+        if (idx < 0) return res.status(404).send('Recipe not found');
+
+        data.recipes.splice(idx, 1);
+        await writeData(data);
+        res.sendStatus(204);
+    } catch (err) {
+        next(err);
+    }
+})
+
 module.exports = router;
