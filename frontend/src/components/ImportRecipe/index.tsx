@@ -11,7 +11,7 @@ interface Props {
 
 const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
     const [url, setUrl] = useState('');
-    const [error, setError] = useState<string | null>(null);
+    const [errors, setErrors] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [imported, setImported] = useState<RecipeFormValues | null>(null);
     const {token} = useAuth();
@@ -19,7 +19,7 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null);
+        setErrors([]);
         setLoading(true);
 
         try {
@@ -31,11 +31,18 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
                 },
                 body: JSON.stringify({url}),
             });
-            if (!res.ok) throw new Error('Import fehlgeschlagen');
-            const data: RecipeFormValues = await res.json();
+
+            const json = await res.json();
+            if (!res.ok) {
+                setErrors([json.message, ...json.details]);
+                setLoading(false);
+                return;
+            }
+
+            const data: RecipeFormValues = json;
             setImported(data);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Fehler beim Import');
+            setErrors(err instanceof Error ? [err.message] : ['Fehler beim Import']);
         } finally {
             setLoading(false);
         }
@@ -82,7 +89,14 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
                         required
                     />
                 </label>
-                {error && <p className={styles.error}>{error}</p>}
+                {errors.length > 0 && (
+                    <div className={styles.errorSection}>
+                        <h3>{errors[0]}</h3>
+                        {errors.slice(1).map((e, i) => (
+                            <p key={i}>{e}</p>
+                        ))}
+                    </div>
+                )}
                 <button type="submit" disabled={loading}>
                     {loading ? 'Importiere…' : 'Import starten'}
                 </button>

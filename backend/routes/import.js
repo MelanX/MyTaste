@@ -19,8 +19,15 @@ router.post('/import', authenticateToken, async (req, res, next) => {
         }
 
         const { url } = value;
-        const recipe = await importGeneric(url);
-        res.json(recipe);
+        try {
+            const recipe = await importGeneric(url);
+            res.json(recipe);
+        } catch (err) {
+            return res.status(400).json({
+                message: 'Import failed',
+                details: [ err.message ]
+            });
+        }
     } catch (err) {
         next(err);
     }
