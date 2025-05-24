@@ -69,13 +69,22 @@ function toNumber(str = '') {
     return isNaN(n) ? undefined : n;
 }
 
-function formatIngredientName(raw = '') {
+function formatIngredientName(raw = '', renameRules = {}) {
     // Text in brackets as specification
     const matchArray = raw.match(/^\s*(.+?)\s+\(+\s*([^)]+?)\s*\)+\s*$/);
     if (matchArray) {
-        const base = matchArray[1].trim();
+        let base = matchArray[1].trim();
         const note = matchArray[2].trim();
+
+        if (renameRules[base]) {
+            base = renameRules[base];
+        }
+
         return base ? `${ base }, ${ note }` : note;
+    }
+
+    if (renameRules[raw.trim()]) {
+        return renameRules[raw.trim()];
     }
 
     return raw.trim();
@@ -87,7 +96,7 @@ function formatIngredientName(raw = '') {
  *  – supports ASCII and Unicode fractions
  *  – keeps everything after the unit together in `name`
  */
-function parseIngredientLine(text = '') {
+function parseIngredientLine(text = '', renameRules = {}) {
     const ingredient = {
         name: '',
         amount: undefined,
@@ -114,7 +123,7 @@ function parseIngredientLine(text = '') {
         line = line.slice(unitMatch[0].length);
     }
 
-    ingredient.name = formatIngredientName(line);
+    ingredient.name = formatIngredientName(line, renameRules);
     return ingredient;
 }
 
@@ -145,8 +154,8 @@ function parseSpiceFromIngredient(ingredient) {
  * Turns raw ingredient strings into our Ingredient shape,
  * attempting to extract amounts and units.
  */
-function parseIngredients(rawIngredients = []) {
-    return rawIngredients.map(line => parseIngredientLine(line));
+function parseIngredients(rawIngredients = [], renameRules = {}) {
+    return rawIngredients.map(line => parseIngredientLine(line, renameRules));
 }
 
 /**
@@ -190,13 +199,15 @@ async function importGeneric(url) {
         },
     });
 
+    let renameRules = loadRenameRules();
+
     const html = res.data;
     const ld = extractRecipeLd(html);
     if (!ld) {
         return importCustom(url, html);
     }
 
-    let ingredients = parseIngredients(ld.recipeIngredient);
+    let ingredients = parseIngredients(ld.recipeIngredient, renameRules);
     const instructions = parseInstructions(ld.recipeInstructions);
     const spices = [];
     for (let i = ingredients.length - 1; i >= 0; i--) {
@@ -220,6 +231,27 @@ async function importGeneric(url) {
         spices,
         instructions,
     };
+}
+
+function loadRenameRules() {
+    const rules = {};
+    const fs = require('fs');
+    const path = require('path');
+    const importerConfig = path.join(__dirname, '..', 'data', 'config.json');
+    if (fs.existsSync(importerConfig)) {
+        const data = fs.readFileSync(importerConfig, 'utf8');
+        let lel = JSON.parse(data);
+        let renameRules = lel['rename_rules'];
+
+        for (let i = 0; i < renameRules.length; i++) {
+            let rule = renameRules[i];
+            rule.from.forEach(from => {
+                rules[from] = rule.to;
+            });
+        }
+    }
+
+    return rules;
 }
 
 async function importCustom(url, html) {

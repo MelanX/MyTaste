@@ -7,34 +7,37 @@ const authRouter = require('../routes/auth');
 const recipesRouter = require('../routes/recipes');
 const importRouter = require('../routes/import');
 const uploadRouter = require('../routes/upload');
+const configRouter = require('../routes/config');
+
+let mockRecipeData = {
+    recipes: [
+        {
+            id: '1',
+            title: 'Dummy',
+            url: 'https://example.com',
+            image: '',
+            ingredients: [ { name: 'Schokolade' } ],
+            spices: [ 'Salz' ],
+            instructions: [],
+            author: 'MelanX',
+            linkOutUrl: 'https://ex.com',
+        },
+    ],
+};
+
+let mockMainConfig = { rename_rules: [] };
 
 // Mock fileService so tests never touch the real recipes.json
-jest.mock('../utils/fileService', () => {
-    let data;
-    try {
-        data = require('../data/recipes.json')
-    } catch {
-        data = {
-            recipes: [ {
-                id: '1',
-                title: 'Dummy',
-                url: 'https://example.com',
-                image: '',
-                ingredients: [ { name: 'Schokolade' } ],
-                spices: [ 'Salz' ],
-                instructions: [],
-                author: 'MelanX',
-                linkOutUrl: 'https://ex.com',
-            } ]
-        };
-    }
-    return {
-        readData: jest.fn(async () => JSON.parse(JSON.stringify(data))),
-        writeData: jest.fn(async (newData) => {
-            data = newData;
-        }),
-    };
-});
+jest.mock('../utils/fileService', () => ({
+    readData: jest.fn(async () => JSON.parse(JSON.stringify(mockRecipeData))),
+    writeData: jest.fn(async newData => {
+        mockRecipeData = newData;
+    }),
+    readImportConfig: jest.fn(async () => JSON.parse(JSON.stringify(mockMainConfig))),
+    writeImportConfig: jest.fn(async newCfg => {
+        mockMainConfig = newCfg;
+    }),
+}));
 
 // Mock importer to avoid real HTTP calls
 jest.mock('../utils/importer', () => ({
@@ -51,7 +54,7 @@ jest.mock('../utils/importer', () => ({
 function makeApp() {
     const app = express();
     app.use(express.json());
-    app.use('/api', authRouter, recipesRouter, importRouter, uploadRouter);
+    app.use('/api', authRouter, recipesRouter, importRouter, uploadRouter, configRouter);
     // default error handler mimic
     app.use((err, req, res, next) => res.status(500).json({ message: err.message }));
     return app;
@@ -333,5 +336,42 @@ describe('POST /api/upload-image', () => {
         expect(res.body).toHaveProperty('url');
         // url should start with /uploads/ and end in .webp
         expect(res.body.url).toMatch(/^\/uploads\/\d+\-.*\.webp$/);
+    });
+});
+
+describe('Importer-config endpoints', () => {
+    beforeEach(() => {
+        mockMainConfig = { rename_rules: [ { from: [ 'Foo' ], to: 'Bar' } ] };
+        jest.clearAllMocks();
+    });
+
+    it('GET /api/importer-config returns the current importer configuration', async () => {
+        const res = await request(app).get('/api/importer-config');
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual(mockMainConfig);
+        // ensure the mock helper was called
+        const { readImportConfig } = require('../utils/fileService');
+        expect(readImportConfig).toHaveBeenCalledTimes(1);
+    });
+
+    it('PUT /api/importer-config writes the new config and echoes it back', async () => {
+        const newCfg = {
+            rename_rules: [
+                { from: [ 'A', 'B' ], to: 'Alpha' },
+                { from: [ 'X' ], to: 'Ex' },
+            ],
+        };
+
+        const res = await request(app).put('/api/importer-config').send(newCfg);
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual(newCfg);
+
+        const { writeImportConfig } = require('../utils/fileService');
+        expect(writeImportConfig).toHaveBeenCalledWith(newCfg);
+        expect(writeImportConfig).toHaveBeenCalledTimes(1);
+
+        // subsequent GET should return the new config
+        const followUp = await request(app).get('/api/importer-config');
+        expect(followUp.body).toEqual(newCfg);
     });
 });

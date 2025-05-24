@@ -14,6 +14,8 @@ import { RecipeFormValues } from "./components/RecipeForm/RecipeFormBase";
 import EditRecipe from "./components/EditRecipe";
 import { apiFetch } from "./utils/api_service";
 import RequireLogin from "./components/RequireLogin";
+import RenameRulesConfig from "./components/RenameRulesConfig";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App: React.FC = () => {
     const {token} = useAuth();
@@ -70,29 +72,34 @@ const App: React.FC = () => {
                             <RecipeList recipes={recipes} />
                         </RequireLogin>
                     } />
+                    <Route path="/rename-rules" element={
+                        <ProtectedRoute>
+                            <RenameRulesConfig />
+                        </ProtectedRoute>
+                    } />
                     <Route path="/login" element={<Login />} />
                     <Route
                         path="/new-recipe"
                         element={
-                            <RequireLogin>
+                            <ProtectedRoute>
                                 <RecipeForm onSubmit={handleRecipeSubmit} />
-                            </RequireLogin>
+                            </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/import-recipe"
                         element={
-                            <RequireLogin>
+                            <ProtectedRoute>
                                 <ImportRecipe onSubmit={updateRecipes} />
-                            </RequireLogin>
+                            </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/edit/:id"
                         element={
-                            <RequireLogin>
+                            <ProtectedRoute>
                                 <EditRecipe />
-                            </RequireLogin>
+                            </ProtectedRoute>
                         }
                     />
                     <Route path="/recipe/:id" element={
