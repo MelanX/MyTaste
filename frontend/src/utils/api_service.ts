@@ -1,6 +1,6 @@
 import { getConfig } from "../config";
 
-export async function apiFetch(path: string, options: RequestInit = {}) {
+export async function apiFetch(path: string, options: RequestInit = {}): Promise<Response> {
     const {API_URL: baseUrl, requireLogin} = getConfig();
 
     if (requireLogin && !!localStorage.getItem('authToken')) {

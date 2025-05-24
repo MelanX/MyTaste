@@ -62,9 +62,13 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
                         body: JSON.stringify(vals),
                     });
 
-                    const json = await response.json();
-                    navigate(`/recipe/${json.id}`);
-                    await onSubmit();
+                    if (response.ok) {
+                        const json = await response.json();
+                        await onSubmit();
+                        navigate(`/recipe/${json.id}`);
+                    }
+
+                    return response;
                 }}
             />
         );

@@ -26,20 +26,21 @@ const App: React.FC = () => {
             .catch(err => console.error('Failed to fetch recipes:', err));
     }, [token]);
 
-    const handleRecipeSubmit = async (recipeFormValues: RecipeFormValues) => {
-        try {
-            await apiFetch('/api/recipes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(token ? {Authorization: `Bearer ${token}`} : {}),
-                },
-                body: JSON.stringify(recipeFormValues),
-            });
+    const handleRecipeSubmit = async (recipeFormValues: RecipeFormValues): Promise<Response> => {
+        const response = await apiFetch('/api/recipes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? {Authorization: `Bearer ${token}`} : {}),
+            },
+            body: JSON.stringify(recipeFormValues),
+        });
+
+        if (response.ok) {
             await updateRecipes();
-        } catch (error) {
-            console.error('Error submitting recipe:', error);
         }
+
+        return response;
     };
 
     const updateRecipes = async () => {

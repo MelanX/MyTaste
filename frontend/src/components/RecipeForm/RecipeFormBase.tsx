@@ -2,6 +2,9 @@ import React, { FormEvent, useRef, useState } from 'react';
 import { Ingredient } from '../../types/Recipe';
 import styles from './styles.module.css';
 import { formatAmount } from '../../utils/formatters';
+import ImageUpload from "../ImageUpload";
+import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../../utils/api_service";
 
 export interface RecipeFormValues {
     title: string;
@@ -15,7 +18,8 @@ export interface RecipeFormValues {
 interface RecipeFormBaseProps {
     initial?: RecipeFormValues;
     submitLabel: string;
-    onSubmit: (values: RecipeFormValues) => Promise<void>;
+    onSubmit: (values: RecipeFormValues) => Promise<Response>;
+    redirectTo?: string;
 }
 
 const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
@@ -28,17 +32,26 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                                                                spices: []
                                                            },
                                                            submitLabel,
-                                                           onSubmit
+                                                           onSubmit,
+                                                           redirectTo
                                                        }) => {
+    const navigate = useNavigate();
     const [title, setTitle] = useState(initial.title);
     const [instructions, setInstructions] = useState<string[]>(initial.instructions);
     const [url, setUrl] = useState(initial.url);
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [image, setImage] = useState(initial.image || '');
     const [ingredients, setIngredients] = useState<Ingredient[]>(initial.ingredients);
-    const [newIngredient, setNewIngredient] = useState<Ingredient>({name: '', amount: undefined, unit: '', note: ''});
+    const [newIngredient, setNewIngredient] = useState<Ingredient>({
+        name: '',
+        amount: undefined,
+        unit: undefined,
+        note: undefined
+    });
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [spices, setSpices] = useState<string[]>(initial.spices);
     const [newSpice, setNewSpice] = useState('');
+    const [errors, setErrors] = useState<string[]>([]);
     const amountInputRef = useRef<HTMLInputElement>(null);
 
     const handleAddIngredient = () => {
@@ -57,7 +70,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
         }
 
         setIngredients(updated);
-        setNewIngredient({name: '', amount: undefined, unit: '', note: ''});
+        setNewIngredient({name: '', amount: undefined, unit: undefined, note: undefined});
         setEditingIndex(null);
         amountInputRef.current?.focus();
     };
@@ -67,7 +80,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
         // if we were editing that or after, reset editingIndex
         if (editingIndex !== null && editingIndex === index) {
             setEditingIndex(null);
-            setNewIngredient({name: '', amount: undefined, unit: '', note: ''});
+            setNewIngredient({name: '', amount: undefined, unit: undefined, note: undefined});
         }
     };
 
@@ -89,7 +102,50 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const filteredInstructions = instructions.filter(l => l.trim());
-        await onSubmit({title, instructions: filteredInstructions, url, image, ingredients, spices});
+
+        let imgUrl = image;
+        if (imageFile && !imgUrl) {
+            try {
+                const form = new FormData();
+                form.append('file', imageFile);
+                const response = await apiFetch('/api/upload-image', {
+                    method: 'POST',
+                    body: form,
+                });
+
+                if (!response.ok) {
+                    const json = await response.json();
+                    setErrors([json.message, ...json.details]);
+                    return;
+                }
+
+                const {url: uploadedUrl} = await response.json();
+                console.log(response);
+                imgUrl = uploadedUrl;
+            } catch (err) {
+                console.error(err);
+                return;
+            }
+        }
+
+        const response: Response = await onSubmit({
+            title,
+            instructions: filteredInstructions,
+            url,
+            image: imgUrl,
+            ingredients,
+            spices
+        });
+
+        if (!response.ok) {
+            const json = await response.json();
+            setErrors([json.message, ...json.details]);
+            return;
+        }
+
+        if (redirectTo) {
+            navigate(redirectTo);
+        }
     };
 
     return (
@@ -136,12 +192,15 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
 
                     {/* Image */}
                     <div className={styles.formGroup}>
-                        <label htmlFor="image">Bild URL (optional)</label>
+                        <label>Bild</label>
+                        <ImageUpload file={imageFile} onFile={setImageFile} url={image} onUrl={setImage} />
+                        <small>…oder externe URL eingeben:</small>
                         <input
                             id="image"
                             type="url"
-                            value={image}
+                            value={image.startsWith('/uploads') ? '' : image}
                             onChange={e => setImage(e.target.value)}
+                            placeholder="https://example.com/bild.jpg"
                         />
                     </div>
                 </div>
@@ -264,6 +323,14 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                     </form>
                 </div>
 
+                {errors.length > 0 && (
+                    <div className={styles.errorSection}>
+                        <h3>{errors[0]}</h3>
+                        {errors.slice(1).map((e, i) => (
+                            <p key={i}>{e}</p>
+                        ))}
+                    </div>
+                )}
                 <div className={styles.formActions}>
                     <button type="submit" className={styles.submitButton}>
                         {submitLabel}

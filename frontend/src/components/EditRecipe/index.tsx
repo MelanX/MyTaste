@@ -26,8 +26,8 @@ const EditRecipe: React.FC = () => {
             });
     }, [id]);
 
-    const handleUpdate = async (values: RecipeFormValues) => {
-        await apiFetch(`/api/recipe/${id}`, {
+    const handleUpdate = async (values: RecipeFormValues): Promise<Response> => {
+        const response = await apiFetch(`/api/recipe/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -35,7 +35,12 @@ const EditRecipe: React.FC = () => {
             },
             body: JSON.stringify(values)
         });
-        navigate(`/recipe/${id}`);
+
+        if (response.ok) {
+            navigate(`/recipe/${id}`);
+        }
+
+        return response;
     };
 
     if (!initial) return <div>Lade Rezept…</div>;

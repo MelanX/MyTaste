@@ -26,6 +26,7 @@ export async function loadConfig() {
         requireLogin = !!json.requireLogin;
     } catch { }
 
+    apiUrl = apiUrl.endsWith('/') ? apiUrl.substring(0, apiUrl.length - 1) : apiUrl;
     config = {API_URL: apiUrl, requireLogin};
 }
 

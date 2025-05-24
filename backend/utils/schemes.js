@@ -18,9 +18,12 @@ const recipeSchema = Joi.object({
             'string.uri': 'URL must be a valid URL.',
             'any.required': 'URL is required.',
         }),
-    image: Joi.string().uri().messages({
-        'string.uri': 'Image must be a valid URL.',
-    }),
+    image: Joi.alternatives()
+        .try(
+            Joi.string().uri({ scheme: [ 'http', 'https' ] }),
+            Joi.string().pattern(/^\/uploads\/[\w.-]+\.webp$/i)
+        )
+        .allow(null, ''),
     ingredients: Joi.array().items(
         Joi.object({
             name: Joi.string().min(3).max(256).required(),

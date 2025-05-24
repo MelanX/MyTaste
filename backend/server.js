@@ -8,6 +8,8 @@ const authRouter = require('./routes/auth');
 const configRouter = require('./routes/config');
 const recipesRouter = require('./routes/recipes');
 const importRouter = require('./routes/import');
+const uploadRouter = require('./routes/upload');
+const { join } = require("node:path");
 
 const app = express();
 const PORT = 5000;
@@ -19,6 +21,7 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
 
 app.use(cors({
     origin: function (origin, callback) {
+        if (process.env.NODE_ENV !== 'production') return callback(null, true);
         if (!origin) return callback(null, true);
         if (allowedOrigins.includes(origin)) {
             return callback(null, true);
@@ -44,6 +47,8 @@ if (process.env.REQUIRE_LOGIN === 'true') {
 
 app.use('/api', recipesRouter);
 app.use('/api', importRouter);
+app.use('/api', uploadRouter);
+app.use('/uploads', express.static(join(__dirname, 'uploads')));
 
 // Default error handler
 app.use((err, req, res, next) => {
