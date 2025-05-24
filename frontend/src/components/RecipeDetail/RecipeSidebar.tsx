@@ -2,6 +2,7 @@ import React from 'react';
 import { Recipe } from '../../types/Recipe';
 import styles from './styles.module.css';
 import { formatAmount } from '../../utils/formatters';
+import { getConfig } from "../../config";
 
 interface RecipeSidebarProps {
     recipe: Recipe;
@@ -15,7 +16,7 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({recipe, hideImage = false}
                 {!hideImage && recipe.image && (
                     <div className={styles.sidebarImageContainer}>
                         <img
-                            src={recipe.image}
+                            src={recipe.image.startsWith('/uploads') ? `${getConfig().API_URL}${recipe.image}` : recipe.image}
                             alt={recipe.title}
                             className={styles.sidebarImage}
                         />

@@ -5,6 +5,7 @@ import { Recipe } from '../../types/Recipe';
 import BringButton from '../BringButton';
 import FilterSection from '../FilterSection';
 import styles from './styles.module.css';
+import { getConfig } from "../../config";
 
 interface RecipeListProps {
     recipes: Recipe[]
@@ -101,13 +102,15 @@ const RecipeList: React.FC<RecipeListProps> = ({recipes}) => {
             <div className={styles.recipeCardsGrid}>
                 {filtered.map(recipe => (
                     <div key={recipe.id} className={styles.recipeCard}>
-                        <div className={styles.recipeCardImageContainer}>
-                            <img
-                                src={recipe.image}
-                                alt={recipe.title}
-                                className={styles.recipeCardImage}
-                            />
-                        </div>
+                        {recipe.image && (
+                            <div className={styles.recipeCardImageContainer}>
+                                <img
+                                    src={recipe.image.startsWith('/uploads') ? `${getConfig().API_URL}${recipe.image}` : recipe.image}
+                                    alt={recipe.title}
+                                    className={styles.recipeCardImage}
+                                />
+                            </div>
+                        )}
                         <div className={styles.recipeCardContent}>
                             <h3 className={styles.recipeCardTitle}>{recipe.title}</h3>
                             <Link to={`/recipe/${recipe.id}`} className={styles.recipeCardButton}>
