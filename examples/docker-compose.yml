@@ -11,6 +11,9 @@ services:
       - ADMIN_PASS=adm1n
       - JWT_SECRET=abaWyk9m2GfUr0gy9Q9keZan5kjfRSxnRlrQYCt3NnDDc7Fu5aVRy3f92No42mPN
       - ALLOWED_ORIGINS=http://localhost
+    volumes:
+      - /docker/mytaste/backend/data:/app/data # Where recipes and config are stored
+      - /docker/mytaste/backend/uploads:/app/uploads # Where uploaded images will end up
     restart: always
 
   frontend:
