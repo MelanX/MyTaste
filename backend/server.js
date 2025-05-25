@@ -5,6 +5,7 @@ const authenticateToken = require('./middleware/auth');
 require('dotenv').config();
 
 const authRouter = require('./routes/auth');
+const bringRouter = require('./routes/bring');
 const configRouter = require('./routes/config');
 const recipesRouter = require('./routes/recipes');
 const importRouter = require('./routes/import');
@@ -40,6 +41,7 @@ app.use(bodyParser.json());
 // Mount routers
 app.use('/api', authRouter);
 app.use('/api', configRouter);
+app.use('/api', bringRouter);
 
 if (process.env.REQUIRE_LOGIN === 'true') {
     app.use('/api', authenticateToken);

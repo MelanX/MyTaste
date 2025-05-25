@@ -1,4 +1,5 @@
 const express = require('express');
+const authenticateToken = require('../middleware/auth');
 const { readImportConfig, writeImportConfig } = require("../utils/fileService");
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.get('/importer-config', async (req, res) => {
     res.json(data);
 });
 
-router.put('/importer-config', async (req, res) => {
+router.put('/importer-config', authenticateToken, async (req, res) => {
     const data = req.body;
     await writeImportConfig(data);
 
