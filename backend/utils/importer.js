@@ -13,14 +13,14 @@ const {
  * Extracts the JSON-LD Recipe object from HTML
  */
 function extractRecipeLd(html) {
-    const $ = cheerio.load(html);
+    const api = cheerio.load(html);
     let recipeData = null;
 
-    $('script[type="application/ld+json"]').each((_, el) => {
+    api('script[type="application/ld+json"]').each((_, el) => {
         if (recipeData) return false;
 
         try {
-            const payload = JSON.parse($(el).html());
+            const payload = JSON.parse(api(el).html());
             if (Array.isArray(payload['@graph'])) {
                 const found = payload['@graph'].find(item => item['@type'] === 'Recipe');
                 if (found) {

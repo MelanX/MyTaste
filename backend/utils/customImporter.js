@@ -1,68 +1,84 @@
+const cheerio = require('cheerio');
 const {
     loadRenameRules,
+    parseSpicesAndIngredients,
     parseInstructions,
-    parseSpicesAndIngredients
-} = require("./parserHelpers");
-const cheerio = require('cheerio');
+} = require('./parserHelpers');
+
+/** --- Generic extract/clean helpers ------------------------------------ */
+
+/** Extracts the title, falling back from selector1 → selector2  */
+function extractTitle(api, primary = 'h1', fallbackMeta = 'meta[property="og:title"]') {
+    return api(primary).first().text().trim()
+        || api(fallbackMeta).attr('content')
+        || '';
+}
+
+/** Extracts the image URL from og:image or first <img> in article/figure */
+function extractImage($, meta = 'meta[property="og:image"]') {
+    return $(meta).attr('content')
+        || $('article img, figure img').first().attr('src')
+        || '';
+}
+
+/** Cleans an element’s text: removes unwanted nodes, collapses whitespace */
+function cleanText(el, removeSelectors = [ 'i', '.ai-viewports', 'span', 'br' ]) {
+    return el
+        .clone()
+        .find(removeSelectors.join(','))
+        .remove()
+        .end()
+        .text()
+        .replace(/\s+/g, ' ')
+        .trim();
+}
 
 /**
- * Parser for https://leckerabnehmen.com/
+ * Finds the first <h2> matching headingRegex, then collects all
+ * following <p> until the next <h2>.
  */
+function extractParagraphSection($, headingRegex) {
+    const out = [];
+    const h2 = $('h2').filter((_, el) => headingRegex.test($(el).text())).first();
+    let node = h2.next();
+    while (node.length && !node.is('h2')) {
+        if (node.is('p')) {
+            const txt = cleanText(node);
+            if (txt) out.push(txt);
+        }
+        node = node.next();
+    }
+    return out;
+}
+
+/**
+ * Finds the first <h2> matching headingRegex, then grabs the
+ * very next <ul> matching listSelector, and extracts li → cleanText.
+ */
+function extractListSection($, headingRegex, listSelector = 'ul', elementInList = undefined) {
+    const out = [];
+    const h2 = $('h2').filter((_, el) => headingRegex.test($(el).text())).first();
+    const list = h2.nextAll(listSelector).first();
+    list.find('li').each((_, li) => {
+        const txt = elementInList
+            ? $(li).find(elementInList).text().trim()
+            : cleanText($(li));
+        if (txt) out.push(txt);
+    });
+    return out;
+}
+
+/** --- Site-specific parsers using the generic helpers -------------- */
+
+/** Parser for https://leckerabnehmen.com/… */
 async function parseLeckerAbnehmen(url, html) {
-    const $ = cheerio.load(html);
+    const api = cheerio.load(html);
 
-    // title
-    const title =
-        $('h1').first().text().trim() ||
-        $('meta[property="og:title"]').attr('content') ||
-        '';
+    const title = extractTitle(api);
+    const image = extractImage(api);
 
-    // image
-    const image =
-        $('meta[property="og:image"]').attr('content') ||
-        $('figure img').first().attr('src') ||
-        '';
-
-    // ingredients
-    const rawIngredients = [];
-    const ingredientsTitle = $('h2').filter((_, element) => $(element).text().trim().toLowerCase().startsWith('zutaten')).first();
-    let ingredientsNode = ingredientsTitle.next();
-    while (ingredientsNode.length && !ingredientsNode.is('h2')) {
-        if (ingredientsNode.is('p')) {
-            const text = ingredientsNode.clone()
-                .find('i, .ai-viewports')
-                .remove()
-                .end()
-                .text()
-                .replace(/\s+/g, ' ')
-                .trim();
-            if (text) {
-                rawIngredients.push(text);
-            }
-        }
-        ingredientsNode = ingredientsNode.next();
-    }
-
-    // instructions
-    const rawInstructions = [];
-    const instructionsTitle = $('h2').filter((_, element) => $(element).text().trim().toLowerCase().startsWith('zubereitung')).first();
-    let instructionNode = instructionsTitle.next();
-    while (instructionNode.length && !instructionNode.is('h2')) {
-        if (instructionNode.is('p')) {
-            const text = instructionNode.clone()
-                .find('.ai-viewports')
-                .remove()
-                .end()
-                .text()
-                .replace(/\s+/g, ' ')
-                .replace(/(\d?\d.\) )/, '')
-                .trim();
-            if (text) {
-                rawInstructions.push(text);
-            }
-        }
-        instructionNode = instructionNode.next();
-    }
+    const rawIngredients = extractParagraphSection(api, /^zutaten/i);
+    const rawInstructions = extractParagraphSection(api, /^zubereitung/i);
 
     const renameRules = await loadRenameRules();
     const { spices, ingredients } = parseSpicesAndIngredients(rawIngredients, renameRules);
@@ -71,60 +87,26 @@ async function parseLeckerAbnehmen(url, html) {
     return { title, url, image, ingredients, spices, instructions };
 }
 
-/**
- * Parser for https://lilya.momycooks.com
- */
+/** Parser for https://lilya.momycooks.com/… */
 async function parseLilyaMomycooks(url, html) {
-    const $ = cheerio.load(html);
+    const api = cheerio.load(html);
 
-    // title
-    const title = $('h1.entry-title').first().text().trim()
-        || $('meta[property="og:title"]').attr('content') || '';
+    const title = extractTitle(api, 'h1.entry-title');
+    const image = extractImage(api);
 
-    // image
-    const image = $('meta[property="og:image"]').attr('content')
-        || $('article img').first().attr('src') || '';
+    // ingredients live in a <ul class="wp-block-list">
+    const rawIngredients = extractListSection(api, /^zutaten/i, 'ul.wp-block-list', 'strong');
 
-    // ingredients
-    const rawIngredients = [];
-    const ingH2 = $('h2')
-        .filter((_, el) =>
-            /zutaten/i.test($(el).text().trim())
-        )
-        .first();
-    const ingList = ingH2.nextAll('ul.wp-block-list').first();
-    ingList.find('li').each((_, li) => {
-        const text = $(li)
-            .find('strong')
-            .first()
-            .clone()
-            .find('i, .ai-viewports')
-            .remove()
-            .end()
-            .text()
-            .trim();
-        if (text) rawIngredients.push(text);
-    });
+    // instructions might be an <ol>, <ul> or paragraphs
+    // try lists first; if empty, fall back to paragraphs
+    let rawInstructions = extractListSection(api, /zubereitung|anleitung/i, 'ol');
 
-    // instructions
-    const rawInstructions = [];
-    const instH2 = $('h2')
-        .filter((_, el) =>
-            /zubereitung|anleitung/i.test($(el).text().trim())
-        )
-        .first();
-    node = instH2.next();
-    while (node.length && !node.is('h2')) {
-        if (node.is('ol') || node.is('ul')) {
-            node.find('li').each((_, li) => {
-                const txt = $(li).text().trim();
-                if (txt) rawInstructions.push(txt);
-            });
-        } else if (node.is('p')) {
-            const txt = node.text().trim();
-            if (txt) rawInstructions.push(txt);
-        }
-        node = node.next();
+    if (rawInstructions.length === 0) {
+        rawInstructions = extractListSection(api, /zubereitung|anleitung/i, 'ul');
+    }
+
+    if (rawInstructions.length === 0) {
+        rawInstructions = extractParagraphSection(api, /zubereitung|anleitung/i);
     }
 
     const renameRules = await loadRenameRules();
