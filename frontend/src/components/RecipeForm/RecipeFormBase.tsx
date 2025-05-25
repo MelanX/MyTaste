@@ -12,7 +12,7 @@ export interface RecipeFormValues {
     url?: string;
     image?: string;
     ingredients: Ingredient[];
-    spices: string[];
+    spices?: string[];
 }
 
 interface RecipeFormBaseProps {
@@ -40,7 +40,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
     const navigate = useNavigate();
     const [title, setTitle] = useState(initial.title);
     const [instructions, setInstructions] = useState<string[]>(initial.instructions);
-    const [url, setUrl] = useState(initial.url);
+    const [url, setUrl] = useState<string>(initial.url || '');
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [image, setImage] = useState(initial.image || '');
     const [ingredients, setIngredients] = useState<Ingredient[]>(initial.ingredients);
@@ -51,15 +51,20 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
         note: undefined
     });
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
-    const [spices, setSpices] = useState<string[]>(initial.spices);
+    const [spices, setSpices] = useState<string[]>(initial.spices || []);
     const [newSpice, setNewSpice] = useState('');
     const [errors, setErrors] = useState<string[]>([]);
     const amountInputRef = useRef<HTMLInputElement>(null);
 
     const handleAddIngredient = () => {
         if (!newIngredient.name.trim()) return;
-        const amt = parseFloat(String(newIngredient.amount).replace(',', '.')) || 0;
-        const entry: Ingredient = {...newIngredient, amount: amt};
+        const amt = parseFloat(String(newIngredient.amount).replace(',', '.')) || undefined;
+        const entry: Ingredient = {
+            name: newIngredient.name.trim(),
+            amount: amt,
+            unit: newIngredient.unit?.trim() || undefined,
+            note: newIngredient.note?.trim() || undefined,
+        };
 
         let updated: Ingredient[];
         if (editingIndex !== null) {
@@ -135,13 +140,18 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
             }
         }
 
+        let maybeSpices: string[] | undefined = spices.map(s => s.trim()).filter(s => s !== '');
+        if (maybeSpices.length === 0) {
+            maybeSpices = undefined;
+        }
+
         const response: Response = await onSubmit({
             title,
             instructions: filteredInstructions,
-            url,
-            image: imgUrl,
+            url: url.trim() || undefined,
+            image: imgUrl.trim() || undefined,
             ingredients,
-            spices
+            spices: maybeSpices,
         });
 
         if (!response.ok) {
@@ -271,7 +281,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                                 <input
                                     id="ing-unit"
                                     type="text"
-                                    value={newIngredient.unit}
+                                    value={newIngredient.unit ?? ''}
                                     onChange={e => setNewIngredient(ni => ({...ni, unit: e.target.value}))}
                                     placeholder="g"
                                 />
@@ -291,7 +301,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                                 <input
                                     id="ing-note"
                                     type="text"
-                                    value={newIngredient.note}
+                                    value={newIngredient.note ?? ''}
                                     onChange={e => setNewIngredient(ni => ({...ni, note: e.target.value}))}
                                     placeholder="Optional"
                                 />
