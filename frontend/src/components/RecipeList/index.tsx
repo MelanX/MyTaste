@@ -138,41 +138,45 @@ const RecipeList: React.FC<RecipeListProps> = ({recipes}) => {
             <div className={styles.recipeCardsGrid}>
                 {filtered.map(recipe => (
                     <div key={recipe.id} className={styles.recipeCard}>
-                        {recipe.image && (
-                            <div className={styles.recipeCardImageContainer}>
-                                {/* cook-state in top-left */}
-                                {!recipe.status?.cookState && (
-                                    <div className={styles.cookIcon}>
-                                        <i
-                                            className="fa-solid fa-question"
-                                            title="Noch nicht gekocht"
-                                            onClick={e => markCooked(recipe.id)}
-                                        />
-                                    </div>
-                                )}
-                                {/* favorite in top-right */}
-                                <div className={styles.favIcon}>
-                                    {recipe.status?.favorite ? (
-                                        <i
-                                            className="fa-solid fa-heart"
-                                            title="Favorit"
-                                            onClick={e => handleToggleFavorite(recipe.id, false)}
-                                        />
-                                    ) : (
-                                        <i
-                                            className="fa-regular fa-heart"
-                                            title="Kein Favorit"
-                                            onClick={e => handleToggleFavorite(recipe.id, true)}
-                                        />
-                                    )}
+                        <div className={styles.recipeCardImageContainer}>
+                            {/* cook-state in top-left */}
+                            {!recipe.status?.cookState && (
+                                <div className={styles.cookIcon}>
+                                    <i
+                                        className="fa-solid fa-question"
+                                        title="Noch nicht gekocht"
+                                        onClick={e => markCooked(recipe.id)}
+                                    />
                                 </div>
-                                <img
-                                    src={recipe.image.startsWith('/uploads') ? `${getConfig().API_URL}${recipe.image}` : recipe.image}
-                                    alt={recipe.title}
-                                    className={styles.recipeCardImage}
-                                />
+                            )}
+                            {/* favorite in top-right */}
+                            <div className={styles.favIcon}>
+                                {recipe.status?.favorite ? (
+                                    <i
+                                        className="fa-solid fa-heart"
+                                        title="Favorit"
+                                        onClick={e => handleToggleFavorite(recipe.id, false)}
+                                    />
+                                ) : (
+                                    <i
+                                        className="fa-regular fa-heart"
+                                        title="Kein Favorit"
+                                        onClick={e => handleToggleFavorite(recipe.id, true)}
+                                    />
+                                )}
                             </div>
-                        )}
+                            <img
+                                src={
+                                    recipe.image
+                                        ? (recipe.image.startsWith('/uploads')
+                                            ? `${getConfig().API_URL}${recipe.image}`
+                                            : recipe.image)
+                                        : '/placeholder.webp'
+                                }
+                                alt={recipe.title}
+                                className={styles.recipeCardImage}
+                            />
+                        </div>
                         <div className={styles.recipeCardContent}>
                             <h3 className={styles.recipeCardTitle}>{recipe.title}</h3>
                             <Link to={`/recipe/${recipe.id}`} className={styles.recipeCardButton}>

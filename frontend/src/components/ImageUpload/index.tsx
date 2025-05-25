@@ -30,7 +30,7 @@ const ImageUpload: React.FC<Props> = ({file, onFile, url, onUrl}) => {
         };
     }, [preview]);
 
-    const display = preview || url;
+    const display = preview || url || '/placeholder.webp';
 
     return (
         <div {...getRootProps({className: styles.dropzone})}>

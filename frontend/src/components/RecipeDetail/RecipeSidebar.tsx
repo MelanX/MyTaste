@@ -41,7 +41,7 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({recipe, hideImage = false,
     return (
         <div className={styles.sidebar}>
             <div className={styles.sidebarCard}>
-                {!hideImage && recipe.image && (
+                {!hideImage && (
                     <div className={styles.sidebarImageContainer}>
                         {isAuthenticated && (
                             <div className={styles.buttonRow}>
@@ -72,7 +72,13 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({recipe, hideImage = false,
                             </div>
                         )}
                         <img
-                            src={recipe.image.startsWith('/uploads') ? `${getConfig().API_URL}${recipe.image}` : recipe.image}
+                            src={
+                                recipe.image
+                                    ? (recipe.image.startsWith('/uploads')
+                                        ? `${getConfig().API_URL}${recipe.image}`
+                                        : recipe.image)
+                                    : '/placeholder.webp'
+                            }
                             alt={recipe.title}
                             className={styles.sidebarImage}
                         />
