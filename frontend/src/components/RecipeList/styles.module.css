@@ -22,6 +22,7 @@
 }
 
 .recipeCardImageContainer {
+    position: relative;
     width: 100%;
     height: 200px;
     overflow: hidden;
@@ -36,6 +37,41 @@
 
 .recipeCardImage:hover {
     transform: scale(1.05);
+}
+
+.cookIcon, .favIcon {
+    position: absolute;
+    top: 0.5rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0.3rem;
+    font-size: 1.2rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+
+    z-index: 2;
+    cursor: pointer;
+}
+
+.cookIcon {
+    left: 0.5rem;
+}
+
+.cookIcon i {
+    color: #ff5151;
+}
+
+.favIcon {
+    right: 0.5rem;
+}
+
+.favIcon i[title="Favorit"] {
+    color: #ff5151;
 }
 
 .recipeCardContent {

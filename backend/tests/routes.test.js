@@ -392,3 +392,110 @@ describe('Importer-config endpoints', () => {
         expect(followUp.body).toEqual(newCfg);
     });
 });
+
+describe('GET /api/recipes sorting', () => {
+    it('puts favorites first, then cooked, then alphabetical by title', async () => {
+        // Arrange: override the in‐memory data
+        mockRecipeData = {
+            recipes: [
+                { id: '1', title: 'Alpha', status: { favorite: false, cookState: false } },
+                { id: '2', title: 'Bravo', status: { favorite: true, cookState: false } },
+                { id: '3', title: 'Charlie', status: { favorite: false, cookState: true } },
+                { id: '4', title: 'Delta', status: { favorite: true, cookState: true } },
+            ],
+        };
+
+        // Act
+        const res = await request(app).get('/api/recipes');
+
+        // Assert
+        expect(res.status).toBe(200);
+        expect(res.body.recipes.map(r => r.id)).toEqual([
+            '4', // favorite & cooked
+            '2', // favorite only
+            '3', // cooked only
+            '1', // neither
+        ]);
+    });
+});
+
+describe('PATCH /api/recipe/:id/status', () => {
+    beforeEach(() => {
+        // reset to a single recipe with no status
+        mockRecipeData = {
+            recipes: [
+                {
+                    id: '1',
+                    title: 'Dummy',
+                    url: 'https://example.com',
+                    image: '',
+                    ingredients: [ { name: 'Schokolade' } ],
+                    spices: [ 'Salz' ],
+                    instructions: [],
+                    author: 'MelanX',
+                    linkOutUrl: 'https://ex.com',
+                    status: { favorite: false, cookState: false },
+                },
+            ],
+        };
+    });
+
+    it('401 if no token is provided', async () => {
+        const res = await request(app)
+            .patch('/api/recipe/1/status')
+            .send({ status: { favorite: true } });
+        expect(res.status).toBe(401);
+    });
+
+    it('403 if token is invalid', async () => {
+        const res = await request(app)
+            .patch('/api/recipe/1/status')
+            .set('Authorization', 'Bearer badtoken')
+            .send({ status: { favorite: true } });
+        expect(res.status).toBe(403);
+    });
+
+    it('404 for unknown recipe id', async () => {
+        const res = await request(app)
+            .patch('/api/recipe/999/status')
+            .set(authHeader())
+            .send({ status: { favorite: true } });
+        expect(res.status).toBe(404);
+    });
+
+    it('200 updates favorite flag and returns new status', async () => {
+        const res = await request(app)
+            .patch('/api/recipe/1/status')
+            .set(authHeader())
+            .send({ status: { favorite: true } });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ favorite: true, cookState: false });
+
+        // subsequent GET should reflect it
+        const getRes = await request(app).get('/api/recipe/1');
+        expect(getRes.body.status.favorite).toBe(true);
+    });
+
+    it('200 updates cookState and returns new status', async () => {
+        const res = await request(app)
+            .patch('/api/recipe/1/status')
+            .set(authHeader())
+            .send({ status: { cookState: true } });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ favorite: false, cookState: true });
+
+        // subsequent GET should reflect it
+        const getRes = await request(app).get('/api/recipe/1');
+        expect(getRes.body.status.cookState).toBe(true);
+    });
+
+    it('400 if status is missing', async () => {
+        await request(app)
+            .patch('/api/recipe/1/status')
+            .set(authHeader())
+            .send({})
+            .expect(400);
+    })
+});

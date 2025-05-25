@@ -25,3 +25,15 @@ export async function apiFetch(path: string, options: RequestInit = {}): Promise
     console.debug('API URL:', url);
     return fetch(url, options);
 }
+
+export async function updateRecipeStatus(recipeId: string, updates: {
+    cookState?: boolean;
+    favorite?: boolean
+}): Promise<{ cookState: boolean; favorite: boolean }> {
+    const res = await apiFetch(`/api/recipe/${recipeId}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({status: updates}),
+    });
+    if (!res.ok) throw new Error('Failed to update recipe status');
+    return res.json();
+}

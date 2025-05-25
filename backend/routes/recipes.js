@@ -10,6 +10,13 @@ const router = express.Router();
 router.get('/recipes', async (req, res, next) => {
     try {
         const data = await readData();
+        data.recipes.sort((a, b) => {
+            if (a.status?.favorite && !b.status?.favorite) return -1;
+            if (!a.status?.favorite && b.status?.favorite) return 1;
+            if (a.status?.cookState && !b.status?.cookState) return -1;
+            if (!a.status?.cookState && b.status?.cookState) return 1;
+            return a.title.localeCompare(b.title);
+        });
         res.json(data);
     } catch (err) {
         next(err);
@@ -67,6 +74,27 @@ router.put('/recipe/:id', authenticateToken, async (req, res, next) => {
         data.recipes[idx] = updated;
         await writeData(data);
         res.json(updated);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.patch('/recipe/:id/status', authenticateToken, async (req, res, next) => {
+    try {
+        if (!req.body.status) {
+            return res.status(400).send('Missing status');
+        }
+
+        const { id } = req.params;
+        const data = await readData();
+        const idx = data.recipes.findIndex(r => r.id === id);
+        if (idx < 0) {
+            return res.status(404).send('Recipe not found');
+        }
+
+        data.recipes[idx].status = { ...data.recipes[idx].status, ...req.body.status };
+        await writeData(data);
+        res.json(data.recipes[idx].status);
     } catch (err) {
         next(err);
     }

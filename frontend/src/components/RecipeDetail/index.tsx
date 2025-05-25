@@ -38,30 +38,6 @@ const RecipeDetail: React.FC = () => {
         fetchRecipe();
     }, [id]);
 
-    useEffect(() => {
-        if (buttonsRowRef.current && window.innerWidth >= 768) {
-            const buttonElements = buttonsRowRef.current.querySelectorAll<HTMLElement>(
-                `.${styles.originalRecipeButton}, .${styles.bringButton} > *`
-            );
-
-            if (buttonElements.length > 0) {
-                // Find the widest button
-                let maxWidth = 0;
-                buttonElements.forEach(button => {
-                    const width = button.offsetWidth;
-                    if (width > maxWidth) {
-                        maxWidth = width;
-                    }
-                });
-
-                // Apply the maximum width to all buttons
-                buttonElements.forEach(button => {
-                    button.style.width = `${maxWidth + 1}px`;
-                });
-            }
-        }
-    }, [recipe]); // Run this effect when recipe data is loaded
-
     if (loading) return <div>Lade Rezept...</div>;
     if (error) return <div>Fehler: {error}</div>;
     if (!recipe) return <div>Rezept nicht gefunden</div>;
@@ -94,7 +70,7 @@ const RecipeDetail: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                <RecipeSidebar recipe={recipe} />
+                <RecipeSidebar recipe={recipe} updateRecipe={r => setRecipe(r)} />
             </div>
         </div>
     );

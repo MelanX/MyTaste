@@ -6,6 +6,7 @@ import BringButton from '../BringButton';
 import FilterSection from '../FilterSection';
 import styles from './styles.module.css';
 import { getConfig } from "../../config";
+import { updateRecipeStatus } from "../../utils/api_service";
 
 interface RecipeListProps {
     recipes: Recipe[]
@@ -36,16 +37,21 @@ const RecipeList: React.FC<RecipeListProps> = ({recipes}) => {
 
     const [titleFilter, setTitleFilter] = React.useState('');
     const [selectedIngredients, setSelectedIngredients] = React.useState<string[]>([]);
+    const [localRecipes, setLocalRecipes] = React.useState<Recipe[]>(recipes);
+
+    React.useEffect(() => {
+        setLocalRecipes(recipes);
+    }, [recipes]);
 
     // derive full unique ingredient list
     const allIngredients = React.useMemo(() => {
         const set = new Set<string>();
-        recipes.forEach(r =>
+        localRecipes.forEach(r =>
             r.ingredients.forEach(i => set.add(i.name))
         );
 
         return Array.from(set).sort();
-    }, [recipes]);
+    }, [localRecipes]);
 
     const toggleIngredient = (ing: string) => {
         setSelectedIngredients(sel =>
@@ -55,10 +61,40 @@ const RecipeList: React.FC<RecipeListProps> = ({recipes}) => {
         );
     }
 
+    const handleToggleFavorite = async (recipeId: string, favorite: boolean) => {
+        try {
+            const updated = await updateRecipeStatus(recipeId, {favorite});
+            setLocalRecipes(recipes =>
+                recipes.map(r =>
+                    r.id === recipeId
+                        ? {...r, status: {...r.status, favorite: updated.favorite}}
+                        : r
+                )
+            );
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    const markCooked = async (recipeId: string) => {
+        try {
+            const updated = await updateRecipeStatus(recipeId, {cookState: true});
+            setLocalRecipes(recipes =>
+                recipes.map(r =>
+                    r.id === recipeId
+                        ? {...r, status: {...r.status, cookState: updated.cookState}}
+                        : r
+                )
+            );
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     // final filtered recipes
     const filtered = React.useMemo(() => {
         const term = titleFilter.trim().toLowerCase();
-        return recipes.filter(r => {
+        return localRecipes.filter(r => {
             // title match
             const title = r.title.toLowerCase();
             const titleOk =
@@ -76,7 +112,7 @@ const RecipeList: React.FC<RecipeListProps> = ({recipes}) => {
 
             return true;
         })
-    }, [recipes, titleFilter, selectedIngredients]);
+    }, [localRecipes, titleFilter, selectedIngredients]);
 
     return (
         <div>
@@ -104,6 +140,32 @@ const RecipeList: React.FC<RecipeListProps> = ({recipes}) => {
                     <div key={recipe.id} className={styles.recipeCard}>
                         {recipe.image && (
                             <div className={styles.recipeCardImageContainer}>
+                                {/* cook-state in top-left */}
+                                {!recipe.status?.cookState && (
+                                    <div className={styles.cookIcon}>
+                                        <i
+                                            className="fa-solid fa-question"
+                                            title="Noch nicht gekocht"
+                                            onClick={e => markCooked(recipe.id)}
+                                        />
+                                    </div>
+                                )}
+                                {/* favorite in top-right */}
+                                <div className={styles.favIcon}>
+                                    {recipe.status?.favorite ? (
+                                        <i
+                                            className="fa-solid fa-heart"
+                                            title="Favorit"
+                                            onClick={e => handleToggleFavorite(recipe.id, false)}
+                                        />
+                                    ) : (
+                                        <i
+                                            className="fa-regular fa-heart"
+                                            title="Kein Favorit"
+                                            onClick={e => handleToggleFavorite(recipe.id, true)}
+                                        />
+                                    )}
+                                </div>
                                 <img
                                     src={recipe.image.startsWith('/uploads') ? `${getConfig().API_URL}${recipe.image}` : recipe.image}
                                     alt={recipe.title}
