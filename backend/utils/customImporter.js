@@ -1,9 +1,7 @@
 const {
     loadRenameRules,
-    parseIngredients,
-    parseSpiceFromIngredient,
     parseInstructions,
-    parseSpicesFromIngredients, parseSpicesAndIngredients
+    parseSpicesAndIngredients
 } = require("./parserHelpers");
 const cheerio = require('cheerio');
 
@@ -45,11 +43,6 @@ async function parseLeckerAbnehmen(url, html) {
         ingredientsNode = ingredientsNode.next();
     }
 
-    const renameRules = await loadRenameRules();
-
-    // split out spices so they don’t clutter the ingredient list
-    const { spices, ingredients } = parseSpicesAndIngredients(rawIngredients, renameRules);
-
     // instructions
     const rawInstructions = [];
     const instructionsTitle = $('h2').filter((_, element) => $(element).text().trim().toLowerCase().startsWith('zubereitung')).first();
@@ -71,6 +64,71 @@ async function parseLeckerAbnehmen(url, html) {
         instructionNode = instructionNode.next();
     }
 
+    const renameRules = await loadRenameRules();
+    const { spices, ingredients } = parseSpicesAndIngredients(rawIngredients, renameRules);
+    const instructions = parseInstructions(rawInstructions);
+
+    return { title, url, image, ingredients, spices, instructions };
+}
+
+/**
+ * Parser for https://lilya.momycooks.com
+ */
+async function parseLilyaMomycooks(url, html) {
+    const $ = cheerio.load(html);
+
+    // title
+    const title = $('h1.entry-title').first().text().trim()
+        || $('meta[property="og:title"]').attr('content') || '';
+
+    // image
+    const image = $('meta[property="og:image"]').attr('content')
+        || $('article img').first().attr('src') || '';
+
+    // ingredients
+    const rawIngredients = [];
+    const ingH2 = $('h2')
+        .filter((_, el) =>
+            /zutaten/i.test($(el).text().trim())
+        )
+        .first();
+    const ingList = ingH2.nextAll('ul.wp-block-list').first();
+    ingList.find('li').each((_, li) => {
+        const text = $(li)
+            .find('strong')
+            .first()
+            .clone()
+            .find('i, .ai-viewports')
+            .remove()
+            .end()
+            .text()
+            .trim();
+        if (text) rawIngredients.push(text);
+    });
+
+    // instructions
+    const rawInstructions = [];
+    const instH2 = $('h2')
+        .filter((_, el) =>
+            /zubereitung|anleitung/i.test($(el).text().trim())
+        )
+        .first();
+    node = instH2.next();
+    while (node.length && !node.is('h2')) {
+        if (node.is('ol') || node.is('ul')) {
+            node.find('li').each((_, li) => {
+                const txt = $(li).text().trim();
+                if (txt) rawInstructions.push(txt);
+            });
+        } else if (node.is('p')) {
+            const txt = node.text().trim();
+            if (txt) rawInstructions.push(txt);
+        }
+        node = node.next();
+    }
+
+    const renameRules = await loadRenameRules();
+    const { spices, ingredients } = parseSpicesAndIngredients(rawIngredients, renameRules);
     const instructions = parseInstructions(rawInstructions);
 
     return { title, url, image, ingredients, spices, instructions };
@@ -78,4 +136,5 @@ async function parseLeckerAbnehmen(url, html) {
 
 module.exports = {
     parseLeckerAbnehmen,
+    parseLilyaMomycooks,
 };

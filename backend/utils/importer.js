@@ -1,6 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const { parseLeckerAbnehmen } = require("./customImporter");
+const { parseLeckerAbnehmen, parseLilyaMomycooks } = require("./customImporter");
 const {
     parseIngredients,
     parseInstructions,
@@ -89,11 +89,23 @@ async function importGeneric(url) {
 async function importCustom(url, html) {
     const hostname = new URL(url).hostname;
 
-    if (hostname === 'leckerabnehmen.com' || hostname.endsWith('.leckerabnehmen.com')) {
+    if (isDomain(hostname, 'leckerabnehmen.com')) {
         return parseLeckerAbnehmen(url, html);
     }
 
+    if (isDomain(hostname, 'lilya.momycooks.com')) {
+        return parseLilyaMomycooks(url, html);
+    }
+
     throw new Error('Unsupported Website');
+}
+
+/**
+ * Checks if the given URL is from the given domain.
+ */
+function isDomain(hostname, domain) {
+    if (hostname === domain) return true;
+    return hostname.endsWith(`.${ domain }`);
 }
 
 module.exports = {
