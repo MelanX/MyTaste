@@ -14,7 +14,8 @@ const Login: React.FC = () => {
         e.preventDefault();
         try {
             await login(username, password);
-            navigate('/');
+            const urlParams = new URLSearchParams(window.location.search);
+            navigate(urlParams.get('redir') || '/');
         } catch {
             setError('Invalid username or password');
         }
