@@ -2,7 +2,7 @@ const {
     parseIngredientLine,
     parseSpiceFromIngredient,
     parseInstructions,
-} = require('../utils/importer');
+} = require('../utils/parserHelpers');
 
 describe('parseIngredientLine()', () => {
     it('Parses "1 kg Zucker"', () => {
