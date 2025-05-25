@@ -4,10 +4,12 @@ const jwt = require('jsonwebtoken');
 
 // Routers under test
 const authRouter = require('../routes/auth');
+const bringRouter = require('../routes/bring');
 const recipesRouter = require('../routes/recipes');
 const importRouter = require('../routes/import');
 const uploadRouter = require('../routes/upload');
 const configRouter = require('../routes/config');
+const { writeImportConfig } = require("../utils/fileService");
 
 let mockRecipeData = {
     recipes: [
@@ -54,7 +56,7 @@ jest.mock('../utils/importer', () => ({
 function makeApp() {
     const app = express();
     app.use(express.json());
-    app.use('/api', authRouter, recipesRouter, importRouter, uploadRouter, configRouter);
+    app.use('/api', authRouter, bringRouter, recipesRouter, importRouter, uploadRouter, configRouter);
     // default error handler mimic
     app.use((err, req, res, next) => res.status(500).json({ message: err.message }));
     return app;
@@ -354,7 +356,7 @@ describe('Importer-config endpoints', () => {
         expect(readImportConfig).toHaveBeenCalledTimes(1);
     });
 
-    it('PUT /api/importer-config writes the new config and echoes it back', async () => {
+    it('PUT /api/importer-config is unauthorized without credentials', async () => {
         const newCfg = {
             rename_rules: [
                 { from: [ 'A', 'B' ], to: 'Alpha' },
@@ -363,6 +365,21 @@ describe('Importer-config endpoints', () => {
         };
 
         const res = await request(app).put('/api/importer-config').send(newCfg);
+        expect(res.status).toBe(401);
+    });
+
+    it('PUT /api/importer-config writes the new config and echoes it back', async () => {
+        const newCfg = {
+            rename_rules: [
+                { from: [ 'A', 'B' ], to: 'Alpha' },
+                { from: [ 'X' ], to: 'Ex' },
+            ],
+        };
+
+        const res = await request(app)
+            .put('/api/importer-config')
+            .set(authHeader())
+            .send(newCfg);
         expect(res.status).toBe(200);
         expect(res.body).toEqual(newCfg);
 
