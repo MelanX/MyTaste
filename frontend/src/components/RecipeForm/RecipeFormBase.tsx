@@ -324,19 +324,24 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                                  onClick={() => handleRemoveSpice(i)}>{s}</div>
                         ))}
                     </div>
-                    <form className={styles.spiceInputRow} onSubmit={handleAddSpice}>
+                    <div className={styles.spiceInputRow}>
                         <div className={styles.formGroup}>
                             <input type="text" value={newSpice}
                                    onChange={e => setNewSpice(e.target.value)}
+                                   onKeyDown={e => {
+                                       if (e.key === 'Enter') {
+                                           handleAddSpice();
+                                       }
+                                   }}
                                    placeholder="Neues Gewürz" />
                         </div>
-                        <button type="submit"
+                        <button type="button"
                                 className={styles.addButton}
                                 onClick={handleAddSpice}
                                 disabled={!newSpice.trim()}>
                             <i className="fa-solid fa-plus" />
                         </button>
-                    </form>
+                    </div>
                 </div>
 
                 {errors.length > 0 && (
