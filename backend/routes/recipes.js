@@ -65,13 +65,24 @@ router.post('/recipes', authenticateToken, async (req, res, next) => {
 router.put('/recipe/:id', authenticateToken, async (req, res, next) => {
     try {
         const { id } = req.params;
-        const updated = req.body;
         const data = await readData();
         const idx = data.recipes.findIndex(r => r.id === id);
         if (idx < 0) return res.status(404).send('Recipe not found');
 
+        const { value: updated, error } = recipeSchema.validate(req.body, {
+            abortEarly: false,
+            stripUnknown: true,
+        });
+
+        if (error) {
+            return res.status(400).json({
+                message: 'Validation failed',
+                details: error.details.map(d => d.message)
+            });
+        }
+
         updated.id = id;
-        data.recipes[idx] = updated;
+        data.recipes[idx] = { ...updated, ...data.recipes[idx] };
         await writeData(data);
         res.json(updated);
     } catch (err) {
