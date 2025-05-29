@@ -1,37 +1,13 @@
+jest.mock('../utils/fileService');
+jest.mock('../utils/importer');
 const request = require('supertest');
-const express = require('express');
 const jwt = require('jsonwebtoken');
+const fileService = require('../utils/fileService');
+const { makeApp } = require("./testUtils");
 
-const configRouter = require('../routes/config');
-const recipesRouter = require('../routes/recipes');
-
-// mock FS helpers – identical technique used in routes.test.js
-let mockCfg = {
-    rename_rules: [ { from: [ 'Foo' ], to: 'Bar' } ],
-    spice_rules: { spices: [ 'Salz' ], spice_map: [] },
-};
-jest.mock('../utils/fileService', () => ({
-    readImportConfig: jest.fn(async () => JSON.parse(JSON.stringify(mockCfg))),
-    writeImportConfig: jest.fn(async (c) => { mockCfg = c; }),
-
-    /* the recipe helpers are needed for /recipe/:id/status */
-    readData: jest.fn(async () => ({
-        recipes: [ {
-            id: '1', title: 'Patch', ingredients: [ { name: 'X' } ], spices: [], instructions: [],
-            status: { favorite: false, cookState: false }
-        } ]
-    })),
-    writeData: jest.fn(async () => {}),
-}));
-
-function makeApp() {
-    const app = express();
-    app.use(express.json());
-    app.use('/api', configRouter, recipesRouter);
-    return app;
-}
-
+let mockCfg;
 const app = makeApp();
+const agent = request(app);
 
 const token = jwt.sign({ user: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
 const auth = { Authorization: `Bearer ${ token }` };
@@ -42,12 +18,12 @@ describe('PATCH /api/importer-config', () => {
             rename_rules: [ { from: [ 'Foo' ], to: 'Bar' } ],
             spice_rules: { spices: [ 'Salz' ], spice_map: {} },
         };
-        jest.clearAllMocks();
+        fileService.__setImportConfig(JSON.parse(JSON.stringify(mockCfg)));
     });
 
     it('merges when only rename_rules are sent', async () => {
         const patch = { rename_rules: [ { from: [ 'A' ], to: 'Alpha' } ] };
-        const { status, body } = await request(app)
+        const { status, body } = await agent
             .patch('/api/importer-config')
             .set(auth)
             .send(patch);
@@ -60,7 +36,7 @@ describe('PATCH /api/importer-config', () => {
 
     it('merges when only spice_rules are sent', async () => {
         const patch = { spice_rules: { spices: [ 'Muskat' ], spice_map: {} } };
-        const res = await request(app).patch('/api/importer-config').set(auth).send(patch);
+        const res = await agent.patch('/api/importer-config').set(auth).send(patch);
 
         expect(res.status).toBe(200);
         expect(res.body.spice_rules).toEqual(patch.spice_rules);
@@ -69,19 +45,34 @@ describe('PATCH /api/importer-config', () => {
     });
 
     it('401 without credentials', async () => {
-        await request(app).patch('/api/importer-config').send({ rename_rules: [] }).expect(401);
+        await agent.patch('/api/importer-config').send({ rename_rules: [] }).expect(401);
     });
 
     it('400 when payload type is invalid   ⟵ expected to fail', async () => {
         const bad = { rename_rules: 'not an array' };
-        const res = await request(app).patch('/api/importer-config').set(auth).send(bad);
+        const res = await agent.patch('/api/importer-config').set(auth).send(bad);
         expect(res.status).toBe(400);
     });
 });
 
 describe('PATCH /api/recipe/:id/status', () => {
+    beforeEach(() => {
+        fileService.__setRecipeData({
+            recipes: [
+                {
+                    id: '1',
+                    title: 'Patch',
+                    ingredients: [ { name: 'X' } ],
+                    spices: [],
+                    instructions: [],
+                    status: { favorite: false, cookState: false },
+                },
+            ],
+        });
+    });
+
     it('updates both flags at once', async () => {
-        const { body, status } = await request(app)
+        const { body, status } = await agent
             .patch('/api/recipe/1/status')
             .set(auth)
             .send({ status: { favorite: true, cookState: true } });
@@ -91,7 +82,7 @@ describe('PATCH /api/recipe/:id/status', () => {
     });
 
     it('rejects unknown keys inside status   ⟵ expected to fail', async () => {
-        const res = await request(app)
+        const res = await agent
             .patch('/api/recipe/1/status')
             .set(auth)
             .send({ status: { unknown: true } });

@@ -6,3 +6,5 @@ process.env.JWT_SECRET = 'shhhhh';
 // Silence console noise in test output
 jest.spyOn(console, 'error').mockImplementation(() => {
 });
+
+afterEach(() => jest.clearAllMocks());

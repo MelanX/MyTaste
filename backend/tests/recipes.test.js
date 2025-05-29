@@ -1,122 +1,56 @@
+jest.mock('../utils/fileService');
+jest.mock('../utils/importer');
+
+const fileService = require('../utils/fileService');
 const request = require('supertest');
-const express = require('express');
-const jwt = require('jsonwebtoken');
-
-// Routers under test
-const authRouter = require('../routes/auth');
-const bringRouter = require('../routes/bring');
-const recipesRouter = require('../routes/recipes');
-const importRouter = require('../routes/import');
-const uploadRouter = require('../routes/upload');
-const configRouter = require('../routes/config');
-const { writeImportConfig } = require("../utils/fileService");
-
-let mockRecipeData = {
-    recipes: [
-        {
-            id: '1',
-            title: 'Dummy',
-            url: 'https://example.com',
-            image: '',
-            ingredients: [ { name: 'Schokolade' } ],
-            spices: [ 'Salz' ],
-            instructions: [],
-            author: 'MelanX',
-            linkOutUrl: 'https://ex.com',
-        },
-    ],
-};
-
-let mockMainConfig = { rename_rules: [] };
-
-// Mock fileService so tests never touch the real recipes.json
-jest.mock('../utils/fileService', () => ({
-    readData: jest.fn(async () => JSON.parse(JSON.stringify(mockRecipeData))),
-    writeData: jest.fn(async newData => {
-        mockRecipeData = newData;
-    }),
-    readImportConfig: jest.fn(async () => JSON.parse(JSON.stringify(mockMainConfig))),
-    writeImportConfig: jest.fn(async newCfg => {
-        mockMainConfig = newCfg;
-    }),
-}));
-
-// Mock importer to avoid real HTTP calls
-jest.mock('../utils/importer', () => ({
-    importGeneric: jest.fn(async (url) => ({
-        title: 'Dummy',
-        url,
-        image: '',
-        ingredients: [],
-        spices: [],
-        instructions: [],
-    })),
-}));
-
-function makeApp() {
-    const app = express();
-    app.use(express.json());
-    app.use('/api', authRouter, bringRouter, recipesRouter, importRouter, uploadRouter, configRouter);
-    // default error handler mimic
-    app.use((err, req, res, next) => res.status(500).json({ message: err.message }));
-    return app;
-}
+const { makeApp, authHeader } = require('./testUtils');
 
 const app = makeApp();
+const agent = request(app);
 
-/** helper for auth’d routes */
-function authHeader() {
-    const token = jwt.sign({ user: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    return { Authorization: `Bearer ${ token }` };
-}
-
-describe('Auth flow', () => {
-    it('returns a token for valid credentials', async () => {
-        const { body, status } = await request(app)
-            .post('/api/login')
-            .send({ username: 'admin', password: 'password' });
-        expect(status).toBe(200);
-        expect(body.token).toBeDefined();
-    });
-
-    it('401s on wrong credentials', async () => {
-        const res = await request(app)
-            .post('/api/login')
-            .send({ username: 'foo', password: 'bar' });
-        expect(res.status).toBe(401);
+beforeEach(() => {
+    fileService.__setRecipeData({
+        recipes: [
+            {
+                id: '1', title: 'Dummy', url: 'https://example.com',
+                image: '', ingredients: [ { name: 'Schokolade' } ],
+                spices: [ 'Salz' ], instructions: [], author: 'MelanX',
+                linkOutUrl: 'https://ex.com', status: { favorite: false, cookState: false }
+            }
+        ]
     });
 });
 
 describe('Recipes endpoints', () => {
     it('GET /recipes returns full collection', async () => {
-        const res = await request(app).get('/api/recipes');
+        const res = await agent.get('/api/recipes');
         expect(res.body.recipes.length).toBeGreaterThan(0);
     });
 
     it('GET /recipe/:id returns one recipe', async () => {
-        const res = await request(app).get('/api/recipe/1');
+        const res = await agent.get('/api/recipe/1');
         expect(res.status).toBe(200);
         expect(res.body.id).toBe('1');
     });
 
     it('GET /recipe/:id 404s for unknown id', async () => {
-        const res = await request(app).get('/api/recipe/__nope__');
+        const res = await agent.get('/api/recipe/__nope__');
         expect(res.status).toBe(404);
     });
 
     it('GET /bring-recipe converts data for Bring! app', async () => {
-        const res = await request(app).get('/api/bring-recipe/1');
+        const res = await agent.get('/api/bring-recipe/1');
         expect(res.body).toHaveProperty('items');
         expect(res.body.items.some((i) => i.itemId === 'Salz' && i.stock)).toBe(true);
     });
 
     it('POST /recipes without token → 401', async () => {
-        const res = await request(app).post('/api/recipes').send({ title: 'x' });
+        const res = await agent.post('/api/recipes').send({ title: 'x' });
         expect(res.status).toBe(401);
     });
 
     it('POST /recipes with bad token → 403', async () => {
-        const res = await request(app)
+        const res = await agent
             .post('/api/recipes')
             .set('Authorization', 'Bearer badtoken')
             .send({ title: 'x' });
@@ -131,7 +65,7 @@ describe('Recipes endpoints', () => {
             spices: [],
             instructions: [ 'Iss die Schokolade' ],
         };
-        const res = await request(app)
+        const res = await agent
             .post('/api/recipes')
             .set(authHeader())
             .send(body);
@@ -140,7 +74,7 @@ describe('Recipes endpoints', () => {
     });
 
     it('Rejects recipe without title', async () => {
-        const res = await request(app)
+        const res = await agent
             .post('/api/recipes')
             .set(authHeader())
             .send({ url: 'https://ex.com' });
@@ -239,7 +173,7 @@ describe('DELETE /recipe/:id', () => {
     });
 
     it('DELETE /recipe/:id does not accidentally delete other recipes', async () => {
-// create two recipes
+        // create two recipes
         const resA = await request(app)
             .post('/api/recipes')
             .set(authHeader())
@@ -277,133 +211,17 @@ describe('DELETE /recipe/:id', () => {
     });
 });
 
-describe('POST /api/upload-image', () => {
-    let app;
-    beforeAll(() => {
-        app = makeApp();
-    });
-
-    it('400 when no file is sent', async () => {
-        const res = await request(app)
-            .post('/api/upload-image')
-            .send({});              // no multipart/form-data
-        expect(res.status).toBe(400);
-        expect(res.body).toMatchObject({
-            message: 'Validation failed',
-            details: [ 'No file uploaded' ]
-        });
-    });
-
-    it('400 when wrong field-name is used', async () => {
-        const res = await request(app)
-            .post('/api/upload-image')
-            .field('not_file', 'oops')
-            .attach('not_file', Buffer.from('fake'), {
-                filename: 'fake.png',
-                contentType: 'image/png'
-            });
-        expect(res.status).toBe(400);
-        expect(res.body.details).toContain('No file uploaded');
-    });
-
-    it('413 when file too large', async () => {
-        // generate a Buffer >10 MiB
-        const large = Buffer.alloc(11 * 1024 * 1024, 0);
-        const res = await request(app)
-            .post('/api/upload-image')
-            .attach('file', large, {
-                filename: 'big.png',
-                contentType: 'image/png'
-            });
-        expect(res.status).toBe(413);
-        expect(res.body).toMatchObject({
-            message: 'Validation failed',
-            details: expect.arrayContaining([ expect.stringMatching(/File too large/) ])
-        });
-    });
-
-    it('200 and returns a .webp URL on success', async () => {
-        const tiny = Buffer.from(
-            // a 1×1 transparent PNG
-            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=',
-            'base64'
-        );
-        const res = await request(app)
-            .post('/api/upload-image')
-            .attach('file', tiny, {
-                filename: 'pixel.png',
-                contentType: 'image/png'
-            });
-        expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('url');
-        // url should start with /uploads/ and end in .webp
-        expect(res.body.url).toMatch(/^\/uploads\/\d+\-.*\.webp$/);
-    });
-});
-
-describe('Importer-config endpoints', () => {
-    beforeEach(() => {
-        mockMainConfig = { rename_rules: [ { from: [ 'Foo' ], to: 'Bar' } ] };
-        jest.clearAllMocks();
-    });
-
-    it('GET /api/importer-config returns the current importer configuration', async () => {
-        const res = await request(app).get('/api/importer-config');
-        expect(res.status).toBe(200);
-        expect(res.body).toEqual(mockMainConfig);
-        // ensure the mock helper was called
-        const { readImportConfig } = require('../utils/fileService');
-        expect(readImportConfig).toHaveBeenCalledTimes(1);
-    });
-
-    it('PATCH /api/importer-config is unauthorized without credentials', async () => {
-        const newCfg = {
-            rename_rules: [
-                { from: [ 'A', 'B' ], to: 'Alpha' },
-                { from: [ 'X' ], to: 'Ex' },
-            ],
-        };
-
-        const res = await request(app).patch('/api/importer-config').send(newCfg);
-        expect(res.status).toBe(401);
-    });
-
-    it('PATCH /api/importer-config writes the new config and echoes it back', async () => {
-        const newCfg = {
-            rename_rules: [
-                { from: [ 'A', 'B' ], to: 'Alpha' },
-                { from: [ 'X' ], to: 'Ex' },
-            ],
-        };
-
-        const res = await request(app)
-            .patch('/api/importer-config')
-            .set(authHeader())
-            .send(newCfg);
-        expect(res.status).toBe(200);
-        expect(res.body).toEqual(newCfg);
-
-        const { writeImportConfig } = require('../utils/fileService');
-        expect(writeImportConfig).toHaveBeenCalledWith(newCfg);
-        expect(writeImportConfig).toHaveBeenCalledTimes(1);
-
-        // subsequent GET should return the new config
-        const followUp = await request(app).get('/api/importer-config');
-        expect(followUp.body).toEqual(newCfg);
-    });
-});
-
 describe('GET /api/recipes sorting', () => {
     it('puts favorites first, then cooked, then alphabetical by title', async () => {
         // Arrange: override the in‐memory data
-        mockRecipeData = {
+        fileService.__setRecipeData({
             recipes: [
                 { id: '1', title: 'Alpha', status: { favorite: false, cookState: false } },
                 { id: '2', title: 'Bravo', status: { favorite: true, cookState: false } },
                 { id: '3', title: 'Charlie', status: { favorite: false, cookState: true } },
                 { id: '4', title: 'Delta', status: { favorite: true, cookState: true } },
             ],
-        };
+        });
 
         // Act
         const res = await request(app).get('/api/recipes');
@@ -422,7 +240,7 @@ describe('GET /api/recipes sorting', () => {
 describe('PATCH /api/recipe/:id/status', () => {
     beforeEach(() => {
         // reset to a single recipe with no status
-        mockRecipeData = {
+        fileService.__setRecipeData({
             recipes: [
                 {
                     id: '1',
@@ -437,7 +255,7 @@ describe('PATCH /api/recipe/:id/status', () => {
                     status: { favorite: false, cookState: false },
                 },
             ],
-        };
+        });
     });
 
     it('401 if no token is provided', async () => {

@@ -3,6 +3,7 @@ const multer = require('multer');
 const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
+const authenticateToken = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -25,7 +26,7 @@ const upload = multer({
 
 const uploadSingle = upload.single('file');
 
-router.post('/upload-image', (req, res, next) => {
+router.post('/upload-image', authenticateToken, (req, res, next) => {
     uploadSingle(req, res, async err => {
         const validationError = {
             message: 'Validation failed',
