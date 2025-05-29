@@ -87,8 +87,46 @@ const importSchema = Joi.object({
         })
 });
 
+const configSchema = Joi.object({
+    rename_rules: Joi.array().items(
+        Joi.object({
+            from: Joi.array().items(Joi.string()).min(1).required(),
+            to: Joi.string().min(1).required(),
+        })
+    ),
+    spice_rules: Joi.object({
+        spices: Joi.array().items(Joi.string().trim().min(1)).unique().required(),
+        spice_map: Joi.object().pattern(
+            Joi.string().trim().min(1),
+            Joi.array().items(Joi.string().trim().min(1)).unique()
+        )
+    }).custom((value, helpers) => {
+        const allowed = new Set(value.spices);
+        const invalid = [];
+
+        for (const [ alias, spices ] of Object.entries(value.spice_map ?? {})) {
+            const missing = spices.filter(s => !allowed.has(s));
+            if (missing.length > 0) {
+                invalid.push({ [alias]: missing });
+            }
+        }
+
+        return invalid.length ? helpers.error('any.invalid', { invalid }) : value;
+    }, 'spice_map items must exist in spices')
+}).unknown(false).min(1); // at least one key when patching
+
+const recipeStatusSchema = Joi.object({
+    status: Joi.object({
+        favorite: Joi.boolean(),
+        cookState: Joi.boolean(),
+    })
+        .min(1).max(2).required().unknown(false),
+});
+
 module.exports = {
     recipeSchema,
     loginSchema,
-    importSchema
+    importSchema,
+    configSchema,
+    recipeStatusSchema
 };

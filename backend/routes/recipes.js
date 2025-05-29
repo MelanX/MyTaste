@@ -2,7 +2,7 @@ const express = require('express');
 const authenticateToken = require('../middleware/auth');
 const { readData, writeData } = require('../utils/fileService');
 const nanoid = require("../utils/id");
-const { recipeSchema } = require("../utils/schemes");
+const { recipeSchema, recipeStatusSchema } = require("../utils/schemes");
 
 const router = express.Router();
 
@@ -81,8 +81,16 @@ router.put('/recipe/:id', authenticateToken, async (req, res, next) => {
 
 router.patch('/recipe/:id/status', authenticateToken, async (req, res, next) => {
     try {
-        if (!req.body.status) {
-            return res.status(400).send('Missing status');
+        const { value, error } = recipeStatusSchema.validate(req.body, {
+            abortEarly: false,
+            stripUnknown: true
+        });
+
+        if (error) {
+            return res.status(400).json({
+                message: 'Validation failed',
+                details: error.details.map(d => d.message)
+            });
         }
 
         const { id } = req.params;
@@ -92,7 +100,7 @@ router.patch('/recipe/:id/status', authenticateToken, async (req, res, next) => 
             return res.status(404).send('Recipe not found');
         }
 
-        data.recipes[idx].status = { ...data.recipes[idx].status, ...req.body.status };
+        data.recipes[idx].status = { ...data.recipes[idx].status, ...value.status };
         await writeData(data);
         res.json(data.recipes[idx].status);
     } catch (err) {

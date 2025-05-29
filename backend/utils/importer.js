@@ -67,7 +67,7 @@ async function importGeneric(url) {
 
     const renameRules = await loadRenameRules();
     const instructions = parseInstructions(ld.recipeInstructions);
-    const { spices, ingredients } = parseSpicesAndIngredients(ld.recipeIngredient, renameRules);
+    const { spices, ingredients } = await parseSpicesAndIngredients(ld.recipeIngredient, renameRules);
 
     if (typeof ld.image === 'object' && ld.image['@type'] === 'ImageObject') {
         ld.image = ld.image.url;

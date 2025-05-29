@@ -356,7 +356,7 @@ describe('Importer-config endpoints', () => {
         expect(readImportConfig).toHaveBeenCalledTimes(1);
     });
 
-    it('PUT /api/importer-config is unauthorized without credentials', async () => {
+    it('PATCH /api/importer-config is unauthorized without credentials', async () => {
         const newCfg = {
             rename_rules: [
                 { from: [ 'A', 'B' ], to: 'Alpha' },
@@ -364,11 +364,11 @@ describe('Importer-config endpoints', () => {
             ],
         };
 
-        const res = await request(app).put('/api/importer-config').send(newCfg);
+        const res = await request(app).patch('/api/importer-config').send(newCfg);
         expect(res.status).toBe(401);
     });
 
-    it('PUT /api/importer-config writes the new config and echoes it back', async () => {
+    it('PATCH /api/importer-config writes the new config and echoes it back', async () => {
         const newCfg = {
             rename_rules: [
                 { from: [ 'A', 'B' ], to: 'Alpha' },
@@ -377,7 +377,7 @@ describe('Importer-config endpoints', () => {
         };
 
         const res = await request(app)
-            .put('/api/importer-config')
+            .patch('/api/importer-config')
             .set(authHeader())
             .send(newCfg);
         expect(res.status).toBe(200);

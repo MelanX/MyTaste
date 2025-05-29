@@ -81,7 +81,7 @@ async function parseLeckerAbnehmen(url, html) {
     const rawInstructions = extractParagraphSection(api, /^zubereitung/i);
 
     const renameRules = await loadRenameRules();
-    const { spices, ingredients } = parseSpicesAndIngredients(rawIngredients, renameRules);
+    const { spices, ingredients } = await parseSpicesAndIngredients(rawIngredients, renameRules);
     const instructions = parseInstructions(rawInstructions);
 
     return { title, url, image, ingredients, spices, instructions };
@@ -110,7 +110,7 @@ async function parseLilyaMomycooks(url, html) {
     }
 
     const renameRules = await loadRenameRules();
-    const { spices, ingredients } = parseSpicesAndIngredients(rawIngredients, renameRules);
+    const { spices, ingredients } = await parseSpicesAndIngredients(rawIngredients, renameRules);
     const instructions = parseInstructions(rawInstructions);
 
     return { title, url, image, ingredients, spices, instructions };

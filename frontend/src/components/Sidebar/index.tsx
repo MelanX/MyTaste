@@ -67,8 +67,8 @@ const Sidebar: React.FC = () => {
                                             Rezept</Link>
                                     </li>
                                     <li>
-                                        <Link to="/rename-rules"
-                                              onClick={() => setIsOpen(false)}>Umbenennungsregeln</Link>
+                                        <Link to="/config"
+                                              onClick={() => setIsOpen(false)}>Einstellungen</Link>
                                     </li>
                                 </>
                             )}

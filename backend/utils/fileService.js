@@ -15,7 +15,13 @@ async function ensureFile() {
 async function ensureImportConfigFile() {
     if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
     if (!fs.existsSync(CONFIG_FILE)) {
-        fs.writeFileSync(CONFIG_FILE, JSON.stringify({ rename_rules: [] }, null, 2));
+        fs.writeFileSync(CONFIG_FILE, JSON.stringify({
+            rename_rules: [],
+            spice_rules: {
+                spices: [],
+                spice_map: {}
+            }
+        }, null, 2));
     }
 }
 

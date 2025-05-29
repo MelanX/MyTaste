@@ -42,13 +42,20 @@ describe('parseIngredientLine()', () => {
 });
 
 describe('parseSpiceFromIngredient()', () => {
+    spiceRules = {
+        spices: [ 'Salz', 'Pfeffer' ],
+        spice_map: {
+            'Salz und Pfeffer': [ 'Salz', 'Pfeffer' ],
+        }
+    }
+    
     it('Detects single spices', () => {
-        expect(parseSpiceFromIngredient({ name: 'Pfeffer' })).toBe('Pfeffer');
+        expect(parseSpiceFromIngredient({ name: 'Pfeffer' }, spiceRules)).toBe('Pfeffer');
     });
 
     it('Maps combined spice lines', () => {
         const combo = { name: 'Salz und Pfeffer' };
-        expect(parseSpiceFromIngredient(combo)).toEqual([ 'Salz', 'Pfeffer' ]);
+        expect(parseSpiceFromIngredient(combo, spiceRules)).toEqual([ 'Salz', 'Pfeffer' ]);
     });
 });
 

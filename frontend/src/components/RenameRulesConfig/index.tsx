@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styles from './styles.module.css';
+import styles from '../Config/styles.module.css';
 import { apiFetch } from "../../utils/api_service";
 
 interface RenameRule {
@@ -42,7 +42,7 @@ const RenameRulesConfig: React.FC = () => {
     const saveConfig = () => {
         const rename_rules = rules.filter(rule => rule.from.length > 0 && rule.to);
         apiFetch('/api/importer-config', {
-            method: 'PUT',
+            method: 'PATCH',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({rename_rules}),
         }).then(response => {
@@ -63,10 +63,10 @@ const RenameRulesConfig: React.FC = () => {
             {rules.map((rule, idx) => (
                 <div key={idx} className={styles.ruleRow}>
                     <div className={styles.fromGroup}>
-                        <label>Von:</label>
+                        <label>Von</label>
                         <input
                             type="text"
-                            value={rule.from.join(', ')}
+                            value={rule.from.join(", ")}
                             onChange={e =>
                                 updateRule(idx, {
                                     ...rule,
@@ -76,7 +76,7 @@ const RenameRulesConfig: React.FC = () => {
                         />
                     </div>
                     <div className={styles.toGroup}>
-                        <label>Zu:</label>
+                        <label>Zu</label>
                         <input
                             type="text"
                             value={rule.to}

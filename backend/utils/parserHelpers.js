@@ -89,20 +89,15 @@ function parseIngredients(rawIngredients = [], renameRules = {}) {
     return rawIngredients.map(line => parseIngredientLine(line, renameRules));
 }
 
-function parseSpiceFromIngredient(ingredient) {
+function parseSpiceFromIngredient(ingredient, spice_rules = {}) {
     if (!ingredient) return;
     if (ingredient.name === '') return;
     if (ingredient.amount !== undefined) return;
     if (ingredient.unit !== undefined) return;
     if (ingredient.note !== undefined) return;
 
-    const spices = [ 'Salz', 'Pfeffer', 'Muskat' ];
-    const spiceMap = {
-        'Salz und Pfeffer': [ 'Salz', 'Pfeffer' ],
-        'Pfeffer und Salz': [ 'Salz', 'Pfeffer' ],
-        'Pfeffer, Salz': [ 'Salz', 'Pfeffer' ],
-        'Salz, Pfeffer': [ 'Salz', 'Pfeffer' ],
-    }
+    const spices = spice_rules.spices || [];
+    const spiceMap = spice_rules.spice_map || {};
 
     const isSpice = spices.includes(ingredient.name);
     if (isSpice) {
@@ -112,11 +107,12 @@ function parseSpiceFromIngredient(ingredient) {
     return spiceMap[ingredient.name];
 }
 
-function parseSpicesAndIngredients(rawIngredients = [], renameRules = {}) {
+async function parseSpicesAndIngredients(rawIngredients = [], renameRules = {}) {
     const ingredients = parseIngredients(rawIngredients, renameRules);
     const spices = [];
+    const { spice_rules } = await readImportConfig();
     for (let i = ingredients.length - 1; i >= 0; i--) {
-        const spice = parseSpiceFromIngredient(ingredients[i]);
+        const spice = parseSpiceFromIngredient(ingredients[i], spice_rules);
         if (spice) {
             Array.isArray(spice) ? spices.push(...spice) : spices.push(spice);
             ingredients.splice(i, 1);

@@ -14,8 +14,8 @@ import { RecipeFormValues } from "./components/RecipeForm/RecipeFormBase";
 import EditRecipe from "./components/EditRecipe";
 import { apiFetch } from "./utils/api_service";
 import RequireLogin from "./components/RequireLogin";
-import RenameRulesConfig from "./components/RenameRulesConfig";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Config from "./components/Config";
 
 const App: React.FC = () => {
     const {token} = useAuth();
@@ -72,9 +72,9 @@ const App: React.FC = () => {
                             <RecipeList recipes={recipes} />
                         </RequireLogin>
                     } />
-                    <Route path="/rename-rules" element={
+                    <Route path="/config" element={
                         <ProtectedRoute>
-                            <RenameRulesConfig />
+                            <Config />
                         </ProtectedRoute>
                     } />
                     <Route path="/login" element={<Login />} />
