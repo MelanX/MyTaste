@@ -11,6 +11,7 @@ const RenameRulesConfig: React.FC = () => {
     const [rules, setRules] = useState<RenameRule[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [errors, setErrors] = useState<string[]>([]);
 
     useEffect(() => {
         apiFetch('/api/importer-config')
@@ -39,19 +40,20 @@ const RenameRulesConfig: React.FC = () => {
         setRules(rules.filter((_, i) => i !== index));
     };
 
-    const saveConfig = () => {
+    const saveConfig = async () => {
         const rename_rules = rules.filter(rule => rule.from.length > 0 && rule.to);
-        apiFetch('/api/importer-config', {
+        const response = await apiFetch('/api/importer-config', {
             method: 'PATCH',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({rename_rules}),
-        }).then(response => {
-            if (response.ok) {
-                setRules(rename_rules);
-            } else {
-                setError('Failed to save config');
-            }
-        }).catch(() => setError('Failed to save config'));
+        });
+
+        if (response.ok) {
+            setRules(rename_rules);
+        } else {
+            const json = await response.json();
+            setErrors([json.message, ...json.details]);
+        }
     };
 
     if (loading) return <div>Loading...</div>;

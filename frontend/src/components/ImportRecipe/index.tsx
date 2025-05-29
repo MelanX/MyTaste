@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import RecipeFormBase, { RecipeFormValues } from '../RecipeForm/RecipeFormBase';
 import styles from './styles.module.css';
 import { apiFetch } from '../../utils/api_service';
+import ErrorSection from "../ErrorSection";
 
 interface Props {
     onSubmit: () => Promise<void>;
@@ -90,12 +91,7 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
                     />
                 </label>
                 {errors.length > 0 && (
-                    <div className={styles.errorSection}>
-                        <h3>{errors[0]}</h3>
-                        {errors.slice(1).map((e, i) => (
-                            <p key={i}>{e}</p>
-                        ))}
-                    </div>
+                    <ErrorSection title={errors[0]} details={errors.slice(1)} />
                 )}
                 <button type="submit" disabled={loading}>
                     {loading ? 'Importiere…' : 'Import starten'}

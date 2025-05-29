@@ -203,32 +203,3 @@
 .actions button:hover {
     background: var(--color-primary-dark);
 }
-
-.errorSection {
-    border: 2px solid #d81b60; /* pink-red */
-    border-radius: 6px;
-    padding: 0.75rem 1rem;
-    margin-top: 1rem;
-    background: #fff5f7;
-    color: #b00020;
-    font-size: 0.9rem;
-}
-
-.errorTitle {
-    font-weight: 600;
-    margin: 0 0 0.5rem 0;
-}
-
-.errorList {
-    list-style: disc;
-    margin: 0;
-    padding-left: 1.25rem;
-}
-
-.errorList li {
-    margin: 0.25rem 0;
-}
-
-.missing {
-    font-style: italic;
-}

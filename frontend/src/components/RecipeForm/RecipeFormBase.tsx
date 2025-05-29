@@ -5,6 +5,7 @@ import { formatAmount } from '../../utils/formatters';
 import ImageUpload from "../ImageUpload";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../../utils/api_service";
+import ErrorSection from "../ErrorSection";
 
 export interface RecipeFormValues {
     title: string;
@@ -345,12 +346,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                 </div>
 
                 {errors.length > 0 && (
-                    <div className={styles.errorSection}>
-                        <h3>{errors[0]}</h3>
-                        {errors.slice(1).map((e, i) => (
-                            <p key={i}>{e}</p>
-                        ))}
-                    </div>
+                    <ErrorSection title={errors[0]} details={errors.slice(1)} />
                 )}
                 <div className={styles.formActions}>
                     {onDelete && (

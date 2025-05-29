@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from './styles.module.css';
+import ErrorSection from "../ErrorSection";
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -24,7 +25,7 @@ const Login: React.FC = () => {
     return (
         <div className={styles.loginContainer}>
             <h2>Login</h2>
-            {error && <p className={styles.error}>{error}</p>}
+            <ErrorSection title={error} />
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"

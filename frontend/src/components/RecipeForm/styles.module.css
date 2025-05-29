@@ -201,19 +201,6 @@ label {
     background-color: var(--color-deny-button);
 }
 
-.errorSection {
-    border-color: var(--color-deny-button);
-    border-style: solid;
-    border-radius: 1rem;
-    padding: 1rem;
-    border-width: 2px;
-    margin-top: 2rem;
-}
-
-.errorSection p {
-    margin-left: 1rem;
-}
-
 @media (max-width: 600px) {
     .ingredientInputs {
         flex-direction: column;

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from '../Config/styles.module.css';
 import { apiFetch } from '../../utils/api_service';
+import ErrorSection from "../ErrorSection";
 
 interface SpiceAliasRule {
     alias: string;
@@ -93,6 +94,29 @@ const SpiceRulesConfig: React.FC = () => {
     if (loading) return <div>Loading…</div>;
     if (error) return <div className={styles.error}>{error}</div>;
 
+    const errorDetails = errors.slice(1).map((err, i) => {
+        if (err && typeof err === 'object' && 'alias' in err && Array.isArray((err as any).missing)) {
+            const {alias, missing} = err as { alias: string; missing: string[] };
+            return (
+                <span key={i}>
+                    <code>{alias}</code>&nbsp;→&nbsp;
+                    <span className={styles.missing}>{missing.join(', ')}</span>
+                </span>
+            );
+        }
+        if (err && typeof err === 'object') {
+            const [alias, list] = Object.entries(err)[0] as [string, string[]];
+            return (
+                <span key={i}>
+                    <code>{alias}</code>&nbsp;→&nbsp;
+                    <span className={styles.missing}>{list.join(', ')}</span>
+                </span>
+            );
+        }
+
+        return <span key={i}>{String(err)}</span>;
+    });
+
     return (
         <div className={styles.container}>
             <div className={styles.mainTitle}>Gewürz-Konfiguration</div>
@@ -174,45 +198,7 @@ const SpiceRulesConfig: React.FC = () => {
             })}
 
             {errors.length > 0 && (
-                <div className={styles.errorSection}>
-                    {/* headline */}
-                    <p className={styles.errorTitle}>{errors[0]}</p>
-
-                    {/* details */}
-                    <ul className={styles.errorList}>
-                        {errors.slice(1).map((err, i) => {
-                            /* ----------------  shape 1  { alias, missing }  ---------------- */
-                            if (
-                                err &&
-                                typeof err === 'object' &&
-                                'alias' in err &&
-                                Array.isArray((err as any).missing)
-                            ) {
-                                const {alias, missing} = err as { alias: string; missing: string[] };
-                                return (
-                                    <li key={i}>
-                                        <code>{alias}</code>&nbsp;→&nbsp;
-                                        <span className={styles.missing}>{missing.join(', ')}</span>
-                                    </li>
-                                );
-                            }
-
-                            /* ----------------  shape 2  { [alias]: [missing…] }  ------------ */
-                            if (err && typeof err === 'object') {
-                                const [alias, list] = Object.entries(err)[0] as [string, string[]];
-                                return (
-                                    <li key={i}>
-                                        <code>{alias}</code>&nbsp;→&nbsp;
-                                        <span className={styles.missing}>{list.join(', ')}</span>
-                                    </li>
-                                );
-                            }
-
-                            /* anything else (plain string, number, etc.) */
-                            return <li key={i}>{String(err)}</li>;
-                        })}
-                    </ul>
-                </div>
+                <ErrorSection title={errors[0]} details={errorDetails} />
             )}
 
             <div className={styles.actions}>
