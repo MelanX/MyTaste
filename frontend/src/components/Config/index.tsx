@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import RenameRulesConfig from '../RenameRulesConfig';
 import SpiceRulesConfig from '../SpiceRulesConfig';
 import styles from './styles.module.css';
@@ -9,7 +9,18 @@ const TABS = [
 ];
 
 const Config: React.FC = () => {
-    const [active, setActive] = useState('rename');
+    const getInitialTab = () => {
+        const tabParam = new URLSearchParams(window.location.search).get('tab');
+        return TABS.some(t => t.id === tabParam) ? tabParam! : 'rename';
+    }
+
+    const [active, setActive] = useState(getInitialTab);
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('tab', active);
+        window.history.replaceState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
+    }, [active]);
 
     return (
         <div className={styles.wrapper}>
