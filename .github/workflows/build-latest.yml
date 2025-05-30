@@ -16,7 +16,7 @@ jobs:
       packages: write
 
     env:
-      IMAGE_TAG: latest
+      IMAGE_TAG: dev
 
     steps:
       - uses: actions/checkout@v4
