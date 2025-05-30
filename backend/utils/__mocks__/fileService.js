@@ -10,4 +10,6 @@ module.exports = {
     // helpers for your tests:
     __setRecipeData: d => { recipeData = d; },
     __setImportConfig: c => { importConfig = c; },
+
+    DATABASE_FILE: ':memory:'
 };
