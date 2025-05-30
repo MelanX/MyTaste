@@ -14,8 +14,8 @@ beforeEach(() => {
             {
                 id: '1', title: 'Dummy', url: 'https://example.com',
                 image: '', ingredients: [ { name: 'Schokolade' } ],
-                spices: [ 'Salz' ], instructions: [], author: 'MelanX',
-                linkOutUrl: 'https://ex.com', status: { favorite: false, cookState: false }
+                spices: [ 'Salz' ], instructions: [ 'Iss einfach die Schokolade' ],
+                status: { favorite: false, cookState: false }
             }
         ]
     });
@@ -234,6 +234,62 @@ describe('GET /api/recipes sorting', () => {
             '3', // cooked only
             '1', // neither
         ]);
+    });
+});
+
+describe('PUT /api/recipe/:id', () => {
+    const validBody = {
+        title: 'Updated recipe',
+        url: 'https://example.org',
+        ingredients: [ { name: 'Flour' } ],
+        spices: [ 'Salt' ],
+        instructions: [ 'Mix ingredients', 'Serve' ],
+    };
+
+    it('401 when no token is supplied', async () => {
+        const res = await agent.put('/api/recipe/1').send(validBody);
+        expect(res.status).toBe(401);
+    });
+
+    it('403 with an invalid token', async () => {
+        const res = await agent
+            .put('/api/recipe/1')
+            .set('Authorization', 'Bearer bad.token.here')
+            .send(validBody);
+        expect(res.status).toBe(403);
+    });
+
+    it('404 when the recipe does not exist', async () => {
+        const res = await agent
+            .put('/api/recipe/not-there')
+            .set(authHeader())
+            .send(validBody);
+        expect(res.status).toBe(404);
+    });
+
+    it('400 on validation error (e.g. missing title)', async () => {
+        const { title, ...invalidBody } = validBody;
+        const res = await agent
+            .put('/api/recipe/1')
+            .set(authHeader())
+            .send(invalidBody);
+        expect(res.status).toBe(400);
+    });
+
+    it('200 updates the recipe and returns the new data', async () => {
+        const res = await agent
+            .put('/api/recipe/1')
+            .set(authHeader())
+            .send(validBody);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({ id: '1', title: 'Updated recipe' });
+
+        // follow-up GET should reflect the changes
+        const followUp = await agent.get('/api/recipe/1');
+        expect(followUp.status).toBe(200);
+        expect(followUp.body.title).toBe('Updated recipe');
+        expect(followUp.body.ingredients[0].name).toBe('Flour');
     });
 });
 

@@ -82,9 +82,9 @@ router.put('/recipe/:id', authenticateToken, async (req, res, next) => {
         }
 
         updated.id = id;
-        data.recipes[idx] = { ...updated, ...data.recipes[idx] };
+        data.recipes[idx] = { ...data.recipes[idx], ...updated };
         await writeData(data);
-        res.json(updated);
+        res.json(data.recipes[idx]);
     } catch (err) {
         next(err);
     }
