@@ -1,6 +1,5 @@
 node_modules
 
-data/recipes.json
-data/config.json
+data/*
 uploads/*
 coverage/*

@@ -6,10 +6,12 @@ const recipesRouter = require("../routes/recipes");
 const importRouter = require("../routes/import");
 const uploadRouter = require("../routes/upload");
 const configRouter = require("../routes/config");
+const cookieParser = require("cookie-parser");
 
 function makeApp() {
     const app = express();
     app.use(express.json());
+    app.use(cookieParser())
     app.use("/api",
         authRouter,
         bringRouter,
@@ -18,7 +20,7 @@ function makeApp() {
         uploadRouter,
         configRouter
     );
-    // mimic your global error handler
+    // mimic global error handler
     app.use((err, req, res, next) => res.status(500).json({ message: err.message }));
     return app;
 }
@@ -29,6 +31,7 @@ function authHeader() {
         process.env.JWT_SECRET,
         { expiresIn: "1h" }
     );
+
     return { Authorization: `Bearer ${ token }` };
 }
 

@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import RecipeFormBase, { RecipeFormValues } from '../RecipeForm/RecipeFormBase';
 import { Recipe } from '../../types/Recipe';
 import { apiFetch } from "../../utils/api_service";
 
 const EditRecipe: React.FC = () => {
     const {id} = useParams<{ id: string }>();
-    const {token} = useAuth();
     const navigate = useNavigate();
     const [initial, setInitial] = useState<RecipeFormValues | null>(null);
 
@@ -29,10 +27,7 @@ const EditRecipe: React.FC = () => {
     const handleUpdate = async (values: RecipeFormValues): Promise<Response> => {
         const response = await apiFetch(`/api/recipe/${id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(values)
         });
 
@@ -45,10 +40,7 @@ const EditRecipe: React.FC = () => {
 
     const handleDeletion = async (): Promise<Response> => {
         const response = await apiFetch(`/api/recipe/${id}`, {
-            method: 'DELETE',
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            method: 'DELETE'
         });
 
         if (response.ok) {

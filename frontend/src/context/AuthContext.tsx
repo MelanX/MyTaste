@@ -1,9 +1,7 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { apiFetch } from '../utils/api_service';
 
 interface AuthContextType {
-    token: string | null;
-    tokenExpirationTime: number | null;
     login: (username: string, password: string) => Promise<void>;
     logout: () => void;
     isAuthenticated: boolean;
@@ -12,44 +10,37 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({children}) => {
-    const [token, setToken] = useState<string | null>(() => localStorage.getItem('authToken'));
-    const [tokenExpirationTime, setTokenExpirationTime] = useState<number | null>(() => {
-        const stored = localStorage.getItem('tokenExpirationTime');
-        return stored ? Number(stored) : null;
-    });
+    const [ isAuthenticated, setAuth ] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await apiFetch('/api/refresh', { method: 'POST' });
+                setAuth(res.ok);
+            } catch (err) {
+                setAuth(false);
+            }
+        })();
+    }, []);
 
     const login = async (username: string, password: string) => {
-        const response = await apiFetch('/api/login', {
+        const res = await apiFetch('/api/login', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({username, password}),
         });
-
-        if (!response.ok) {
-            throw new Error('Login failed');
-        }
-
-        const authentication = await response.json();
-
-        setToken(authentication.token);
-        setTokenExpirationTime(authentication.expirationTime);
-        localStorage.setItem('authToken', authentication.token);
-        localStorage.setItem('tokenExpirationTime', authentication.expirationTime);
+        if (!res.ok) throw new Error('Login failed');
+        setAuth(true);                // cookies are now set
     };
 
-    const logout = () => {
-        setToken(null);
-        setTokenExpirationTime(null);
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('tokenExpirationTime');
+    const logout = async () => {
+        await apiFetch('/api/logout', { method: 'POST' }).catch(() => {});
+        setAuth(false);
     };
 
-    const hasValidToken = (token: string | null, expirationTime: number | null) => !!token && !!expirationTime && expirationTime > Date.now();
-
-    const isAuthenticated = hasValidToken(token, tokenExpirationTime);
+    if (isAuthenticated === null) return null;
 
     return (
-        <AuthContext.Provider value={{token, tokenExpirationTime, login, logout, isAuthenticated}}>
+        <AuthContext.Provider value={ { login, logout, isAuthenticated } }>
             {children}
         </AuthContext.Provider>
     );

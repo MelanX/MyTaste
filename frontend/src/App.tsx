@@ -5,7 +5,6 @@ import RecipeForm from './components/RecipeForm';
 import RecipeDetail from './components/RecipeDetail';
 import Login from './components/Login';
 import ImportRecipe from './components/ImportRecipe';
-import { useAuth } from './context/AuthContext';
 import PaperGrain from './components/PaperGrain';
 import Sidebar from './components/Sidebar';
 import './App.css';
@@ -16,24 +15,28 @@ import { apiFetch } from "./utils/api_service";
 import RequireLogin from "./components/RequireLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Config from "./components/Config";
+import { useAuth } from "./context/AuthContext";
 
 const App: React.FC = () => {
-    const {token} = useAuth();
+    const { isAuthenticated } = useAuth();
     const [recipes, setRecipes] = React.useState<Recipe[]>([]);
 
     React.useEffect(() => {
+        if (!isAuthenticated) {
+            setRecipes([]);          // clean slate on logout
+            return;
+        }
         apiFetch('/api/recipes')
-            .then((res) => res.json())
-            .then((data) => setRecipes(data.recipes))
-            .catch(err => console.error('Failed to fetch recipes:', err));
-    }, [token]);
+            .then(res => res.json())
+            .then(data => setRecipes(data.recipes))
+            .catch(() => {});        // 401 handled by <RequireLogin>
+    }, [ isAuthenticated ]);
 
     const handleRecipeSubmit = async (recipeFormValues: RecipeFormValues): Promise<Response> => {
         const response = await apiFetch('/api/recipes', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                ...(token ? {Authorization: `Bearer ${token}`} : {}),
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(recipeFormValues),
         });

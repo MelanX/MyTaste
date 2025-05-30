@@ -1,4 +1,5 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const authenticateToken = require('./middleware/auth');
@@ -22,10 +23,10 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
 
 app.use(cors({
     origin: function (origin, callback) {
-        if (process.env.NODE_ENV !== 'production') return callback(null, true);
+        if (process.env.NODE_ENV !== 'production') return callback(null, origin);
         if (!origin) return callback(null, true);
-        if (allowedOrigins.includes(origin)) {
-            return callback(null, true);
+        if (origin && allowedOrigins.includes(origin)) {
+            return callback(null, origin);
         }
 
         console.warn(`Blocked CORS for origin: ${ origin }`);
@@ -35,6 +36,8 @@ app.use(cors({
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: [ 'Content-Type', 'Authorization' ]
 }));
+app.use(cookieParser());
+app.set('trust proxy', 1);
 
 app.use(bodyParser.json());
 

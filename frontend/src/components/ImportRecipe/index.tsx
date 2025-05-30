@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import RecipeFormBase, { RecipeFormValues } from '../RecipeForm/RecipeFormBase';
 import styles from './styles.module.css';
 import { apiFetch } from '../../utils/api_service';
@@ -15,7 +14,6 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
     const [errors, setErrors] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [imported, setImported] = useState<RecipeFormValues | null>(null);
-    const {token} = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -26,10 +24,7 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
         try {
             const res = await apiFetch('/api/import', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(token ? {Authorization: `Bearer ${token}`} : {}),
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({url}),
             });
 
@@ -57,10 +52,7 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
                 onSubmit={async (vals) => {
                     const response = await apiFetch('/api/recipes', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...(token ? {Authorization: `Bearer ${token}`} : {}),
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(vals),
                     });
 

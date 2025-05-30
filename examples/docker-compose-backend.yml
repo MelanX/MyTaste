@@ -10,6 +10,7 @@ services:
       - ADMIN_USER=admin
       - ADMIN_PASS=adm1n
       - JWT_SECRET=abaWyk9m2GfUr0gy9Q9keZan5kjfRSxnRlrQYCt3NnDDc7Fu5aVRy3f92No42mPN
+      - JWT_REFRESH_SECRET=Ke4rRUDKpPg0lu376mKU54mLUuAA37UUGPn2wMK1XucUDAP9OgBoSPRihCYKbFjt
       - ALLOWED_ORIGINS=http://localhost
     volumes:
       - /docker/mytaste/backend/data:/app/data # Where recipes and config are stored
