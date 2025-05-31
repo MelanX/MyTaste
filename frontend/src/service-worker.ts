@@ -13,6 +13,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
+import { BroadcastUpdatePlugin } from 'workbox-broadcast-update';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -31,7 +32,7 @@ precacheAndRoute(self.__WB_MANIFEST);
 const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$');
 registerRoute(
     // Return false to exempt requests from being fulfilled by index.html.
-    ({request, url}: { request: Request; url: URL }) => {
+    ({ request, url }: { request: Request; url: URL }) => {
         // If this isn't a navigation, skip.
         if (request.mode !== 'navigate') {
             return false;
@@ -58,17 +59,49 @@ registerRoute(
 // precache in this case same-origin .png requests like those from in public/
 registerRoute(
     // Add in any other file extensions or routing criteria as needed.
-    ({url}) => url.origin === self.location.origin && url.pathname.endsWith('.png'),
+    ({ url }) => url.origin === self.location.origin && url.pathname.endsWith('.png'),
     // Customize this strategy as needed, e.g., by changing to CacheFirst.
     new StaleWhileRevalidate({
         cacheName: 'images',
         plugins: [
             // Ensure that once this runtime cache reaches a maximum size the
             // least-recently used images are removed.
-            new ExpirationPlugin({maxEntries: 50}),
+            new ExpirationPlugin({ maxEntries: 50 }),
         ],
     })
 );
+
+// Runtime cache for both the list & single-recipe endpoints
+registerRoute(
+    ({ url, request }) =>
+        request.method === 'GET' &&
+        url.origin === self.location.origin &&
+        (
+            url.pathname === '/api/recipes' ||         // full list
+            url.pathname.startsWith('/api/recipe/')    // single recipe
+        ),
+    new StaleWhileRevalidate({
+        cacheName: 'api-recipes',
+        plugins: [
+            new BroadcastUpdatePlugin(),
+            // keep the cache neat: max 150 entries, purge after 2 weeks
+            new ExpirationPlugin({
+                maxEntries: 150,
+                maxAgeSeconds: 14 * 24 * 60 * 60,
+            }),
+        ],
+    })
+);
+
+// When Workbox broadcasts an update, forward a simple vanilla event
+self.addEventListener('message', (event) => {
+    if (event?.data?.meta === 'workbox-broadcast-update' &&
+        event?.data?.payload?.cacheName === 'api-recipes') {
+        self.clients.matchAll().then(clients =>
+            clients.forEach(c => c.postMessage({ type: 'recipes-updated' }))
+        );
+    }
+});
 
 // This allows the web app to trigger skipWaiting via
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})

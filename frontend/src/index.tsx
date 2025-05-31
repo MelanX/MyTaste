@@ -22,6 +22,12 @@ loadConfig().then(() => {
 
     serviceWorkerRegistration.register();
     reportWebVitals();
+
+    navigator.serviceWorker?.addEventListener('message', (e) => {
+        if (e.data?.type === 'recipes-updated') {
+            window.dispatchEvent(new Event('recipes-updated')); // wake hooks
+        }
+    });
 }).catch(error => {
     console.error('Failed to load config:', error);
 });
