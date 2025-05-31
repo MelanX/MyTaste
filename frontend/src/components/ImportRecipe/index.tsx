@@ -5,11 +5,7 @@ import styles from './styles.module.css';
 import { apiFetch } from '../../utils/api_service';
 import ErrorSection from "../ErrorSection";
 
-interface Props {
-    onSubmit: () => Promise<void>;
-}
-
-const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
+const ImportRecipe: React.FC = () => {
     const [url, setUrl] = useState('');
     const [errors, setErrors] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
@@ -58,7 +54,6 @@ const ImportRecipe: React.FC<Props> = ({onSubmit}) => {
 
                     if (response.ok) {
                         const json = await response.json();
-                        await onSubmit();
                         navigate(`/recipe/${json.id}`);
                     }
 

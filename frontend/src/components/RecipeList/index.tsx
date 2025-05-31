@@ -7,10 +7,7 @@ import FilterSection from '../FilterSection';
 import styles from './styles.module.css';
 import { getConfig } from "../../config";
 import { updateRecipeStatus } from "../../utils/api_service";
-
-interface RecipeListProps {
-    recipes: Recipe[]
-}
+import { useRecipes } from "../../hooks/useRecipes";
 
 const levenshtein = (a: string, b: string): number => {
     const matrix: number[][] = [];
@@ -32,15 +29,17 @@ const levenshtein = (a: string, b: string): number => {
     return matrix[blen][alen];
 }
 
-const RecipeList: React.FC<RecipeListProps> = ({recipes}) => {
+const RecipeList: React.FC = () => {
     const {isAuthenticated} = useAuth();
+
+    const { recipes, loading, error } = useRecipes();
 
     const [titleFilter, setTitleFilter] = React.useState('');
     const [selectedIngredients, setSelectedIngredients] = React.useState<string[]>([]);
-    const [localRecipes, setLocalRecipes] = React.useState<Recipe[]>(recipes);
+    const [ localRecipes, setLocalRecipes ] = React.useState<Recipe[]>([]);
 
     React.useEffect(() => {
-        setLocalRecipes(recipes);
+        setLocalRecipes(recipes ?? []);
     }, [recipes]);
 
     // derive full unique ingredient list
@@ -113,6 +112,10 @@ const RecipeList: React.FC<RecipeListProps> = ({recipes}) => {
             return true;
         })
     }, [localRecipes, titleFilter, selectedIngredients]);
+
+    if (loading && recipes === null) return <p>Lade Rezepte...</p>;
+    if (error) return <p>Fehler: { error.message }</p>;
+    if (filtered.length === 0) return <p>Keine Rezepte gefunden</p>;
 
     return (
         <div>

@@ -8,51 +8,27 @@ import ImportRecipe from './components/ImportRecipe';
 import PaperGrain from './components/PaperGrain';
 import Sidebar from './components/Sidebar';
 import './App.css';
-import { Recipe } from './types/Recipe';
 import { RecipeFormValues } from "./components/RecipeForm/RecipeFormBase";
 import EditRecipe from "./components/EditRecipe";
 import { apiFetch } from "./utils/api_service";
 import RequireLogin from "./components/RequireLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Config from "./components/Config";
-import { useAuth } from "./context/AuthContext";
+import { fetchAndCache } from "./utils/recipesCache";
 
 const App: React.FC = () => {
-    const { isAuthenticated } = useAuth();
-    const [recipes, setRecipes] = React.useState<Recipe[]>([]);
-
-    React.useEffect(() => {
-        if (!isAuthenticated) {
-            setRecipes([]);          // clean slate on logout
-            return;
-        }
-        apiFetch('/api/recipes')
-            .then(res => res.json())
-            .then(data => setRecipes(data.recipes))
-            .catch(() => {});        // 401 handled by <RequireLogin>
-    }, [ isAuthenticated ]);
-
     const handleRecipeSubmit = async (recipeFormValues: RecipeFormValues): Promise<Response> => {
         const response = await apiFetch('/api/recipes', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(recipeFormValues),
         });
 
         if (response.ok) {
-            await updateRecipes();
+            await fetchAndCache();
         }
 
         return response;
-    };
-
-    const updateRecipes = async () => {
-        apiFetch('/api/recipes')
-            .then(res => res.json())
-            .then(data => setRecipes(data.recipes))
-            .catch(err => console.error('Failed to fetch recipes:', err));
     };
 
     return (
@@ -72,7 +48,7 @@ const App: React.FC = () => {
                 <Routes>
                     <Route path="/" element={
                         <RequireLogin>
-                            <RecipeList recipes={recipes} />
+                            <RecipeList />
                         </RequireLogin>
                     } />
                     <Route path="/config" element={
@@ -93,7 +69,7 @@ const App: React.FC = () => {
                         path="/import-recipe"
                         element={
                             <ProtectedRoute>
-                                <ImportRecipe onSubmit={updateRecipes} />
+                                <ImportRecipe />
                             </ProtectedRoute>
                         }
                     />
