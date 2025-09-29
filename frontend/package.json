@@ -27,7 +27,7 @@
     "workbox-broadcast-update": "^6.4.2",
     "workbox-cacheable-response": "^6.4.2",
     "workbox-core": "^6.4.2",
-    "workbox-expiration": "^6.4.2",
+    "workbox-expiration": "^7.3.0",
     "workbox-navigation-preload": "^6.4.2",
     "workbox-precaching": "^6.4.2",
     "workbox-range-requests": "^6.4.2",
