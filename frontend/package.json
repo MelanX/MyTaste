@@ -24,7 +24,7 @@
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.4.2",
-    "workbox-broadcast-update": "^6.4.2",
+    "workbox-broadcast-update": "^7.3.0",
     "workbox-cacheable-response": "^6.4.2",
     "workbox-core": "^6.4.2",
     "workbox-expiration": "^7.3.0",
