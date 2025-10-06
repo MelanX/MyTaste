@@ -27,8 +27,8 @@ jobs:
           npm test -- --watchAll=false
 
       # ----------------- frontend ----------------
-#      - name: Install frontend deps & run tests
-#        working-directory: ./frontend
-#        run: |
-#          npm ci
-#          npm test -- --watchAll=false
+      - name: Install frontend deps & build
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run build
