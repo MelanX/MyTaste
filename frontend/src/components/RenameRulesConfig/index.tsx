@@ -11,7 +11,7 @@ const RenameRulesConfig: React.FC = () => {
     const [rules, setRules] = useState<RenameRule[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [errors, setErrors] = useState<string[]>([]);
+    const [ , setErrors ] = useState<string[]>([]);
 
     useEffect(() => {
         apiFetch('/api/importer-config')
