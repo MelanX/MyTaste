@@ -26,7 +26,7 @@
     "workbox-background-sync": "^7.3.0",
     "workbox-broadcast-update": "^7.3.0",
     "workbox-cacheable-response": "^7.3.0",
-    "workbox-core": "^6.4.2",
+    "workbox-core": "^7.3.0",
     "workbox-expiration": "^7.3.0",
     "workbox-navigation-preload": "^6.4.2",
     "workbox-precaching": "^6.4.2",
