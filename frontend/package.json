@@ -16,7 +16,7 @@
     "@types/react-dom": "^19.2.2",
     "@types/react-router-dom": "^5.3.3",
     "qrcode.react": "^4.2.0",
-    "react": "^19.2.0",
+    "react": "^19.2.3",
     "react-dom": "^19.2.0",
     "react-dropzone": "^14.3.8",
     "react-router-dom": "^7.9.5",
