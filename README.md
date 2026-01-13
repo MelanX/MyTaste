@@ -4,7 +4,7 @@ MyTaste is a lightweight, self-hosted recipe manager consisting of:
 
 | Layer          | Tech                    | Highlights                                                     |
 |----------------|-------------------------|----------------------------------------------------------------|
-| **Backend**    | Node.js 20 ✚ Express 5  | REST API, JWT auth, SQLite/JSON storage, unit-tested with Jest |
+| **Backend**    | Node.js 22 ✚ Express 5  | REST API, JWT auth, SQLite/JSON storage, unit-tested with Jest |
 | **Frontend**   | React 19 ✚ TypeScript   | PWA (offline-capable), responsive UI, service-worker caching   |
 | **Containers** | Docker / Docker Compose | Official images on GitHub Container Registry                   |
 
