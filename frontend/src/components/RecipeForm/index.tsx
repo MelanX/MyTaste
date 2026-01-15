@@ -10,6 +10,7 @@ const RecipeForm: React.FC<Props> = ({onSubmit}) => (
         submitLabel="Rezept hinzufügen"
         onSubmit={onSubmit}
         redirectTo='/'
+        showImportButton={ true }
     />
 );
 

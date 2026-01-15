@@ -21,6 +21,7 @@ interface RecipeFormBaseProps {
     onSubmit: (values: RecipeFormValues) => Promise<Response>;
     onDelete?: () => Promise<Response>;
     redirectTo?: string;
+    showImportButton?: boolean;
 }
 
 type DragInfo = {
@@ -46,7 +47,8 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                                                            submitLabel,
                                                            onSubmit,
                                                            onDelete,
-                                                           redirectTo
+                                                           redirectTo,
+                                                           showImportButton
                                                        }) => {
     const navigate = useNavigate();
     const [ title, setTitle ] = useState(initial.title);
@@ -318,11 +320,26 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
         }
     };
 
+    const redirectToImport = async (e: FormEvent) => {
+        navigate('/import-recipe');
+    }
+
     const isSectionMode = ingredientSections.length > 1;
 
     return (
         <div className={ styles.recipeFormContainer }>
-            <h2>{ submitLabel }</h2>
+            <div className={ styles.titleRow }>
+                <h2>{ submitLabel }</h2>
+                { showImportButton && (
+                    <button
+                        type="button"
+                        className={ styles.importButton }
+                        onClick={ redirectToImport }
+                    >
+                        Lieber importieren!
+                    </button>
+                ) }
+            </div>
             <form onSubmit={ handleSubmit }>
                 <div className={ styles.firstFormGroup }>
                     {/* Title */ }
@@ -519,7 +536,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                                                 >
                                                     Inhalte hierher ziehen, um sie ans Ende zu verschieben
                                                 </div>
-                                        </div>
+                                            </div>
 
                                             {/* per-section "add ingredient" row */ }
                                             <SectionAddRow
@@ -534,7 +551,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                                                     setEditingSectionIngredientIndex(null);
                                                 } }
                                             />
-                                    </div>
+                                        </div>
                                     </div>
                                 )
                             }) }

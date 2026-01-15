@@ -64,6 +64,7 @@ const ImportRecipe: React.FC = () => {
 
                     return response;
                 }}
+                showImportButton={ false }
             />
         );
     }

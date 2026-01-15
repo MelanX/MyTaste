@@ -58,6 +58,7 @@ const EditRecipe: React.FC = () => {
             submitLabel="Rezept bearbeiten"
             onSubmit={handleUpdate}
             onDelete={handleDeletion}
+            showImportButton={ false }
         />
     );
 };
