@@ -86,36 +86,64 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({recipe, hideImage = false,
                 )}
 
                 <div className={styles.sidebarContent}>
-                    <div className={styles.ingredientsCard}>
-                        <h3 className={styles.ingredientsTitle}>Zutaten</h3>
-                        <div className={styles.ingredientsTable}>
-                            {recipe.ingredients.map((ingredient, index) => {
-                                    const [primaryName, ...rest] = ingredient.name.split(',');
-                                    const nameSpecification = rest.length > 0 ? rest.join(',') : '';
+                    <h2 className={ styles.ingredientsTitle }>Zutaten</h2>
+                    { recipe.ingredient_sections && recipe.ingredient_sections.length > 0 ? (
+                        // Render sections
+                        recipe.ingredient_sections.map((section, sectionIndex) => (
+                            <div key={ sectionIndex } className={ styles.ingredientsCard }>
+                                { section.title ? (
+                                    <h3 className={ styles.ingredientSectionTitle }>
+                                        { section.title || 'Zutaten' }
+                                    </h3>
+                                ) : (
+                                    <></>
+                                ) }
+                                <div className={ styles.ingredientsTable }>
+                                    { section.ingredients.map((ingredient, index) => {
+                                        const [ primaryName, ...rest ] = ingredient.name.split(',');
+                                        const nameSpecification =
+                                            rest.length > 0 ? rest.join(',') : '';
 
-                                    return (
-                                        <div key={index} className={styles.ingredientRow}>
-                                            <div className={styles.ingredientAmount}>
-                                                {formatAmount(ingredient.amount)}{ingredient.unit ? ` ${ingredient.unit}` : ''}
-                                            </div>
-                                            <div className={styles.ingredientName}>
-                                                <span>{primaryName}</span>
-                                                {nameSpecification && (
-                                                    <span className={styles.nameSpecification}>{nameSpecification}</span>
-                                                )}
-                                            </div>
-                                            {ingredient.note && (
-                                                <div className={styles.ingredientNote}>
-                                                    <i className="fa-solid fa-circle-exclamation" />
-                                                    <span>{ingredient.note}</span>
+                                        return (
+                                            <div
+                                                key={ index }
+                                                className={ styles.ingredientRow }
+                                            >
+                                                <div className={ styles.ingredientAmount }>
+                                                    { formatAmount(ingredient.amount) }
+                                                    { ingredient.unit
+                                                        ? ` ${ ingredient.unit }`
+                                                        : '' }
                                                 </div>
-                                            )}
-                                        </div>
-                                    )
-                                }
-                            )}
-                        </div>
-                    </div>
+                                                <div className={ styles.ingredientName }>
+                                                    <span>{ primaryName }</span>
+                                                    { nameSpecification && (
+                                                        <span
+                                                            className={
+                                                                styles.nameSpecification
+                                                            }
+                                                        >
+                                            { nameSpecification }
+                                        </span>
+                                                    ) }
+                                                </div>
+                                                { ingredient.note && (
+                                                    <div
+                                                        className={ styles.ingredientNote }
+                                                    >
+                                                        <i className="fa-solid fa-circle-exclamation" />
+                                                        <span>{ ingredient.note }</span>
+                                                    </div>
+                                                ) }
+                                            </div>
+                                        );
+                                    }) }
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <></>
+                    ) }
 
                     {recipe.spices && recipe.spices.length > 0 && (
                         <div className={styles.spicesCard}>

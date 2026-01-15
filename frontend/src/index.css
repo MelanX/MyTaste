@@ -19,6 +19,7 @@ code {
     sans-serif;
     /* Brand colors */
     --color-primary: #e6b17e; /* Primary brand color (orange) */
+    --color-primary-bright: #e6c996; /* Primary brand color (orange) */
     --color-primary-dark: #d99c5e; /* Darker version for hover states */
     --color-primary-text: #372101; /* Text that goes with primary brand colors */
 

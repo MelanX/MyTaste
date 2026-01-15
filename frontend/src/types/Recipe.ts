@@ -8,10 +8,15 @@ export interface Recipe {
     title: string;
     instructions: string[];
     url?: string;
-    ingredients: Ingredient[];
+    ingredient_sections: IngredientSection[];
     spices?: string[];
     image?: string;
     status?: Status;
+}
+
+export interface IngredientSection {
+    title?: string;
+    ingredients: Ingredient[];
 }
 
 export interface Ingredient {

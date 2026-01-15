@@ -1,5 +1,32 @@
 const Joi = require('joi');
 
+const recipeIngredients = Joi.array().items(
+    Joi.object({
+        name: Joi.string().max(256).required(),
+        amount: Joi.number().min(0).optional(),
+        unit: Joi.string().min(1).max(16).optional().allow(null, ''),
+        note: Joi.string().optional().allow(null, '')
+    })
+).max(256);
+
+const sectionBase = Joi.object({
+    title: Joi.string().min(1).max(256).optional().allow(null, ''),
+    ingredients: recipeIngredients.required()
+});
+
+const ingredientSectionsSchema = Joi.array()
+    .items(sectionBase)
+    .min(1)
+    .custom((sections, helpers) => {
+        if (sections.length > 1) {
+            const missing = sections.findIndex(s => !s.title || !String(s.title).trim());
+            if (missing !== -1) {
+                return helpers.error('any.custom', { message: `Section title missing at index ${ missing }` });
+            }
+        }
+        return sections;
+    }, 'section title required when multiple sections');
+
 const recipeSchema = Joi.object({
     id: Joi.string(),
     title: Joi.string()
@@ -24,20 +51,8 @@ const recipeSchema = Joi.object({
             Joi.string().pattern(/^\/uploads\/[\w.-]+\.webp$/i)
         )
         .allow(null, ''),
-    ingredients: Joi.array().items(
-        Joi.object({
-            name: Joi.string().max(256).required(),
-            amount: Joi.number().min(0).optional(),
-            unit: Joi.string().min(1).max(16).optional().allow(null, ''),
-            note: Joi.string().optional().allow(null, '')
-        })
-    )
-        .min(1)
-        .max(256)
-        .required()
-        .messages({
-            'any.required': 'Ingredients are required.',
-        }),
+    ingredients: recipeIngredients.optional(),
+    ingredient_sections: ingredientSectionsSchema.optional(),
     spices: Joi.array().items(Joi.string()),
     instructions: Joi.array()
         .items(
@@ -58,8 +73,12 @@ const recipeSchema = Joi.object({
             'array.min': 'At least one instruction is required.',
             'array.max': 'You can provide at most 64 instructions.',
             'any.required': 'Instructions are required.',
-        }),
-});
+        })
+})
+    .or('ingredients', 'ingredient_sections')
+    .messages({
+        'object.missing': 'Either ingredients or ingredient_sections is required.',
+    });
 
 const loginSchema = Joi.object({
     username: Joi.string().min(1).max(64).required(),

@@ -18,7 +18,7 @@ const EditRecipe: React.FC = () => {
                     instructions: recipe.instructions,
                     url: recipe.url,
                     image: recipe.image,
-                    ingredients: recipe.ingredients,
+                    ingredient_sections: recipe.ingredient_sections ?? [],
                     spices: recipe.spices || []
                 });
             });

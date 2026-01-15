@@ -42,11 +42,23 @@ const RecipeList: React.FC = () => {
         setLocalRecipes(recipes ?? []);
     }, [recipes]);
 
+    const getIngredientNames = (recipe: Recipe): string[] => {
+        const names: string[] = [];
+
+        if (recipe.ingredient_sections) {
+            recipe.ingredient_sections.forEach(section => {
+                section.ingredients.forEach(i => names.push(i.name));
+            });
+        }
+
+        return names;
+    };
+
     // derive full unique ingredient list
     const allIngredients = React.useMemo(() => {
         const set = new Set<string>();
         localRecipes.forEach(r =>
-            r.ingredients.forEach(i => set.add(i.name))
+            getIngredientNames(r).forEach(name => set.add(name))
         );
 
         return Array.from(set).sort();
@@ -105,7 +117,9 @@ const RecipeList: React.FC = () => {
 
             // ingredient match (every selected ingredient must be in a recipe)
             if (selectedIngredients.length > 0) {
-                const names = r.ingredients.map(i => i.name.split(',')[0].trim());
+                const names = getIngredientNames(r).map(i =>
+                    i.split(',')[0].trim()
+                );
                 return selectedIngredients.every(si => names.includes(si));
             }
 

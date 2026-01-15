@@ -17,9 +17,9 @@
 
 label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--color-text);
+    font-size: 1.2rem;
 }
 
 .formSection {
@@ -40,31 +40,6 @@ label {
     border-radius: 4px;
     box-shadow: 0 2px 6px var(--color-shadow);
     padding: 10px;
-}
-
-.ingredientsGrid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 8px;
-}
-
-.ingredientRow {
-    display: flex;
-    align-items: flex-start;
-    padding: 8px 0;
-}
-
-.ingredientRowLeft {
-    display: flex;
-    align-items: center;
-    width: 120px;
-    flex-shrink: 0;
-}
-
-.ingredientRowRight {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
 }
 
 .ingredientAmount {
@@ -89,28 +64,13 @@ label {
     flex-shrink: 0;
 }
 
-.ingredientInputRow, .spiceInputRow {
+.spiceInputRow {
     display: flex;
     gap: 10px;
 }
 
-.ingredientInputRow {
-    padding: 1rem 0;
-}
-
 .recipeFormContainer .spiceInputRow {
     padding: 0;
-}
-
-.ingredientInputs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    flex: 1;
-}
-
-.smallInput {
-    flex: 0 0 100px;
 }
 
 .removeButton {
@@ -151,13 +111,15 @@ label {
     align-items: center;
     justify-content: center;
     align-self: center;
+    flex: 0 0 auto;
 }
 
 .formActions {
-    margin-top: 30px;
+    margin-top: 2rem;
     text-align: right;
     display: flex;
     align-items: center;
+    gap: 0.5rem;
 }
 
 .deleteButton, .submitButton {
@@ -202,18 +164,6 @@ label {
 }
 
 @media (max-width: 600px) {
-    .ingredientInputs {
-        flex-direction: column;
-        gap: 5px;
-        width: 100%;
-    }
-
-    .ingredientRow {
-        flex-direction: column;
-        position: relative;
-        padding-bottom: 10px;
-    }
-
     .removeButton {
         position: absolute;
         top: 0;
@@ -221,13 +171,8 @@ label {
         margin-top: 0;
     }
 
-    .ingredientInputRow, .spiceInputRow {
+    .spiceInputRow {
         flex-direction: column;
-    }
-
-    .smallInput {
-        flex: 0 0 auto;
-        width: 100%;
     }
 
     .addButton {
@@ -235,9 +180,191 @@ label {
     }
 }
 
-@media (min-width: 768px) {
-    .ingredientsGrid {
-        grid-template-columns: 1fr 1fr;
-        column-gap: 20px;
-    }
+.sectionToggleRow {
+    display: flex;
+    margin-bottom: 0.75rem;
+}
+
+.addSectionButton {
+    margin-left: auto;
+    padding: 0.35rem 0.75rem;
+    border-radius: 62.5rem;
+    border: none;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.addSectionButton:hover {
+    filter: var(--color-primary-dark);
+}
+
+.sectionsWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sectionCard {
+    border-radius: 1.5rem;
+    background: var(--color-background);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18); /* 0 1px 3px */
+    padding: 0.75rem 1rem 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sectionTitleInput {
+    flex: 1;
+    border-radius: 0.25rem;
+    border: 0.0625rem solid #ddd;
+    padding: 0.3rem 0.5rem;
+    font-weight: 600;
+}
+
+.sectionDeleteButton {
+    border: none;
+    background: var(--color-deny-button);
+    font-weight: 500;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-left: auto;
+    padding: 0.35rem 0.75rem;
+    border-radius: 2rem;
+    height: 2rem;
+}
+
+.sectionDeleteButton:hover {
+    background: var(--color-deny-button-dark);
+}
+
+.sectionBody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sectionBodyHidden {
+    display: none;
+}
+
+.ingredientsTable {
+    max-height: 20rem;
+    overflow-y: auto;
+    margin: 0.5rem 0;
+    background: var(--color-white);
+}
+
+.ingredientRowDraggable {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.4rem;
+    border-radius: 0.25rem;
+    cursor: move;
+}
+
+.ingredientRowDraggable:hover {
+    background: #faf5ee;
+}
+
+.ingredientAmount {
+    width: 4.375rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.ingredientName {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+.ingredientNote {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.dragHandle {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    padding: 0 0.25rem;
+}
+
+/* highlight row when it's the drop target (line before it) */
+.ingredientRowDropBefore {
+    position: relative;
+}
+
+.ingredientRowDropBefore::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -0.125rem; /* -2px */
+    height: 0.125rem; /* 2px */
+    background: var(--color-primary);
+    border-radius: 62.5rem;
+}
+
+.dropZone {
+    margin-top: 0.3rem;
+    padding: 0.25rem 0.4rem;
+    border-radius: 0.25rem;
+    border: 0.0625rem dashed #ddd;
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+}
+
+.dropZoneActive {
+    border-color: var(--color-primary);
+    background: #fff7f2;
+    color: #666;
+}
+
+.amountInput,
+.unitInput,
+.nameInput,
+.noteInput {
+    padding: 0.3rem 0.4rem;
+    border-radius: 0.25rem;
+    border: 0.0625rem solid #ddd;
+    font-size: 0.9rem;
+}
+
+.sectionAddRow {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.sectionAddInputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+    gap: 0.5rem;
+    align-items: center;
+    min-width: 0;
+}
+
+.sectionAddActions {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    justify-content: flex-end;
+    white-space: nowrap;
+}
+
+.sectionsEmptyHint {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 0.25rem;
 }

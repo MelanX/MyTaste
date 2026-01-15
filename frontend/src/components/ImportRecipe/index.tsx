@@ -31,6 +31,11 @@ const ImportRecipe: React.FC = () => {
                 return;
             }
 
+            if ('ingredients' in json) {
+                json.ingredient_sections = [ { ingredients: json.ingredients } ];
+                delete json.ingredients;
+            }
+
             const data: RecipeFormValues = json;
             setImported(data);
         } catch (err) {

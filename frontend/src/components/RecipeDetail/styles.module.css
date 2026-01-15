@@ -38,7 +38,7 @@
 
 /* Sidebar Styles */
 .sidebar {
-    flex: 1;
+    width: min(100%, 30rem);
 }
 
 .sidebarCard {
@@ -51,10 +51,10 @@
 /* Responsive image container using aspect ratio */
 .sidebarImageContainer {
     width: 100%;
-    height: 0;
-    padding-bottom: 66.67%; /* 2:3 aspect ratio */
+    height: auto;
     position: relative;
     overflow: hidden;
+    aspect-ratio: 3/2;
 }
 
 .sidebarImage {
@@ -80,6 +80,13 @@
     margin-bottom: 16px;
     font-size: 1.3rem;
     font-weight: 600;
+    color: var(--color-text);
+}
+
+.ingredientSectionTitle {
+    font-weight: 450;
+    margin-bottom: 8px;
+    font-size: 1.3rem;
     color: var(--color-text);
 }
 
@@ -323,11 +330,6 @@
         font-size: 1rem;
     }
 
-    .sidebarImageContainer {
-        height: 18rem;
-        padding-bottom: 0;
-    }
-
     .sidebarImage {
         position: static;
     }
@@ -355,8 +357,6 @@
         width: auto;
     }
 }
-
-/* styles.module.css */
 
 @media print {
     /* 1) Shrink page margins */
