@@ -665,23 +665,23 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                         )) }
                     </div>
                     <div className={ styles.spiceInputRow }>
-                        <div className={ styles.formGroup }>
-                            <input type="text" value={ newSpice }
-                                   onChange={ e => setNewSpice(e.target.value) }
-                                   onKeyDown={ e => {
-                                       if (e.key === 'Enter') {
-                                           e.preventDefault();
-                                           handleAddSpice();
-                                       }
-                                   } }
-                                   placeholder="Neues Gewürz" />
+                        <input type="text" value={ newSpice }
+                               onChange={ e => setNewSpice(e.target.value) }
+                               onKeyDown={ e => {
+                                   if (e.key === 'Enter') {
+                                       e.preventDefault();
+                                       handleAddSpice();
+                                   }
+                               } }
+                               placeholder="Neues Gewürz" />
+                        <div className={ styles.sectionAddActions }>
+                            <button type="button"
+                                    className={ styles.addButton }
+                                    onClick={ handleAddSpice }
+                                    disabled={ !newSpice.trim() }>
+                                <i className="fa-solid fa-plus" />
+                            </button>
                         </div>
-                        <button type="button"
-                                className={ styles.addButton }
-                                onClick={ handleAddSpice }
-                                disabled={ !newSpice.trim() }>
-                            <i className="fa-solid fa-plus" />
-                        </button>
                     </div>
                 </div>
 
