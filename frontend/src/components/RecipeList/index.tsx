@@ -182,17 +182,19 @@ const RecipeList: React.FC = () => {
                                     />
                                 )}
                             </div>
-                            <img
-                                src={
-                                    recipe.image
-                                        ? (recipe.image.startsWith('/uploads')
-                                            ? `${getConfig().API_URL}${recipe.image}`
-                                            : recipe.image)
-                                        : '/placeholder.webp'
-                                }
-                                alt={recipe.title}
-                                className={styles.recipeCardImage}
-                            />
+                            <Link to={ `/recipe/${ recipe.id }` }>
+                                <img
+                                    src={
+                                        recipe.image
+                                            ? (recipe.image.startsWith('/uploads')
+                                                ? `${ getConfig().API_URL }${ recipe.image }`
+                                                : recipe.image)
+                                            : '/placeholder.webp'
+                                    }
+                                    alt={ recipe.title }
+                                    className={ styles.recipeCardImage }
+                                />
+                            </Link>
                         </div>
                         <div className={styles.recipeCardContent}>
                             <h3 className={styles.recipeCardTitle}>{recipe.title}</h3>

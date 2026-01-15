@@ -89,8 +89,8 @@
     font-weight: 600;
 }
 
-.recipeCardButton,
-.addRecipeButton {
+.addRecipeButton,
+.recipeCardButton {
     background-color: var(--color-primary);
     color: var(--color-white);
     text-align: center;
