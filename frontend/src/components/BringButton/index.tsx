@@ -9,9 +9,6 @@ interface BringButtonProps {
 
 const BringButton: React.FC<BringButtonProps> = ({recipeId}) => {
     let baseUrl = getConfig().API_URL;
-    if (baseUrl.endsWith('/')) {
-        baseUrl = baseUrl.slice(0, -1);
-    }
 
     const recipeDataUrl = `${baseUrl}/api/bring-recipe/${recipeId}`;
     const bringLink = generateBringImportLink(recipeDataUrl);

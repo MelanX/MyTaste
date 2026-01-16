@@ -18,15 +18,15 @@ export async function loadConfig() {
         } catch { }
     }
 
+    apiUrl = apiUrl.endsWith('/') ? apiUrl.substring(0, apiUrl.length - 1) : apiUrl;
     let requireLogin = false;
     try {
         // We need to call fetch instead of apiFetch because the config isn't loaded yet
-        const res = await fetch(`${apiUrl}${apiUrl.endsWith('/') ? '' : '/'}api/config`);
+        const res = await fetch(`${ apiUrl }/api/config`);
         const json = await res.json();
         requireLogin = !!json.requireLogin;
     } catch { }
 
-    apiUrl = apiUrl.endsWith('/') ? apiUrl.substring(0, apiUrl.length - 1) : apiUrl;
     config = {API_URL: apiUrl, requireLogin};
 }
 
