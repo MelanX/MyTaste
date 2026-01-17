@@ -51,8 +51,7 @@ const recipeSchema = Joi.object({
             Joi.string().pattern(/^\/uploads\/[\w.-]+\.webp$/i)
         )
         .allow(null, ''),
-    ingredients: recipeIngredients.optional(),
-    ingredient_sections: ingredientSectionsSchema.optional(),
+    ingredient_sections: ingredientSectionsSchema.required(),
     spices: Joi.array().items(Joi.string()),
     instructions: Joi.array()
         .items(

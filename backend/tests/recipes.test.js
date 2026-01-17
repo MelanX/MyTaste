@@ -13,7 +13,7 @@ beforeEach(() => {
         recipes: [
             {
                 id: '1', title: 'Dummy', url: 'https://example.com',
-                image: '', ingredients: [ { name: 'Schokolade' } ],
+                image: '', ingredient_sections: [ { ingredients: [ { name: 'Schokolade' } ] } ],
                 spices: [ 'Salz' ], instructions: [ 'Iss einfach die Schokolade' ],
                 status: { favorite: false, cookState: false }
             }
@@ -61,7 +61,7 @@ describe('Recipes endpoints', () => {
         const body = {
             title: 'Test-Recipe',
             url: 'https://ex.com',
-            ingredients: [ { name: 'Schokolade' } ],
+            ingredient_sections: [ { ingredients: [ { name: 'Schokolade' } ] } ],
             spices: [],
             instructions: [ 'Iss die Schokolade' ],
         };
@@ -123,7 +123,7 @@ describe('DELETE /recipe/:id', () => {
         const newRecipe = {
             title: 'TempRecipe',
             url: 'https://temp.com',
-            ingredients: [ { name: 'TestZutat' } ],
+            ingredient_sections: [ { ingredients: [ { name: 'TestZutat' } ] } ],
             spices: [],
             instructions: [ 'Do it' ],
         };
@@ -156,7 +156,12 @@ describe('DELETE /recipe/:id', () => {
         const createRes = await request(app)
             .post('/api/recipes')
             .set(authHeader())
-            .send({ title: 'DoubleDelete', ingredients: [ { name: 'Test' } ], spices: [], instructions: [ 'Test' ] });
+            .send({
+                title: 'DoubleDelete',
+                ingredient_sections: [ { ingredients: [ { name: 'Test' } ] } ],
+                spices: [],
+                instructions: [ 'Test' ]
+            });
         expect(createRes.status).toBe(201);
         const id = createRes.body.id;
 
@@ -179,7 +184,7 @@ describe('DELETE /recipe/:id', () => {
             .set(authHeader())
             .send({
                 title: 'Delete',
-                ingredients: [ { name: 'Foo' } ],
+                ingredient_sections: [ { ingredients: [ { name: 'Foo' } ] } ],
                 spices: [],
                 instructions: [ 'Step A' ],
             });
@@ -191,7 +196,7 @@ describe('DELETE /recipe/:id', () => {
             .set(authHeader())
             .send({
                 title: 'Keep',
-                ingredients: [ { name: 'Bar' } ],
+                ingredient_sections: [ { ingredients: [ { name: 'Bar' } ] } ],
                 spices: [],
                 instructions: [ 'Step B' ],
             });
@@ -241,7 +246,7 @@ describe('PUT /api/recipe/:id', () => {
     const validBody = {
         title: 'Updated recipe',
         url: 'https://example.org',
-        ingredients: [ { name: 'Flour' } ],
+        ingredient_sections: [ { ingredients: [ { name: 'Flour' } ] } ],
         spices: [ 'Salt' ],
         instructions: [ 'Mix ingredients', 'Serve' ],
     };
@@ -289,7 +294,7 @@ describe('PUT /api/recipe/:id', () => {
         const followUp = await agent.get('/api/recipe/1');
         expect(followUp.status).toBe(200);
         expect(followUp.body.title).toBe('Updated recipe');
-        expect(followUp.body.ingredients[0].name).toBe('Flour');
+        expect(followUp.body.ingredient_sections[0].ingredients[0].name).toBe('Flour');
     });
 });
 

@@ -17,7 +17,7 @@ router.get('/bring-recipe/:id', async (req, res, next) => {
             imageUrl: recipe.image || '',
             name: recipe.title,
             items: [
-                ...recipe.ingredients.map(i => ({
+                ...recipe.ingredient_sections.flatMap(s => s.ingredients).map(i => ({
                     itemId: i.name,
                     spec: `${ String(i.amount || '').replace('.', ',') } ${ i.unit || '' }`.trim()
                 })),
