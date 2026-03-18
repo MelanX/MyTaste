@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     image: ghcr.io/melanx/mytaste-backend:latest
