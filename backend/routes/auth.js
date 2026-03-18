@@ -35,7 +35,7 @@ function cookieOptions(maxAgeMs) {
     return {
         httpOnly: true,
         secure: !isDev,
-        sameSite: 'strict',
+        ...(isDev ? {} : { sameSite: 'strict' }),
         expires: new Date(Date.now() + maxAgeMs),
         path: '/'
     };
