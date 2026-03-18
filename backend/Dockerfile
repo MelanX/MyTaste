@@ -1,15 +1,20 @@
-FROM node:20-alpine
+FROM node:24-alpine AS base
+RUN apk add --no-cache tini \
+    && addgroup -S appgroup && adduser -S appuser -G appgroup
 
+FROM base
 WORKDIR /app
-COPY package*.json ./
-
 ENV NODE_ENV=production
-
-RUN npm install --production
-
-COPY . .
-
-RUN mkdir -p data && chmod 777 data
-
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev \
+    && mkdir -p data uploads
+COPY server.js ./
+COPY routes/ ./routes/
+COPY middleware/ ./middleware/
+COPY utils/ ./utils/
+RUN chown -R appuser:appgroup /app
+VOLUME ["/app/data", "/app/uploads"]
 EXPOSE 5000
+USER appuser
+ENTRYPOINT ["tini", "--"]
 CMD ["node", "server.js"]
