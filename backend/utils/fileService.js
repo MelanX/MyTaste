@@ -14,46 +14,51 @@ let recipeQueue = Promise.resolve();
 let configQueue = Promise.resolve();
 
 async function ensureFile() {
-    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
-    if (!fs.existsSync(RECIPE_FILE)) {
-        fs.writeFileSync(RECIPE_FILE, JSON.stringify({ version: `${ RECIPE_FILE_VERSION }`, recipes: [] }, null, 2));
+    await fs.promises.mkdir(DATA_DIR, { recursive: true });
+    try {
+        await fs.promises.writeFile(
+            RECIPE_FILE,
+            JSON.stringify({ version: RECIPE_FILE_VERSION, recipes: [] }, null, 2),
+            { flag: 'wx' }
+        );
+    } catch (err) {
+        if (err.code !== 'EEXIST') throw err;
     }
 }
 
 async function ensureImportConfigFile() {
-    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
-    if (!fs.existsSync(CONFIG_FILE)) {
-        fs.writeFileSync(CONFIG_FILE, JSON.stringify({
-            rename_rules: [],
-            spice_rules: {
-                spices: [],
-                spice_map: {}
-            }
-        }, null, 2));
+    await fs.promises.mkdir(DATA_DIR, { recursive: true });
+    try {
+        await fs.promises.writeFile(
+            CONFIG_FILE,
+            JSON.stringify({ rename_rules: [], spice_rules: { spices: [], spice_map: {} } }, null, 2),
+            { flag: 'wx' }
+        );
+    } catch (err) {
+        if (err.code !== 'EEXIST') throw err;
     }
 }
 
 async function readData() {
     await ensureFile();
-    const raw = fs.readFileSync(RECIPE_FILE, 'utf8');
-
-    return await checkAndUpgradeRecipesFileVersion(JSON.parse(raw));
+    const raw = await fs.promises.readFile(RECIPE_FILE, 'utf8');
+    return checkAndUpgradeRecipesFileVersion(JSON.parse(raw));
 }
 
 async function writeData(data) {
     await ensureFile();
-    fs.writeFileSync(RECIPE_FILE, JSON.stringify(data, null, 2));
+    await fs.promises.writeFile(RECIPE_FILE, JSON.stringify(data, null, 2));
 }
 
 async function readImportConfig() {
     await ensureImportConfigFile();
-    const raw = fs.readFileSync(CONFIG_FILE, 'utf8');
+    const raw = await fs.promises.readFile(CONFIG_FILE, 'utf8');
     return JSON.parse(raw);
 }
 
 async function writeImportConfig(data) {
     await ensureImportConfigFile();
-    fs.writeFileSync(CONFIG_FILE, JSON.stringify(data, null, 2));
+    await fs.promises.writeFile(CONFIG_FILE, JSON.stringify(data, null, 2));
 }
 
 async function checkAndUpgradeRecipesFileVersion(data) {
@@ -83,10 +88,10 @@ async function checkAndUpgradeRecipesFileVersion(data) {
     return data;
 }
 
-async function backup(path) {
-    const dest = path + '_bak_' + new Date().toISOString().replace(/[:.T]/g, '-').replace('Z', '');
-    fs.copyFileSync(path, dest);
-    console.log(`Backed up ${ path } to ${ dest }`);
+async function backup(filePath) {
+    const dest = filePath + '_bak_' + new Date().toISOString().replace(/[:.T]/g, '-').replace('Z', '');
+    await fs.promises.copyFile(filePath, dest);
+    console.log(`Backed up ${ filePath } to ${ dest }`);
 }
 
 /**
