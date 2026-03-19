@@ -57,6 +57,7 @@ async function importGeneric(url) {
         headers: {
             'User-Agent': 'MelanX/MyTaste',
         },
+        timeout: 10000,
     });
 
     const html = res.data;
