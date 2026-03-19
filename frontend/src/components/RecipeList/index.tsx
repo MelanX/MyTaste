@@ -36,7 +36,18 @@ const RecipeList: React.FC = () => {
 
     const [titleFilter, setTitleFilter] = React.useState('');
     const [selectedIngredients, setSelectedIngredients] = React.useState<string[]>([]);
+    const [ favFilter, setFavFilter ] = React.useState(false);
+    const [ cookFilter, setCookFilter ] = React.useState<'cooked' | 'uncooked' | null>(null);
+    const [ sortMode, setSortMode ] = React.useState<'favorites' | 'alpha-asc' | 'alpha-desc' | 'random'>('alpha-asc');
+    const [ randomOrder, setRandomOrder ] = React.useState<string[]>([]);
     const [ localRecipes, setLocalRecipes ] = React.useState<Recipe[]>([]);
+
+    const handleSortChange = (mode: typeof sortMode) => {
+        setSortMode(mode);
+        if (mode === 'random') {
+            setRandomOrder([ ...localRecipes ].map(r => r.id).sort(() => Math.random() - 0.5));
+        }
+    };
 
     React.useEffect(() => {
         setLocalRecipes(recipes ?? []);
@@ -102,10 +113,10 @@ const RecipeList: React.FC = () => {
         }
     }
 
-    // final filtered recipes
+    // final filtered + sorted recipes
     const filtered = React.useMemo(() => {
         const term = titleFilter.trim().toLowerCase();
-        return localRecipes.filter(r => {
+        const result = localRecipes.filter(r => {
             // title match
             const title = r.title.toLowerCase();
             const titleOk =
@@ -114,6 +125,11 @@ const RecipeList: React.FC = () => {
                 levenshtein(term, title) <= 2;
 
             if (!titleOk) return false;
+
+            // quick filters
+            if (favFilter && !r.status?.favorite) return false;
+            if (cookFilter === 'cooked' && !r.status?.cookState) return false;
+            if (cookFilter === 'uncooked' && r.status?.cookState) return false;
 
             // ingredient match (every selected ingredient must be in a recipe)
             if (selectedIngredients.length > 0) {
@@ -124,8 +140,23 @@ const RecipeList: React.FC = () => {
             }
 
             return true;
-        })
-    }, [localRecipes, titleFilter, selectedIngredients]);
+        });
+
+        switch (sortMode) {
+            case 'favorites':
+                return [ ...result ].sort((a, b) =>
+                    (b.status?.favorite ? 1 : 0) - (a.status?.favorite ? 1 : 0)
+                );
+            case 'alpha-desc':
+                return [ ...result ].sort((a, b) => b.title.localeCompare(a.title));
+            case 'random':
+                return [ ...result ].sort((a, b) =>
+                    randomOrder.indexOf(a.id) - randomOrder.indexOf(b.id)
+                );
+            default:
+                return [ ...result ].sort((a, b) => a.title.localeCompare(b.title));
+        }
+    }, [ localRecipes, titleFilter, selectedIngredients, favFilter, cookFilter, sortMode, randomOrder ]);
 
     if (loading && recipes === null) return <p>Lade Rezepte...</p>;
     if (error) return <p>Fehler: { error.message }</p>;
@@ -143,6 +174,44 @@ const RecipeList: React.FC = () => {
                         </Link>
                     ) }
                 </h2>
+
+                <div className={ styles.quickFilters }>
+                    <button
+                        type="button"
+                        className={ `${ styles.filterChip } ${ favFilter ? styles.filterChipActive : '' }` }
+                        onClick={ () => setFavFilter(f => !f) }
+                        title="Favoriten"
+                    >
+                        <i className="fa-solid fa-heart" /><span className={ styles.chipLabel }> Favoriten</span>
+                    </button>
+                    <button
+                        type="button"
+                        className={ `${ styles.filterChip } ${ cookFilter === 'cooked' ? styles.filterChipActive : '' }` }
+                        onClick={ () => setCookFilter(f => f === 'cooked' ? null : 'cooked') }
+                        title="Gekocht"
+                    >
+                        <i className="fa-solid fa-check" /><span className={ styles.chipLabel }> Gekocht</span>
+                    </button>
+                    <button
+                        type="button"
+                        className={ `${ styles.filterChip } ${ cookFilter === 'uncooked' ? styles.filterChipActive : '' }` }
+                        onClick={ () => setCookFilter(f => f === 'uncooked' ? null : 'uncooked') }
+                        title="Nicht gekocht"
+                    >
+                        <i className="fa-solid fa-question" /><span className={ styles.chipLabel }> Nicht gekocht</span>
+                    </button>
+                    <select
+                        className={ styles.filterChip }
+                        value={ sortMode }
+                        onChange={ e => handleSortChange(e.target.value as typeof sortMode) }
+                        title="Sortierung"
+                    >
+                        <option value="favorites">♥ Favoriten zuerst</option>
+                        <option value="alpha-asc">Alphabetisch (A → Z)</option>
+                        <option value="alpha-desc">Alphabetisch (Z → A)</option>
+                        <option value="random">⟳ Zufällig</option>
+                    </select>
+                </div>
 
                 <div className={ styles.searchBar }>
                     <i className={ `fa-solid fa-magnifying-glass ${ styles.searchIcon }` } />
