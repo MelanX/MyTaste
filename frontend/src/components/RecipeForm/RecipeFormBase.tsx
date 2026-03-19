@@ -74,6 +74,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
     const [ spices, setSpices ] = useState<string[]>(initial.spices || []);
     const [ newSpice, setNewSpice ] = useState('');
     const [ errors, setErrors ] = useState<string[]>([]);
+    const [ confirmingDelete, setConfirmingDelete ] = useState(false);
     useEffect(() => {
         if (ingredientSections.length === 0) {
             setIngredientSections([ { ingredients: [] } ]);
@@ -244,11 +245,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
         setSpices(s => s.filter((_, idx) => idx !== index));
     };
 
-    const handleDelete = () => {
-        if (window.confirm('Bist du sicher, dass du dieses Rezept löschen möchtest?')) {
-            onDelete!();
-        }
-    }
+    const handleDelete = () => onDelete!();
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -690,13 +687,28 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                 ) }
                 <div className={ styles.formActions }>
                     { onDelete && (
-                        <button type="button"
-                                className={ styles.deleteButton }
-                                onClick={ handleDelete }
-                        >
-                            <i className="fa-solid fa-trash-can" /> Lösche Rezept
-                        </button>
+                        confirmingDelete ? (
+                            <div className={ styles.deleteConfirm }>
+                                <span className={ styles.confirmText }>Bist du sicher?</span>
+                                <button type="button" className={ styles.confirmDeleteButton }
+                                        onClick={ handleDelete }>
+                                    Ja, löschen
+                                </button>
+                                <button type="button" className={ styles.cancelDeleteButton }
+                                        onClick={ () => setConfirmingDelete(false) }>
+                                    Abbrechen
+                                </button>
+                            </div>
+                        ) : (
+                            <button type="button"
+                                    className={ styles.deleteButton }
+                                    onClick={ () => setConfirmingDelete(true) }
+                            >
+                                <i className="fa-solid fa-trash-can" /> Lösche Rezept
+                            </button>
+                        )
                     ) }
+                    <div className={ styles.formActionsDivider } />
                     <button type="submit" className={ styles.submitButton }>
                         { submitLabel }
                     </button>
