@@ -16,7 +16,11 @@ const Login: React.FC = () => {
         try {
             await login(username, password);
             const urlParams = new URLSearchParams(window.location.search);
-            navigate(urlParams.get('redir') || '/');
+            let redirectDestination = urlParams.get('redir');
+            if (!redirectDestination?.startsWith('/')) {
+                redirectDestination = '/';
+            }
+            navigate(redirectDestination);
         } catch {
             setError('Invalid username or password');
         }
