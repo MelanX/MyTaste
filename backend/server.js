@@ -41,6 +41,9 @@ app.set('trust proxy', 1);
 
 app.use(bodyParser.json());
 
+// Health check (no auth required)
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+
 // Mount routers
 app.use('/api', authRouter);
 app.use('/api', configRouter);
