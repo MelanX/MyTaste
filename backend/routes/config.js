@@ -1,6 +1,6 @@
 const express = require('express');
 const authenticateToken = require('../middleware/auth');
-const { readImportConfig, writeImportConfig } = require("../utils/fileService");
+const { readImportConfig, modifyImportConfig } = require("../utils/fileService");
 const { configSchema } = require("../utils/schemes");
 const router = express.Router();
 
@@ -31,23 +31,27 @@ router.patch('/importer-config', authenticateToken, async (req, res, next) => {
         }
 
         // merge with current config, then validate the whole thing
-        const currentConfig = await readImportConfig();
-        const mergedConfig = { ...currentConfig, ...req.body };
-        const { error, value: validConfig } = configSchema.validate(mergedConfig, {
-            abortEarly: false,
-            stripUnknown: true,
+        let mergeError = null;
+        const savedConfig = await modifyImportConfig(currentConfig => {
+            const mergedConfig = { ...currentConfig, ...req.body };
+            const { error, value: validConfig } = configSchema.validate(mergedConfig, {
+                abortEarly: false,
+                stripUnknown: true,
+            });
+            if (error) {
+                mergeError = error;
+                return null;
+            }
+            return validConfig;
         });
-        if (error) {
-            const invalid = error.details.find(d => d.context?.invalid)?.context?.invalid || [];
-            console.log(error.details);
+        if (mergeError) {
+            const invalid = mergeError.details.find(d => d.context?.invalid)?.context?.invalid || [];
             return res.status(400).json({
                 message: 'Validation failed',
-                details: invalid.length ? invalid : error.details,
+                details: invalid.length ? invalid : mergeError.details,
             });
         }
-
-        await writeImportConfig(validConfig);
-        res.json(validConfig);
+        res.json(savedConfig);
     } catch (err) {
         next(err);
     }

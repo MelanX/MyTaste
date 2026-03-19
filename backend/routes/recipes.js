@@ -1,6 +1,6 @@
 const express = require('express');
 const authenticateToken = require('../middleware/auth');
-const { readData, writeData } = require('../utils/fileService');
+const { readData, modifyData } = require('../utils/fileService');
 const nanoid = require("../utils/id");
 const { recipeSchema, recipeStatusSchema } = require("../utils/schemes");
 
@@ -51,10 +51,11 @@ router.post('/recipes', authenticateToken, async (req, res, next) => {
             });
         }
 
-        const data = await readData();
         newRecipe.id = nanoid();
-        data.recipes.push(newRecipe);
-        await writeData(data);
+        await modifyData(data => {
+            data.recipes.push(newRecipe);
+            return data;
+        });
         res.status(201).json(newRecipe);
     } catch (err) {
         next(err);
@@ -65,9 +66,6 @@ router.post('/recipes', authenticateToken, async (req, res, next) => {
 router.put('/recipe/:id', authenticateToken, async (req, res, next) => {
     try {
         const { id } = req.params;
-        const data = await readData();
-        const idx = data.recipes.findIndex(r => r.id === id);
-        if (idx < 0) return res.status(404).send('Recipe not found');
 
         const { value: updated, error } = recipeSchema.validate(req.body, {
             abortEarly: false,
@@ -82,9 +80,16 @@ router.put('/recipe/:id', authenticateToken, async (req, res, next) => {
         }
 
         updated.id = id;
-        data.recipes[idx] = { ...data.recipes[idx], ...updated };
-        await writeData(data);
-        res.json(data.recipes[idx]);
+        let result = null;
+        await modifyData(data => {
+            const idx = data.recipes.findIndex(r => r.id === id);
+            if (idx < 0) return null;
+            data.recipes[idx] = { ...data.recipes[idx], ...updated };
+            result = data.recipes[idx];
+            return data;
+        });
+        if (!result) return res.status(404).send('Recipe not found');
+        res.json(result);
     } catch (err) {
         next(err);
     }
@@ -105,15 +110,16 @@ router.patch('/recipe/:id/status', authenticateToken, async (req, res, next) => 
         }
 
         const { id } = req.params;
-        const data = await readData();
-        const idx = data.recipes.findIndex(r => r.id === id);
-        if (idx < 0) {
-            return res.status(404).send('Recipe not found');
-        }
-
-        data.recipes[idx].status = { ...data.recipes[idx].status, ...value.status };
-        await writeData(data);
-        res.json(data.recipes[idx].status);
+        let result = null;
+        await modifyData(data => {
+            const idx = data.recipes.findIndex(r => r.id === id);
+            if (idx < 0) return null;
+            data.recipes[idx].status = { ...data.recipes[idx].status, ...value.status };
+            result = data.recipes[idx].status;
+            return data;
+        });
+        if (!result) return res.status(404).send('Recipe not found');
+        res.json(result);
     } catch (err) {
         next(err);
     }
@@ -123,12 +129,15 @@ router.patch('/recipe/:id/status', authenticateToken, async (req, res, next) => 
 router.delete('/recipe/:id', authenticateToken, async (req, res, next) => {
     try {
         const { id } = req.params;
-        const data = await readData();
-        const idx = data.recipes.findIndex(r => r.id === id);
-        if (idx < 0) return res.status(404).send('Recipe not found');
-
-        data.recipes.splice(idx, 1);
-        await writeData(data);
+        let found = false;
+        await modifyData(data => {
+            const idx = data.recipes.findIndex(r => r.id === id);
+            if (idx < 0) return null;
+            data.recipes.splice(idx, 1);
+            found = true;
+            return data;
+        });
+        if (!found) return res.status(404).send('Recipe not found');
         res.sendStatus(204);
     } catch (err) {
         next(err);
