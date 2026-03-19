@@ -129,31 +129,53 @@ const RecipeList: React.FC = () => {
 
     if (loading && recipes === null) return <p>Lade Rezepte...</p>;
     if (error) return <p>Fehler: { error.message }</p>;
-    if (filtered.length === 0) return <p>Keine Rezepte gefunden</p>;
 
     return (
         <div>
-            <h2>
-                Rezepte{' '}
-                {isAuthenticated && (
-                    <Link to="/new-recipe" role="button">
-                        <button type="button" className={styles.addRecipeButton}>
-                            <i className="fa-solid fa-plus" />
+            <div className={ styles.titleRow }>
+                <h2>
+                    Rezepte{ ' ' }
+                    { isAuthenticated && (
+                        <Link to="/new-recipe" role="button">
+                            <button type="button" className={ styles.addRecipeButton }>
+                                <i className="fa-solid fa-plus" />
+                            </button>
+                        </Link>
+                    ) }
+                </h2>
+
+                <div className={ styles.searchBar }>
+                    <i className={ `fa-solid fa-magnifying-glass ${ styles.searchIcon }` } />
+                    <input
+                        type="text"
+                        placeholder="Rezepte suchen..."
+                        value={ titleFilter }
+                        onChange={ e => setTitleFilter(e.target.value) }
+                        className={ styles.searchInput }
+                    />
+                    { titleFilter && (
+                        <button
+                            type="button"
+                            className={ styles.searchClear }
+                            onClick={ () => setTitleFilter('') }
+                            aria-label="Suche löschen"
+                        >
+                            <i className="fa-solid fa-xmark" />
                         </button>
-                    </Link>
-                )}
-            </h2>
+                    ) }
+                </div>
+            </div>
 
             <FilterSection
                 allIngredients={allIngredients}
                 selectedIngredients={selectedIngredients}
                 onIngredientToggle={toggleIngredient}
-                titleFilter={titleFilter}
-                onTitleChange={setTitleFilter}
             />
 
             <div className={styles.recipeCardsGrid}>
-                {filtered.map(recipe => (
+                { filtered.length === 0 ? (
+                    <p>Keine Rezepte gefunden</p>
+                ) : filtered.map(recipe => (
                     <div key={recipe.id} className={styles.recipeCard}>
                         <div className={styles.recipeCardImageContainer}>
                             {/* cook-state in top-left */}

@@ -5,16 +5,12 @@ export interface FilterSectionProps {
     allIngredients: string[]
     selectedIngredients: string[]
     onIngredientToggle: (ingredient: string) => void
-    titleFilter: string
-    onTitleChange: (newTitle: string) => void
 }
 
 const FilterSection: React.FC<FilterSectionProps> = ({
                                                          allIngredients,
                                                          selectedIngredients,
                                                          onIngredientToggle,
-                                                         titleFilter,
-                                                         onTitleChange,
                                                      }) => {
     const [expanded, setExpanded] = React.useState(false)
 
@@ -49,17 +45,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
             {expanded && (
                 <>
-                    {/* Title Search */}
-                    <div className={styles.titleFilter}>
-                        <input
-                            type="text"
-                            placeholder="Suche nach Titel..."
-                            value={titleFilter}
-                            onChange={e => onTitleChange(e.target.value)}
-                            className={styles.titleInput}
-                        />
-                    </div>
-
                     {/* Ingredients Filter */}
                     <div className={styles.ingFilter}>
                         <span className={styles.ingLabel}>Zutaten:</span>

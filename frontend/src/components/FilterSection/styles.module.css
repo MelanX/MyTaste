@@ -5,18 +5,6 @@
     gap: 1rem;
 }
 
-.titleFilter {
-    width: 100%;
-}
-
-.titleInput {
-    width: 100%;
-    padding: 8px;
-    font-size: 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-}
-
 .ingFilter {
     display: flex;
     flex-direction: column;
