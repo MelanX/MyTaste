@@ -15,7 +15,9 @@ export async function loadConfig() {
             const res = await fetch('/config.json');
             const json = await res.json();
             apiUrl = json.API_URL ?? '';
-        } catch { }
+        } catch (err) {
+            console.warn('Failed to load /config.json — all API calls will fail. Check your deployment configuration.', err);
+        }
     }
 
     apiUrl = apiUrl.endsWith('/') ? apiUrl.substring(0, apiUrl.length - 1) : apiUrl;
@@ -25,7 +27,9 @@ export async function loadConfig() {
         const res = await fetch(`${ apiUrl }/api/config`);
         const json = await res.json();
         requireLogin = !!json.requireLogin;
-    } catch { }
+    } catch (err) {
+        console.warn('Failed to fetch /api/config — requireLogin defaults to false.', err);
+    }
 
     config = {API_URL: apiUrl, requireLogin};
 }
