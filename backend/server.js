@@ -61,6 +61,17 @@ app.use((err, req, res, next) => {
     res.status(500).send('Server error');
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${ PORT }`);
 });
+
+function shutdown(signal) {
+    console.log(`Received ${ signal }, shutting down gracefully`);
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
+}
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
