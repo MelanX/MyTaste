@@ -1,8 +1,25 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const authenticateToken = require('../middleware/auth');
 const { readData, modifyData } = require('../utils/fileService');
 const nanoid = require("../utils/id");
 const { recipeSchema, recipeStatusSchema } = require("../utils/schemes");
+
+const UPLOAD_DIR = path.resolve(__dirname, '..', 'uploads');
+
+function isLocalUpload(image) {
+    return typeof image === 'string' && image.startsWith('/uploads/');
+}
+
+async function tryDeleteUpload(imagePath) {
+    const filename = path.basename(imagePath);
+    try {
+        await fs.promises.unlink(path.join(UPLOAD_DIR, filename));
+    } catch (err) {
+        if (err.code !== 'ENOENT') console.error(`Failed to delete upload ${ filename }:`, err.message);
+    }
+}
 
 const router = express.Router();
 
@@ -81,14 +98,20 @@ router.put('/recipe/:id', authenticateToken, async (req, res, next) => {
 
         updated.id = id;
         let result = null;
+        let imageToDelete = null;
         await modifyData(data => {
             const idx = data.recipes.findIndex(r => r.id === id);
             if (idx < 0) return null;
+            const oldImage = data.recipes[idx].image;
             data.recipes[idx] = { ...data.recipes[idx], ...updated };
             result = data.recipes[idx];
+            if (oldImage !== result.image && isLocalUpload(oldImage) && !data.recipes.some(r => r.image === oldImage)) {
+                imageToDelete = oldImage;
+            }
             return data;
         });
         if (!result) return res.status(404).send('Recipe not found');
+        if (imageToDelete) await tryDeleteUpload(imageToDelete);
         res.json(result);
     } catch (err) {
         next(err);
@@ -130,14 +153,20 @@ router.delete('/recipe/:id', authenticateToken, async (req, res, next) => {
     try {
         const { id } = req.params;
         let found = false;
+        let imageToDelete = null;
         await modifyData(data => {
             const idx = data.recipes.findIndex(r => r.id === id);
             if (idx < 0) return null;
+            const oldImage = data.recipes[idx].image;
             data.recipes.splice(idx, 1);
             found = true;
+            if (isLocalUpload(oldImage) && !data.recipes.some(r => r.image === oldImage)) {
+                imageToDelete = oldImage;
+            }
             return data;
         });
         if (!found) return res.status(404).send('Recipe not found');
+        if (imageToDelete) await tryDeleteUpload(imageToDelete);
         res.sendStatus(204);
     } catch (err) {
         next(err);
