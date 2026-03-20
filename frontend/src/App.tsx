@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, Route, Routes } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import RecipeList from './components/RecipeList';
 import RecipeForm from './components/RecipeForm';
 import RecipeDetail from './components/RecipeDetail';
@@ -16,6 +16,12 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Config from "./components/Config";
 import { fetchAndCache } from "./utils/recipesCache";
 import { RecipeFiltersProvider } from "./context/RecipeFiltersContext";
+
+function ScrollToTop() {
+    const { pathname } = useLocation();
+    useEffect(() => { window.scrollTo(0, 0); }, [ pathname ]);
+    return null;
+}
 
 const App: React.FC = () => {
     const handleRecipeSubmit = async (recipeFormValues: RecipeFormValues): Promise<Response> => {
@@ -47,6 +53,7 @@ const App: React.FC = () => {
                         className="logo-image"
                     />
                 </Link>
+                <ScrollToTop />
                 <Routes>
                     <Route path="/" element={
                         <RequireLogin>
