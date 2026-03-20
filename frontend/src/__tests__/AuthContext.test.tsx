@@ -34,10 +34,10 @@ beforeEach(() => {
 });
 
 describe('AuthProvider', () => {
-    it('renders nothing while the initial refresh is in flight', () => {
+    it('renders a loading placeholder while the initial refresh is in flight', () => {
         mockApiFetch.mockReturnValue(new Promise(() => {}));
         const { container } = renderWithProvider();
-        expect(container).toBeEmptyDOMElement();
+        expect(container.querySelector('.app-loading')).toBeInTheDocument();
     });
 
     it('sets isAuthenticated to true when the initial refresh succeeds', async () => {
