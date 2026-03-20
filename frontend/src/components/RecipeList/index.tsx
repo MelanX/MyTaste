@@ -60,7 +60,13 @@ const RecipeList: React.FC = () => {
         || favFilter || cookFilter !== null || sortMode !== 'alpha-asc';
 
     React.useEffect(() => {
-        setLocalRecipes(recipes ?? []);
+        const list = recipes ?? [];
+        setLocalRecipes(list);
+        // Re-seed if random sort was activated before recipes finished loading
+        if (sortMode === 'random' && list.length > 0 && randomOrder.length === 0) {
+            setRandomOrder(list.map(r => r.id).sort(() => Math.random() - 0.5));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [recipes]);
 
     const toggleType = (type: string) => {
@@ -151,7 +157,7 @@ const RecipeList: React.FC = () => {
                 const recipeDietary = r.dietaryRestrictions ?? [];
                 const dietaryMatch = (d: string) =>
                     d === 'other'
-                        ? recipeDietary.length === 0
+                        ? recipeDietary.some((x: string) => !knownDietary.includes(x))
                         : (recipeDietary as string[]).includes(d);
                 const ok = dietaryMode === 'and'
                     ? selectedDietary.every(dietaryMatch)
