@@ -37,7 +37,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({children}) => {
         setAuth(false);
     };
 
-    if (isAuthenticated === null) return null;
+    if (isAuthenticated === null) return <div className="app-loading" />;
 
     return (
         <AuthContext.Provider value={ { login, logout, isAuthenticated } }>

@@ -12,7 +12,7 @@ import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
 import { BroadcastUpdatePlugin } from 'workbox-broadcast-update';
 
 declare const self: ServiceWorkerGlobalScope;
@@ -69,6 +69,16 @@ registerRoute(
             new ExpirationPlugin({ maxEntries: 50 }),
         ],
     })
+);
+
+// Cache /api/config with NetworkFirst so a reconfigured server is always respected;
+// falls back to cache only when the network is unreachable.
+registerRoute(
+    ({ url, request }) =>
+        request.method === 'GET' &&
+        url.origin === self.location.origin &&
+        url.pathname === '/api/config',
+    new NetworkFirst({ cacheName: 'api-config' })
 );
 
 // Runtime cache for both the list & single-recipe endpoints
