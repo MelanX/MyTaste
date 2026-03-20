@@ -30,6 +30,9 @@ const levenshtein = (a: string, b: string): number => {
     return matrix[blen][alen];
 }
 
+const knownTypes = [ 'cooking', 'baking', 'snack', 'dessert' ];
+const knownDietary = [ 'vegan', 'vegetarian', 'glutenfree', 'dairyfree' ];
+
 const RecipeList: React.FC = () => {
     const {isAuthenticated} = useAuth();
 
@@ -118,9 +121,6 @@ const RecipeList: React.FC = () => {
             console.error(err);
         }
     }
-
-    const knownTypes = [ 'cooking', 'baking', 'snack', 'dessert' ];
-    const knownDietary = [ 'vegan', 'vegetarian', 'glutenfree', 'dairyfree' ];
 
     // final filtered + sorted recipes
     const filtered = React.useMemo(() => {
