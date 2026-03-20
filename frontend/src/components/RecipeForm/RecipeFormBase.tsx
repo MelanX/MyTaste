@@ -13,6 +13,8 @@ export interface RecipeFormValues {
     image?: string;
     ingredient_sections: IngredientSection[];
     spices?: string[];
+    recipeType?: string;
+    dietaryRestrictions?: string[];
 }
 
 interface RecipeFormBaseProps {
@@ -42,7 +44,9 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                                                                url: '',
                                                                image: '',
                                                                ingredient_sections: [],
-                                                               spices: []
+                                                               spices: [],
+                                                               recipeType: '',
+                                                               dietaryRestrictions: []
                                                            },
                                                            submitLabel,
                                                            onSubmit,
@@ -71,6 +75,14 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
     const [ editingSectionIndex, setEditingSectionIndex ] = useState<number | null>(null);
     const [ editingSectionIngredientIndex, setEditingSectionIngredientIndex ] = useState<number | null>(null);
     const [ collapsedSections, setCollapsedSections ] = useState<Record<number, boolean>>({});
+    const [ recipeType, setRecipeType ] = useState(initial.recipeType || '');
+    const [ dietaryRestrictions, setDietaryRestrictions ] = useState<string[]>(initial.dietaryRestrictions || []);
+
+    const toggleDietary = (value: string) => {
+        setDietaryRestrictions(prev =>
+            prev.includes(value) ? prev.filter(v => v !== value) : [ ...prev, value ]
+        );
+    };
     const [ spices, setSpices ] = useState<string[]>(initial.spices || []);
     const [ newSpice, setNewSpice ] = useState('');
     const [ errors, setErrors ] = useState<string[]>([]);
@@ -301,7 +313,9 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
             url: url.trim() || undefined,
             image: imgUrl.trim() || undefined,
             spices: maybeSpices,
-            ingredient_sections: normalizedSections
+            ingredient_sections: normalizedSections,
+            recipeType: recipeType || undefined,
+            dietaryRestrictions: dietaryRestrictions.length > 0 ? dietaryRestrictions : undefined,
         };
 
         const response: Response = await onSubmit(payload);
@@ -373,6 +387,40 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                             value={ url }
                             onChange={ e => setUrl(e.target.value) }
                         />
+                    </div>
+
+                    {/* Recipe Type */ }
+                    <div>
+                        <label>Rezepttyp</label>
+                        <div className={ styles.pillGroup }>
+                            { ([ [ 'cooking', 'Kochen' ], [ 'baking', 'Backen' ], [ 'snack', 'Snack' ], [ 'dessert', 'Dessert' ] ] as [ string, string ][]).map(([ value, label ]) => (
+                                <button
+                                    key={ value }
+                                    type="button"
+                                    className={ `${ styles.pill } ${ recipeType === value ? styles.pillActive : '' }` }
+                                    onClick={ () => setRecipeType(v => v === value ? '' : value) }
+                                >
+                                    { label }
+                                </button>
+                            )) }
+                        </div>
+                    </div>
+
+                    {/* Dietary Restrictions */ }
+                    <div>
+                        <label>Ernährung <span className={ styles.pillHint }>(Mehrfachauswahl)</span></label>
+                        <div className={ styles.pillGroup }>
+                            { ([ [ 'vegan', 'Vegan' ], [ 'vegetarian', 'Vegetarisch' ], [ 'glutenfree', 'Glutenfrei' ], [ 'dairyfree', 'Laktosefrei' ] ] as [ string, string ][]).map(([ value, label ]) => (
+                                <button
+                                    key={ value }
+                                    type="button"
+                                    className={ `${ styles.pill } ${ dietaryRestrictions.includes(value) ? styles.pillActive : '' }` }
+                                    onClick={ () => toggleDietary(value) }
+                                >
+                                    { label }
+                                </button>
+                            )) }
+                        </div>
                     </div>
 
                     {/* Image */ }

@@ -28,6 +28,25 @@
     white-space: nowrap;
 }
 
+.resetButton {
+    padding: 5px 11px;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 5rem;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    opacity: 0.7;
+}
+
+.resetButton:hover {
+    background: none;
+    opacity: 1;
+    border-color: var(--color-deny-button);
+    color: var(--color-deny-button);
+}
+
 .filterChipActive {
     background-color: var(--color-primary);
     color: var(--color-white);
@@ -65,6 +84,8 @@
         margin-left: 0;
         justify-content: center;
     }
+
+    /* FilterSection wrapper order:4 is set in FilterSection/styles.module.css */
 
     .chipLabel {
         display: none;
@@ -111,6 +132,39 @@
 .searchClear:hover {
     background: none;
     color: var(--color-text);
+}
+
+.recipeCardBottom {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.recipeTags {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    gap: 0.3rem;
+}
+
+.recipeTag {
+    padding: 3px 9px;
+    background-color: var(--color-background-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 5rem;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+}
+
+.recipeTag:hover {
+    border-color: var(--color-text-secondary);
+}
+
+.recipeTagDietary {
+    background-color: #e8f4ee;
+    border-color: #b2d4c0;
+    color: #3a7a52;
 }
 
 .recipeCardsGrid {
@@ -220,7 +274,6 @@
 }
 
 .recipeCardButton {
-    margin-top: auto;
     padding: 8px 16px;
     border-radius: 4px;
     font-weight: 500;

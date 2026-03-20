@@ -52,6 +52,10 @@ const recipeSchema = Joi.object({
         )
         .allow(null, ''),
     ingredient_sections: ingredientSectionsSchema.required(),
+    recipeType: Joi.string().valid('cooking', 'baking', 'snack', 'dessert').optional().allow(null, ''),
+    dietaryRestrictions: Joi.array().items(
+        Joi.string().valid('vegan', 'vegetarian', 'glutenfree', 'dairyfree')
+    ).optional(),
     spices: Joi.array().items(Joi.string()),
     instructions: Joi.array()
         .items(

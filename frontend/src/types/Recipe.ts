@@ -12,6 +12,8 @@ export interface Recipe {
     spices?: string[];
     image?: string;
     status?: Status;
+    recipeType?: 'cooking' | 'baking' | 'snack' | 'dessert';
+    dietaryRestrictions?: ('vegan' | 'vegetarian' | 'glutenfree' | 'dairyfree')[];
 }
 
 export interface IngredientSection {

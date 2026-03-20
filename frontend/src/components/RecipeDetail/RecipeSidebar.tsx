@@ -86,6 +86,30 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({recipe, hideImage = false,
                 )}
 
                 <div className={styles.sidebarContent}>
+                    { (recipe.recipeType || (recipe.dietaryRestrictions && recipe.dietaryRestrictions.length > 0)) && (
+                        <div className={ styles.recipeTags }>
+                            { recipe.recipeType && (
+                                <span className={ styles.recipeTag }>
+                                    { {
+                                        cooking: 'Kochen',
+                                        baking: 'Backen',
+                                        snack: 'Snack',
+                                        dessert: 'Dessert'
+                                    }[recipe.recipeType] ?? recipe.recipeType }
+                                </span>
+                            ) }
+                            { recipe.dietaryRestrictions?.map(d => (
+                                <span key={ d } className={ `${ styles.recipeTag } ${ styles.recipeTagDietary }` }>
+                                    { {
+                                        vegan: 'Vegan',
+                                        vegetarian: 'Vegetarisch',
+                                        glutenfree: 'Glutenfrei',
+                                        dairyfree: 'Laktosefrei'
+                                    }[d] ?? d }
+                                </span>
+                            )) }
+                        </div>
+                    ) }
                     <h2 className={ styles.ingredientsTitle }>Zutaten</h2>
                     { recipe.ingredient_sections && recipe.ingredient_sections.length > 0 ? (
                         // Render sections

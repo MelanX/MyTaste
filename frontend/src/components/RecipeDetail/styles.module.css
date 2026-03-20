@@ -165,6 +165,29 @@
     display: inline-block;
 }
 
+/* Recipe Tags */
+.recipeTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.recipeTag {
+    padding: 4px 10px;
+    background-color: var(--color-background-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 5rem;
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+}
+
+.recipeTagDietary {
+    background-color: #e8f4ee;
+    border-color: #b2d4c0;
+    color: #3a7a52;
+}
+
 /* Instructions Styles */
 .instructionsCard {
     margin-bottom: 20px;

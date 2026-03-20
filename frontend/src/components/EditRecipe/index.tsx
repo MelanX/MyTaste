@@ -19,7 +19,9 @@ const EditRecipe: React.FC = () => {
                     url: recipe.url,
                     image: recipe.image,
                     ingredient_sections: recipe.ingredient_sections ?? [],
-                    spices: recipe.spices || []
+                    spices: recipe.spices || [],
+                    recipeType: recipe.recipeType,
+                    dietaryRestrictions: recipe.dietaryRestrictions,
                 });
             });
     }, [id]);

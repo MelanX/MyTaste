@@ -63,4 +63,86 @@ describe('RecipeFormBase', () => {
             expect(onDelete).toHaveBeenCalledTimes(1);
         });
     });
+
+    describe('recipeType pill buttons', () => {
+        it('renders all four type pills', () => {
+            renderForm();
+            for (const label of [ 'Kochen', 'Backen', 'Snack', 'Dessert' ]) {
+                expect(screen.getByRole('button', { name: label })).toBeInTheDocument();
+            }
+        });
+
+        it('clicking a type pill selects it', async () => {
+            renderForm();
+            const btn = screen.getByRole('button', { name: 'Backen' });
+            await userEvent.click(btn);
+            expect(btn.className).toMatch(/pillActive/);
+        });
+
+        it('clicking selected type pill deselects it', async () => {
+            renderForm({
+                initial: {
+                    title: 'T',
+                    instructions: [ 'x' ],
+                    ingredient_sections: [],
+                    recipeType: 'baking'
+                }
+            });
+            const btn = screen.getByRole('button', { name: 'Backen' });
+            expect(btn.className).toMatch(/pillActive/);
+            await userEvent.click(btn);
+            expect(btn.className).not.toMatch(/pillActive/);
+        });
+
+        it('pre-selects the type from initial values', () => {
+            renderForm({
+                initial: {
+                    title: 'T',
+                    instructions: [ 'x' ],
+                    ingredient_sections: [],
+                    recipeType: 'cooking'
+                }
+            });
+            expect(screen.getByRole('button', { name: 'Kochen' }).className).toMatch(/pillActive/);
+        });
+    });
+
+    describe('dietaryRestrictions pill buttons', () => {
+        it('renders all four dietary pills', () => {
+            renderForm();
+            for (const label of [ 'Vegan', 'Vegetarisch', 'Glutenfrei', 'Laktosefrei' ]) {
+                expect(screen.getByRole('button', { name: label })).toBeInTheDocument();
+            }
+        });
+
+        it('allows selecting multiple dietary pills', async () => {
+            renderForm();
+            await userEvent.click(screen.getByRole('button', { name: 'Vegan' }));
+            await userEvent.click(screen.getByRole('button', { name: 'Glutenfrei' }));
+            expect(screen.getByRole('button', { name: 'Vegan' }).className).toMatch(/pillActive/);
+            expect(screen.getByRole('button', { name: 'Glutenfrei' }).className).toMatch(/pillActive/);
+            expect(screen.getByRole('button', { name: 'Vegetarisch' }).className).not.toMatch(/pillActive/);
+        });
+
+        it('deselects a dietary pill on second click', async () => {
+            renderForm();
+            await userEvent.click(screen.getByRole('button', { name: 'Vegan' }));
+            await userEvent.click(screen.getByRole('button', { name: 'Vegan' }));
+            expect(screen.getByRole('button', { name: 'Vegan' }).className).not.toMatch(/pillActive/);
+        });
+
+        it('pre-selects dietary values from initial', () => {
+            renderForm({
+                initial: {
+                    title: 'T',
+                    instructions: [ 'x' ],
+                    ingredient_sections: [],
+                    dietaryRestrictions: [ 'vegan', 'glutenfree' ]
+                }
+            });
+            expect(screen.getByRole('button', { name: 'Vegan' }).className).toMatch(/pillActive/);
+            expect(screen.getByRole('button', { name: 'Glutenfrei' }).className).toMatch(/pillActive/);
+            expect(screen.getByRole('button', { name: 'Laktosefrei' }).className).not.toMatch(/pillActive/);
+        });
+    });
 });

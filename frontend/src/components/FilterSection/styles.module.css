@@ -1,18 +1,88 @@
-.filterSection {
-    margin-bottom: 1.5rem;
+.filterWrapper {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+}
+
+.filterToggleChip {
+    padding: 5px 11px;
+    background-color: var(--color-background-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 5rem;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.filterToggleChip:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.filterToggleActive {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border-color: var(--color-primary-dark);
+}
+
+.filterLabel {
+    /* hidden on mobile via media query below */
+}
+
+.filterBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-white);
+    color: var(--color-primary);
+    border-radius: 5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    min-width: 1.1rem;
+    height: 1.1rem;
+    padding: 0 0.2rem;
+    line-height: 1;
+}
+
+.filterToggleChip:not(.filterToggleActive) .filterBadge {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.filterPopup {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 100;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 4px 16px var(--color-shadow);
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    min-width: 300px;
 }
 
-.ingFilter {
+.filterGroup {
     display: flex;
     flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filterGroupHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
 }
 
 .ingLabel {
     font-weight: 500;
-    margin-bottom: 0.5rem;
 }
 
 .ingList {
@@ -24,12 +94,12 @@
 .ingButton {
     padding: 6px 12px;
     background-color: var(--color-background-alt);
-    border-color: var(--color-text);
     border: 1px solid var(--color-border);
     border-radius: 5rem;
     font-size: 0.9rem;
     color: var(--color-text-secondary);
     display: inline-block;
+    cursor: pointer;
 }
 
 .ingButton:hover {
@@ -40,4 +110,46 @@
     background-color: var(--color-primary);
     color: var(--color-white);
     border-color: var(--color-primary-dark);
+}
+
+.modeToggle {
+    display: inline-flex;
+    border: 1px solid var(--color-border);
+    border-radius: 5rem;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.modeBtn {
+    padding: 2px 8px;
+    font-size: 0.72rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+}
+
+.modeBtn:hover {
+    background-color: var(--color-background-alt);
+}
+
+.modeBtnActive {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+@media (max-width: 600px) {
+    .filterLabel {
+        display: none;
+    }
+
+    .filterPopup {
+        position: fixed;
+        top: var(--popup-top);
+        left: 50%;
+        transform: translateX(-50%);
+        width: 88vw;
+        min-width: unset;
+    }
 }

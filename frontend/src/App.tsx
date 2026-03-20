@@ -15,6 +15,7 @@ import RequireLogin from "./components/RequireLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Config from "./components/Config";
 import { fetchAndCache } from "./utils/recipesCache";
+import { RecipeFiltersProvider } from "./context/RecipeFiltersContext";
 
 const App: React.FC = () => {
     const handleRecipeSubmit = async (recipeFormValues: RecipeFormValues): Promise<Response> => {
@@ -32,6 +33,7 @@ const App: React.FC = () => {
     };
 
     return (
+        <RecipeFiltersProvider>
         <div className="app-container">
             <Sidebar />
             <div className="content">
@@ -89,6 +91,7 @@ const App: React.FC = () => {
                 </Routes>
             </div>
         </div>
+        </RecipeFiltersProvider>
     );
 };
 

@@ -8,6 +8,7 @@ import styles from './styles.module.css';
 import { getConfig } from "../../config";
 import { updateRecipeStatus } from "../../utils/api_service";
 import { useRecipes } from "../../hooks/useRecipes";
+import { useRecipeFilters } from "../../context/RecipeFiltersContext";
 
 const levenshtein = (a: string, b: string): number => {
     const matrix: number[][] = [];
@@ -34,11 +35,17 @@ const RecipeList: React.FC = () => {
 
     const { recipes, loading, error } = useRecipes();
 
-    const [titleFilter, setTitleFilter] = React.useState('');
-    const [selectedIngredients, setSelectedIngredients] = React.useState<string[]>([]);
-    const [ favFilter, setFavFilter ] = React.useState(false);
-    const [ cookFilter, setCookFilter ] = React.useState<'cooked' | 'uncooked' | null>(null);
-    const [ sortMode, setSortMode ] = React.useState<'favorites' | 'alpha-asc' | 'alpha-desc' | 'random'>('alpha-asc');
+    const {
+        titleFilter, setTitleFilter,
+        selectedTypes, setSelectedTypes,
+        typeMode, setTypeMode,
+        selectedDietary, setSelectedDietary,
+        dietaryMode, setDietaryMode,
+        favFilter, setFavFilter,
+        cookFilter, setCookFilter,
+        sortMode, setSortMode,
+        resetFilters,
+    } = useRecipeFilters();
     const [ randomOrder, setRandomOrder ] = React.useState<string[]>([]);
     const [ localRecipes, setLocalRecipes ] = React.useState<Recipe[]>([]);
 
@@ -49,39 +56,32 @@ const RecipeList: React.FC = () => {
         }
     };
 
+    const hasActiveFilters = titleFilter !== '' || selectedTypes.length > 0 || selectedDietary.length > 0
+        || favFilter || cookFilter !== null || sortMode !== 'alpha-asc';
+
     React.useEffect(() => {
         setLocalRecipes(recipes ?? []);
     }, [recipes]);
 
-    const getIngredientNames = (recipe: Recipe): string[] => {
-        const names: string[] = [];
-
-        if (recipe.ingredient_sections) {
-            recipe.ingredient_sections.forEach(section => {
-                section.ingredients.forEach(i => names.push(i.name));
-            });
-        }
-
-        return names;
+    const toggleType = (type: string) => {
+        setSelectedTypes(sel =>
+            sel.includes(type) ? sel.filter(x => x !== type) : [ ...sel, type ]
+        );
     };
 
-    // derive full unique ingredient list
-    const allIngredients = React.useMemo(() => {
-        const set = new Set<string>();
-        localRecipes.forEach(r =>
-            getIngredientNames(r).forEach(name => set.add(name))
+    const toggleDietary = (dietary: string) => {
+        setSelectedDietary(sel =>
+            sel.includes(dietary) ? sel.filter(x => x !== dietary) : [ ...sel, dietary ]
         );
+    };
 
-        return Array.from(set).sort();
-    }, [localRecipes]);
+    const activateType = (type: string) => {
+        setSelectedTypes(sel => sel.includes(type) ? sel : [ ...sel, type ]);
+    };
 
-    const toggleIngredient = (ing: string) => {
-        setSelectedIngredients(sel =>
-            sel.includes(ing)
-                ? sel.filter(x => x !== ing)
-                : [...sel, ing]
-        );
-    }
+    const activateDietary = (dietary: string) => {
+        setSelectedDietary(sel => sel.includes(dietary) ? sel : [ ...sel, dietary ]);
+    };
 
     const handleToggleFavorite = async (recipeId: string, favorite: boolean) => {
         try {
@@ -113,6 +113,9 @@ const RecipeList: React.FC = () => {
         }
     }
 
+    const knownTypes = [ 'cooking', 'baking', 'snack', 'dessert' ];
+    const knownDietary = [ 'vegan', 'vegetarian', 'glutenfree', 'dairyfree' ];
+
     // final filtered + sorted recipes
     const filtered = React.useMemo(() => {
         const term = titleFilter.trim().toLowerCase();
@@ -131,12 +134,29 @@ const RecipeList: React.FC = () => {
             if (cookFilter === 'cooked' && !r.status?.cookState) return false;
             if (cookFilter === 'uncooked' && r.status?.cookState) return false;
 
-            // ingredient match (every selected ingredient must be in a recipe)
-            if (selectedIngredients.length > 0) {
-                const names = getIngredientNames(r).map(i =>
-                    i.split(',')[0].trim()
-                );
-                return selectedIngredients.every(si => names.includes(si));
+            // type filter
+            if (selectedTypes.length > 0) {
+                const typeMatch = (t: string) =>
+                    t === 'other'
+                        ? !knownTypes.includes(r.recipeType ?? '')
+                        : r.recipeType === t;
+                const ok = typeMode === 'and'
+                    ? selectedTypes.every(typeMatch)
+                    : selectedTypes.some(typeMatch);
+                if (!ok) return false;
+            }
+
+            // dietary filter (recipe.dietaryRestrictions is now string[])
+            if (selectedDietary.length > 0) {
+                const recipeDietary = r.dietaryRestrictions ?? [];
+                const dietaryMatch = (d: string) =>
+                    d === 'other'
+                        ? recipeDietary.length === 0
+                        : (recipeDietary as string[]).includes(d);
+                const ok = dietaryMode === 'and'
+                    ? selectedDietary.every(dietaryMatch)
+                    : selectedDietary.some(dietaryMatch);
+                if (!ok) return false;
             }
 
             return true;
@@ -156,7 +176,7 @@ const RecipeList: React.FC = () => {
             default:
                 return [ ...result ].sort((a, b) => a.title.localeCompare(b.title));
         }
-    }, [ localRecipes, titleFilter, selectedIngredients, favFilter, cookFilter, sortMode, randomOrder ]);
+    }, [ localRecipes, titleFilter, selectedTypes, typeMode, selectedDietary, dietaryMode, favFilter, cookFilter, sortMode, randomOrder ]);
 
     if (loading && recipes === null) return <p>Lade Rezepte...</p>;
     if (error) return <p>Fehler: { error.message }</p>;
@@ -176,6 +196,26 @@ const RecipeList: React.FC = () => {
                 </h2>
 
                 <div className={ styles.quickFilters }>
+                    { hasActiveFilters && (
+                        <button
+                            type="button"
+                            className={ styles.resetButton }
+                            onClick={ resetFilters }
+                            title="Alle Filter zurücksetzen"
+                        >
+                            <i className="fa-solid fa-xmark" /><span className={ styles.chipLabel }> Zurücksetzen</span>
+                        </button>
+                    ) }
+                    <FilterSection
+                        selectedTypes={ selectedTypes }
+                        onTypeToggle={ toggleType }
+                        typeMode={ typeMode }
+                        onTypeModeChange={ setTypeMode }
+                        selectedDietary={ selectedDietary }
+                        onDietaryToggle={ toggleDietary }
+                        dietaryMode={ dietaryMode }
+                        onDietaryModeChange={ setDietaryMode }
+                    />
                     <button
                         type="button"
                         className={ `${ styles.filterChip } ${ favFilter ? styles.filterChipActive : '' }` }
@@ -235,12 +275,6 @@ const RecipeList: React.FC = () => {
                 </div>
             </div>
 
-            <FilterSection
-                allIngredients={allIngredients}
-                selectedIngredients={selectedIngredients}
-                onIngredientToggle={toggleIngredient}
-            />
-
             <div className={styles.recipeCardsGrid}>
                 { filtered.length === 0 ? (
                     <p>Keine Rezepte gefunden</p>
@@ -289,10 +323,47 @@ const RecipeList: React.FC = () => {
                         </div>
                         <div className={styles.recipeCardContent}>
                             <h3 className={styles.recipeCardTitle}>{recipe.title}</h3>
+                            <div className={ styles.recipeCardBottom }>
+                                { (recipe.recipeType || recipe.dietaryRestrictions?.length) && (
+                                    <div className={ styles.recipeTags }>
+                                        { recipe.recipeType && (
+                                            <button
+                                                type="button"
+                                                className={ styles.recipeTag }
+                                                onClick={ () => activateType(recipe.recipeType!) }
+                                                title="Filter nach Rezepttyp"
+                                            >
+                                                { {
+                                                    cooking: 'Kochen',
+                                                    baking: 'Backen',
+                                                    snack: 'Snack',
+                                                    dessert: 'Dessert'
+                                                }[recipe.recipeType] ?? recipe.recipeType }
+                                            </button>
+                                        ) }
+                                        { recipe.dietaryRestrictions?.map(d => (
+                                            <button
+                                                key={ d }
+                                                type="button"
+                                                className={ `${ styles.recipeTag } ${ styles.recipeTagDietary }` }
+                                                onClick={ () => activateDietary(d) }
+                                                title="Filter nach Ernährung"
+                                            >
+                                                { {
+                                                    vegan: 'Vegan',
+                                                    vegetarian: 'Vegetarisch',
+                                                    glutenfree: 'Glutenfrei',
+                                                    dairyfree: 'Laktosefrei'
+                                                }[d] ?? d }
+                                            </button>
+                                        )) }
+                                    </div>
+                                ) }
                             <Link to={`/recipe/${recipe.id}`} className={styles.recipeCardButton}>
                                 Rezept ansehen
                             </Link>
                             <BringButton recipeId={recipe.id} />
+                            </div>
                         </div>
                     </div>
                 ))}
