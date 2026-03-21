@@ -51,8 +51,6 @@ function registerValidSW(swUrl: string, config?: SWConfig) {
     navigator.serviceWorker
         .register(swUrl)
         .then((registration) => {
-            registration.update().catch(() => {
-            });
             registration.onupdatefound = () => {
                 const installingWorker = registration.installing;
                 if (!installingWorker) return;
@@ -60,14 +58,50 @@ function registerValidSW(swUrl: string, config?: SWConfig) {
                 installingWorker.onstatechange = () => {
                     if (installingWorker.state === 'installed') {
                         if (navigator.serviceWorker.controller) {
-                            // At this point, the updated precached content has been fetched,
-                            // but the previous service worker will still serve the older
-                            // content until all client tabs are closed.
-                            console.log(
-                                'New content is available and will be used when all ',
-                                'tabs for this page are closed.',
-                            );
-                            config?.onUpdate?.(registration);
+                            if (config?.onUpdate) {
+                                // Caller provides its own update UI — hand off control.
+                                config.onUpdate(registration);
+                            } else {
+                                // No update handler: defer the SW swap until the user
+                                // navigates, so unsaved form input is never lost.
+                                const waiting = registration.waiting;
+                                if (waiting) {
+                                    const applyUpdate = () => {
+                                        waiting.postMessage({ type: 'SKIP_WAITING' });
+                                        navigator.serviceWorker.addEventListener('controllerchange', () => {
+                                            window.location.reload();
+                                        }, { once: true });
+                                        unsubscribe();
+                                    };
+
+                                    // On pagehide (tab close / PWA backgrounded), activate the
+                                    // new SW. If the page is then restored from bfcache the old
+                                    // JS is still running with the new SW in control — reload to
+                                    // resolve the mismatch (important on iOS Safari PWA).
+                                    const onPageHide = () => {
+                                        waiting.postMessage({ type: 'SKIP_WAITING' });
+                                        window.addEventListener('pageshow', (e) => {
+                                            if (e.persisted) window.location.reload();
+                                        }, { once: true });
+                                        unsubscribe();
+                                    };
+
+                                    // Declared after the handlers that reference it but before
+                                    // the listeners are registered, so it is always assigned
+                                    // before any callback can invoke it.
+                                    const unsubscribe = () => {
+                                        window.removeEventListener('popstate', applyUpdate);
+                                        window.removeEventListener('pagehide', onPageHide);
+                                    };
+
+                                    // popstate fires on back/forward navigation.
+                                    // Link clicks (React Router pushState) are intentionally
+                                    // not intercepted to avoid converting SPA navigations into
+                                    // hard reloads.
+                                    window.addEventListener('popstate', applyUpdate, { once: true });
+                                    window.addEventListener('pagehide', onPageHide, { once: true });
+                                }
+                            }
                         } else {
                             // At this point, everything has been precached.
                             // It's the perfect time to display a

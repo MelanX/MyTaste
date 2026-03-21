@@ -16,7 +16,7 @@ const TestConsumer: React.FC<{ onError?: (e: Error) => void }> = ({ onError }) =
         <div>
             <span data-testid="status">{ isAuthenticated ? 'authenticated' : 'guest' }</span>
             <button onClick={ () => login('user', 'pass').catch(e => onError?.(e)) }>Login</button>
-            <button onClick={ logout }>Logout</button>
+            <button onClick={ () => logout() }>Logout</button>
         </div>
     );
 };
@@ -31,13 +31,14 @@ function renderWithProvider(onError?: (e: Error) => void) {
 
 beforeEach(() => {
     mockApiFetch.mockReset();
+    localStorage.clear();
 });
 
 describe('AuthProvider', () => {
     it('renders a loading placeholder while the initial refresh is in flight', () => {
         mockApiFetch.mockReturnValue(new Promise(() => {}));
-        const { container } = renderWithProvider();
-        expect(container.querySelector('.app-loading')).toBeInTheDocument();
+        renderWithProvider();
+        expect(screen.getByTestId('app-loading')).toBeInTheDocument();
     });
 
     it('sets isAuthenticated to true when the initial refresh succeeds', async () => {
@@ -61,9 +62,11 @@ describe('AuthProvider', () => {
             .mockResolvedValueOnce({ ok: false })  // initial refresh
             .mockResolvedValueOnce({ ok: true });   // login
         renderWithProvider();
-        await waitFor(() => screen.getByTestId('status'));
+        await screen.findByTestId('status');
         await userEvent.click(screen.getByText('Login'));
-        expect(screen.getByTestId('status')).toHaveTextContent('authenticated');
+        await waitFor(() =>
+            expect(screen.getByTestId('status')).toHaveTextContent('authenticated')
+        );
     });
 
     it('login() does not set isAuthenticated to true on failure', async () => {
@@ -72,9 +75,11 @@ describe('AuthProvider', () => {
             .mockResolvedValueOnce({ ok: false })  // initial refresh
             .mockResolvedValueOnce({ ok: false });  // failed login
         renderWithProvider(onError);
-        await waitFor(() => screen.getByTestId('status'));
+        await screen.findByTestId('status');
         await userEvent.click(screen.getByText('Login'));
-        expect(screen.getByTestId('status')).toHaveTextContent('guest');
+        await waitFor(() =>
+            expect(screen.getByTestId('status')).toHaveTextContent('guest')
+        );
         expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'Login failed' }));
     });
 
@@ -87,6 +92,71 @@ describe('AuthProvider', () => {
             expect(screen.getByTestId('status')).toHaveTextContent('authenticated')
         );
         await userEvent.click(screen.getByText('Logout'));
-        expect(screen.getByTestId('status')).toHaveTextContent('guest');
+        await waitFor(() =>
+            expect(screen.getByTestId('status')).toHaveTextContent('guest')
+        );
+    });
+
+    it('successful refresh sets localStorage.auth to "true"', async () => {
+        mockApiFetch.mockResolvedValue({ ok: true });
+        renderWithProvider();
+        await waitFor(() =>
+            expect(screen.getByTestId('status')).toHaveTextContent('authenticated')
+        );
+        expect(localStorage.getItem('auth')).toBe('true');
+    });
+
+    it('offline with localStorage.auth=true → isAuthenticated becomes true', async () => {
+        localStorage.setItem('auth', 'true');
+        mockApiFetch.mockRejectedValue(new TypeError('Failed to fetch'));
+        renderWithProvider();
+        await waitFor(() =>
+            expect(screen.getByTestId('status')).toHaveTextContent('authenticated')
+        );
+    });
+
+    it('offline with no localStorage entry → isAuthenticated becomes false', async () => {
+        mockApiFetch.mockRejectedValue(new TypeError('Failed to fetch'));
+        renderWithProvider();
+        await waitFor(() =>
+            expect(screen.getByTestId('status')).toHaveTextContent('guest')
+        );
+    });
+
+    it('login() sets localStorage.auth to "true"', async () => {
+        mockApiFetch
+            .mockResolvedValueOnce({ ok: false })  // initial refresh
+            .mockResolvedValueOnce({ ok: true });   // login
+        renderWithProvider();
+        await screen.findByTestId('status');
+        await userEvent.click(screen.getByText('Login'));
+        await waitFor(() =>
+            expect(localStorage.getItem('auth')).toBe('true')
+        );
+    });
+
+    it('logout() removes localStorage.auth', async () => {
+        localStorage.setItem('auth', 'true');
+        mockApiFetch
+            .mockResolvedValueOnce({ ok: true })   // initial refresh
+            .mockResolvedValueOnce({ ok: true });   // logout call
+        renderWithProvider();
+        await waitFor(() =>
+            expect(screen.getByTestId('status')).toHaveTextContent('authenticated')
+        );
+        await userEvent.click(screen.getByText('Logout'));
+        await waitFor(() =>
+            expect(localStorage.getItem('auth')).toBeNull()
+        );
+    });
+
+    it('server 401 on refresh → localStorage.auth removed and isAuthenticated false', async () => {
+        localStorage.setItem('auth', 'true');
+        mockApiFetch.mockResolvedValue({ ok: false });
+        renderWithProvider();
+        await waitFor(() =>
+            expect(screen.getByTestId('status')).toHaveTextContent('guest')
+        );
+        expect(localStorage.getItem('auth')).toBeNull();
     });
 });

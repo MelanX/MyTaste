@@ -74,8 +74,8 @@ const Sidebar: React.FC = () => {
                             )}
                             <li>
                                 {isAuthenticated ? (
-                                    <button onClick={() => {
-                                        logout();
+                                    <button onClick={async () => {
+                                        await logout();
                                         setIsOpen(false);
                                     }}>Logout</button>
                                 ) : (

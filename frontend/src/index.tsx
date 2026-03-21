@@ -8,6 +8,14 @@ import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { loadConfig } from "./config";
 
+serviceWorkerRegistration.register();
+
+navigator.serviceWorker?.addEventListener('message', (e) => {
+    if (e.data?.type === 'recipes-updated') {
+        window.dispatchEvent(new Event('recipes-updated')); // wake hooks
+    }
+});
+
 loadConfig().then(() => {
     const root = ReactDOM.createRoot(document.getElementById('root')!);
     root.render(
@@ -20,14 +28,7 @@ loadConfig().then(() => {
         </React.StrictMode>
     );
 
-    serviceWorkerRegistration.register();
     reportWebVitals();
-
-    navigator.serviceWorker?.addEventListener('message', (e) => {
-        if (e.data?.type === 'recipes-updated') {
-            window.dispatchEvent(new Event('recipes-updated')); // wake hooks
-        }
-    });
 }).catch(error => {
     console.error('Failed to load config:', error);
 });

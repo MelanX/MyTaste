@@ -3,7 +3,7 @@ import { apiFetch } from '../utils/api_service';
 
 interface AuthContextType {
     login: (username: string, password: string) => Promise<void>;
-    logout: () => void;
+    logout: () => Promise<void>;
     isAuthenticated: boolean;
 }
 
@@ -16,9 +16,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({children}) => {
         (async () => {
             try {
                 const res = await apiFetch('/api/refresh', { method: 'POST' });
+                if (res.ok) {
+                    localStorage.setItem('auth', 'true');
+                } else {
+                    localStorage.removeItem('auth');
+                }
                 setAuth(res.ok);
             } catch (err) {
-                setAuth(false);
+                // Network error (offline) — trust last-known auth state
+                setAuth(localStorage.getItem('auth') === 'true');
             }
         })();
     }, []);
@@ -30,14 +36,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({children}) => {
         });
         if (!res.ok) throw new Error('Login failed');
         setAuth(true);                // cookies are now set
+        localStorage.setItem('auth', 'true');
     };
 
     const logout = async () => {
         await apiFetch('/api/logout', { method: 'POST' }).catch(() => {});
         setAuth(false);
+        localStorage.removeItem('auth');
     };
 
-    if (isAuthenticated === null) return <div className="app-loading" />;
+    if (isAuthenticated === null) return <div className="app-loading" data-testid="app-loading" />;
 
     return (
         <AuthContext.Provider value={ { login, logout, isAuthenticated } }>

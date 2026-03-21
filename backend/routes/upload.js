@@ -17,7 +17,7 @@ const ACCEPTED_MIME_TYPES = [
 // keep the file in RAM — we’ll save only the converted WebP
 const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 10 * 1024 * 1024 }, // 5 MB
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
     fileFilter: (_, file, cb) =>
         ACCEPTED_MIME_TYPES.includes(file.mimetype)
             ? cb(null, true)
