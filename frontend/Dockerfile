@@ -5,6 +5,10 @@ RUN npm ci
 COPY public ./public
 COPY src ./src
 COPY tsconfig.json ./
+ARG REACT_APP_VERSION
+ARG REACT_APP_COMMIT_URL
+ENV REACT_APP_VERSION=$REACT_APP_VERSION
+ENV REACT_APP_COMMIT_URL=$REACT_APP_COMMIT_URL
 RUN npm run build
 
 FROM nginx:stable-alpine

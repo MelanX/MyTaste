@@ -86,6 +86,19 @@ const Sidebar: React.FC = () => {
                             </li>
                         </ul>
                     </nav>
+                    <div className={styles.version}>
+                        {process.env.REACT_APP_COMMIT_URL ? (
+                            <a
+                                href={process.env.REACT_APP_COMMIT_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {process.env.REACT_APP_VERSION ?? 'dev'}
+                            </a>
+                        ) : (
+                            process.env.REACT_APP_VERSION ?? 'dev'
+                        )}
+                    </div>
                 </div>
             </div>
         </>

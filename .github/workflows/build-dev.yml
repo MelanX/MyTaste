@@ -35,5 +35,8 @@ jobs:
 
       - name: Build & push frontend image
         run: |
-          docker build -t ghcr.io/melanx/mytaste-frontend:${IMAGE_TAG} ./frontend
+          docker build \
+            --build-arg REACT_APP_VERSION="dev" \
+            --build-arg REACT_APP_COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}" \
+            -t ghcr.io/melanx/mytaste-frontend:${IMAGE_TAG} ./frontend
           docker push ghcr.io/melanx/mytaste-frontend:${IMAGE_TAG}
