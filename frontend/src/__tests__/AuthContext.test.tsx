@@ -159,4 +159,23 @@ describe('AuthProvider', () => {
         );
         expect(localStorage.getItem('auth')).toBeNull();
     });
+
+    it('timeout on refresh with localStorage.auth=true → isAuthenticated becomes true', async () => {
+        localStorage.setItem('auth', 'true');
+        const abortError = new DOMException('The operation was aborted', 'AbortError');
+        mockApiFetch.mockRejectedValue(abortError);
+        renderWithProvider();
+        await waitFor(() =>
+            expect(screen.getByTestId('status')).toHaveTextContent('authenticated')
+        );
+    });
+
+    it('timeout on refresh with no localStorage → isAuthenticated becomes false', async () => {
+        const abortError = new DOMException('The operation was aborted', 'AbortError');
+        mockApiFetch.mockRejectedValue(abortError);
+        renderWithProvider();
+        await waitFor(() =>
+            expect(screen.getByTestId('status')).toHaveTextContent('guest')
+        );
+    });
 });
