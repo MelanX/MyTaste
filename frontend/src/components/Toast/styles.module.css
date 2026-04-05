@@ -1,0 +1,40 @@
+.toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(40, 40, 40, 0.92);
+    color: #fff;
+    padding: 0.75rem 1.25rem;
+    border-radius: 2rem;
+    font-size: 0.9rem;
+    max-width: min(90vw, 28rem);
+    text-align: center;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    animation: slideUp 0.2s ease-out;
+}
+
+.toast:hover {
+    background: rgba(60, 60, 60, 0.95);
+}
+
+.dismiss {
+    margin-left: 0.6rem;
+    opacity: 0.7;
+    font-size: 0.8rem;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}

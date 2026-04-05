@@ -14,6 +14,7 @@ import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
 import { BroadcastUpdatePlugin } from 'workbox-broadcast-update';
+import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -137,6 +138,9 @@ registerRoute(
         cacheName: 'api-recipes',
         plugins: [
             new BroadcastUpdatePlugin(),
+            // Only cache successful JSON responses — prevents HTML error pages
+            // (e.g. 502/504 from nginx) from being stored and served as JSON.
+            new CacheableResponsePlugin({ statuses: [0, 200] }),
             // keep the cache neat: max 150 entries, purge after 2 weeks
             new ExpirationPlugin({
                 maxEntries: 150,
@@ -164,4 +168,9 @@ self.addEventListener('message', (event) => {
     }
 });
 
-// Any other custom service worker logic can go here.
+// Diagnostic: log when the SW handles a recipes API fetch (cache vs network).
+self.addEventListener('fetch', (event) => {
+    if ((event as FetchEvent).request.url.includes('/api/recipes')) {
+        console.debug('[SW] Handling /api/recipes fetch', (event as FetchEvent).request.url);
+    }
+});

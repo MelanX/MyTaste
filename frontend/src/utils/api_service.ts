@@ -1,5 +1,12 @@
 import { getConfig } from "../config";
 
+export class ApiError extends Error {
+    constructor(public readonly status: number, message: string) {
+        super(message || `HTTP ${status}`);
+        this.name = 'ApiError';
+    }
+}
+
 /**
  * Thin wrapper around `fetch` that
  *   • always sends credentials (cookies) to the API
@@ -43,6 +50,7 @@ export async function apiFetch(
         if (refresh.ok) {
             return apiFetch(path, options, 1);       // second (and final) try
         }
+        console.warn('[apiFetch] Token refresh failed', { status: refresh.status, url });
     }
 
     return res;
