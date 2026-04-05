@@ -75,25 +75,26 @@ describe('RecipeList error handling', () => {
         expect(screen.getByText('Pasta')).toBeInTheDocument();
     });
 
-    it('shows a toast with the error message when background fetch fails with cached data', async () => {
+    it('shows a toast containing the error message when background fetch fails with cached data', async () => {
         mockUseRecipes.mockReturnValue({
             recipes: sampleRecipes,
             loading: false,
             error: new Error('Network error'),
         });
         render(<RecipeList />);
-        expect(await screen.findByRole('alert')).toHaveTextContent('Network error');
+        const alert = await screen.findByRole('alert');
+        expect(alert).toHaveTextContent('Network error');
     });
 
-    it('dismisses the toast when clicked', async () => {
+    it('dismisses the toast when the close button is clicked', async () => {
         mockUseRecipes.mockReturnValue({
             recipes: sampleRecipes,
             loading: false,
             error: new Error('Network error'),
         });
         render(<RecipeList />);
-        const toast = await screen.findByRole('alert');
-        await userEvent.click(toast);
+        await screen.findByRole('alert');
+        await userEvent.click(screen.getByRole('button', { name: /schließen/i }));
         expect(screen.queryByRole('alert')).toBeNull();
     });
 
