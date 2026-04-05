@@ -4,9 +4,10 @@ import { useAuth } from '../../context/AuthContext';
 import { Recipe } from '../../types/Recipe';
 import BringButton from '../BringButton';
 import FilterSection from '../FilterSection';
+import Toast from '../Toast';
 import styles from './styles.module.css';
 import { getConfig } from "../../config";
-import { updateRecipeStatus } from "../../utils/api_service";
+import { updateRecipeStatus, ApiError } from "../../utils/api_service";
 import { useRecipes } from "../../hooks/useRecipes";
 import { useRecipeFilters } from "../../context/RecipeFiltersContext";
 
@@ -34,9 +35,21 @@ const knownTypes = [ 'cooking', 'baking', 'snack', 'dessert' ];
 const knownDietary = [ 'vegan', 'vegetarian', 'glutenfree', 'dairyfree' ];
 
 const RecipeList: React.FC = () => {
-    const {isAuthenticated} = useAuth();
+    const { isAuthenticated, logout } = useAuth();
 
     const { recipes, loading, error } = useRecipes();
+    const [ toastMessage, setToastMessage ] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        if (!error) return;
+        const isAuthError = error instanceof ApiError && (error.status === 401 || error.status === 403);
+        if (isAuthError) {
+            logout();
+        } else if (recipes !== null) {
+            setToastMessage(error.message);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [error]);
 
     const {
         titleFilter, setTitleFilter,
@@ -185,10 +198,10 @@ const RecipeList: React.FC = () => {
     }, [ localRecipes, titleFilter, selectedTypes, typeMode, selectedDietary, dietaryMode, favFilter, cookFilter, sortMode, randomOrder ]);
 
     if (loading && recipes === null) return <p>Lade Rezepte...</p>;
-    if (error) return <p>Fehler: { error.message }</p>;
+    if (error && recipes === null) return <p>Fehler: { error.message }</p>;
 
     return (
-        <div>
+        <><div>
             <div className={ styles.titleRow }>
                 <h2>
                     Rezepte{ ' ' }
@@ -375,6 +388,8 @@ const RecipeList: React.FC = () => {
                 ))}
             </div>
         </div>
+        <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
+        </>
     );
 };
 

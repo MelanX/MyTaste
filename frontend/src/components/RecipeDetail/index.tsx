@@ -4,26 +4,40 @@ import styles from './styles.module.css';
 import BringButton from "../BringButton";
 import RecipeSidebar from './RecipeSidebar';
 import RecipeInstructions from './Instructions';
+import Toast from '../Toast';
 import { QRCodeSVG } from 'qrcode.react';
 import { useAuth } from "../../context/AuthContext";
+import { ApiError } from "../../utils/api_service";
 import { useRecipe } from "../../hooks/useRecipe";
 import { upsertRecipe } from "../../utils/recipesCache";
 
 const RecipeDetail: React.FC = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, logout } = useAuth();
     const { id } = useParams<{ id: string }>();
     const { recipe, loading, error } = useRecipe(id);
+    const [ toastMessage, setToastMessage ] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        if (!error) return;
+        const isAuthError = error instanceof ApiError && (error.status === 401 || error.status === 403);
+        if (isAuthError) {
+            logout();
+        } else if (recipe !== null) {
+            setToastMessage(error.message);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [error]);
 
     const buttonsRowRef = useRef<HTMLDivElement>(null);
     const location = useLocation();
     const currentUrl = window.location.origin + location.pathname;
 
-    if (loading) return <div>Lade Rezept...</div>;
-    if (error) return <div>Fehler: { error.message }</div>;
+    if (loading && !recipe) return <div>Lade Rezept...</div>;
+    if (error && !recipe) return <div>Fehler: { error.message }</div>;
     if (!recipe) return <div>Rezept nicht gefunden</div>;
 
     return (
-        <div className={ styles.recipeDetail }>
+        <><div className={ styles.recipeDetail }>
             <div className={ styles.titleContainer }>
                 <h1>{ recipe.title }
                     { isAuthenticated && (
@@ -53,6 +67,8 @@ const RecipeDetail: React.FC = () => {
                 <RecipeSidebar recipe={ recipe } updateRecipe={ r => upsertRecipe(r) } />
             </div>
         </div>
+        <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
+        </>
     );
 };
 
