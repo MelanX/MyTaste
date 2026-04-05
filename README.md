@@ -63,7 +63,7 @@ Lazy way: `cd frontend && npm run start` – this script spins up backend **and*
 
 ```bash
 cd backend   && npm test     # Jest unit tests
-cd ../frontend && npm test   # React Testing Library, not implemented yet
+cd ../frontend && npm test   # React Testing Library
 ```
 
 ---
@@ -81,6 +81,43 @@ docker build -t mytaste-frontend .
 ```
 
 Use the locally built tags in your compose file.
+
+---
+
+## 🌐 Reverse proxy (Nginx Proxy Manager)
+
+If you expose MyTaste through **Nginx Proxy Manager** and host both the frontend and backend behind the same domain, NPM
+must be told to forward `/api/` requests to the backend container — otherwise nginx serves the frontend for all paths 
+and API calls fail.
+
+> [!NOTE]
+> **Required step when using a single domain for both frontend and backend.**
+> Without this, the app will not be able to authenticate or fetch recipes, showing
+> a 405 error on login and a blank / loading screen that never resolves.
+
+### Setup in NPM (one domain, path-based routing)
+
+1. In NPM → **Proxy Hosts**, edit the entry for your domain.
+2. The main **Forward Hostname / Port** should point to the **frontend** container (port `3000`).
+3. Open the **Custom Locations** tab → click **Add location**.
+4. Fill in:
+   - **Location:** `/api/`
+   - **Scheme:** `http`
+   - **Forward Hostname / IP:** your backend container name (e.g. `mytaste-backend`)
+   - **Forward Port:** `5000`
+5. Click the **gear icon** in that location row and paste:
+   ```nginx
+   proxy_http_version 1.1;
+   proxy_set_header Host $host;
+   proxy_set_header X-Real-IP $remote_addr;
+   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+   ```
+6. Save and test.
+
+> [!TIP]
+> If you prefer two separate proxy hosts (e.g. `mytaste.example.com` for the frontend
+> and `api.mytaste.example.com` for the backend), no custom location is needed — just
+> set `API_URL` in your `config.json` to the backend domain and skip the steps above.
 
 ---
 
