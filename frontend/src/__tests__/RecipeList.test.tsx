@@ -4,10 +4,23 @@ import userEvent from '@testing-library/user-event';
 import RecipeList from '../components/RecipeList';
 import { ApiError } from '../utils/api_service';
 import { Recipe } from '../types/Recipe';
+import { useRecipes } from '../hooks/useRecipes';
+import { useAuth } from '../context/AuthContext';
+import { useRecipeFilters } from '../context/RecipeFiltersContext';
 
 jest.mock('../hooks/useRecipes');
 jest.mock('../context/AuthContext');
 jest.mock('../context/RecipeFiltersContext');
+jest.mock('../context/NextUpContext', () => ({
+    useNextUpContext: () => ({
+        ids: [],
+        loading: false,
+        error: null,
+        add: () => Promise.resolve(),
+        remove: () => Promise.resolve(),
+        clear: () => Promise.resolve()
+    }),
+}));
 jest.mock('../config', () => ({ getConfig: () => ({ API_URL: '', requireLogin: false }) }));
 jest.mock('../utils/api_service', () => ({
     ...jest.requireActual('../utils/api_service'),
@@ -18,10 +31,6 @@ jest.mock('../components/FilterSection', () => () => null);
 jest.mock('react-router-dom', () => ({
     Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
 }), { virtual: true });
-
-import { useRecipes } from '../hooks/useRecipes';
-import { useAuth } from '../context/AuthContext';
-import { useRecipeFilters } from '../context/RecipeFiltersContext';
 
 const mockUseRecipes = useRecipes as jest.Mock;
 const mockUseAuth = useAuth as jest.Mock;

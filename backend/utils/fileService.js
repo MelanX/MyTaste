@@ -4,6 +4,7 @@ const path = require('path');
 const DATA_DIR = path.resolve(__dirname, '..', 'data');
 const RECIPE_FILE = path.join(DATA_DIR, 'recipes.json');
 const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
+const COLLECTIONS_FILE = path.join(DATA_DIR, 'collections.json');
 const DATABASE_FILE = process.env.NODE_ENV === 'test'
     ? ':memory:'
     : path.join(DATA_DIR, 'tokens.db');
@@ -12,6 +13,7 @@ const RECIPE_FILE_VERSION = '2';
 // Queues serialize concurrent read-modify-write cycles so they never interleave.
 let recipeQueue = Promise.resolve();
 let configQueue = Promise.resolve();
+let collectionsQueue = Promise.resolve();
 
 async function ensureFile() {
     await fs.promises.mkdir(DATA_DIR, { recursive: true });
@@ -39,6 +41,19 @@ async function ensureImportConfigFile() {
     }
 }
 
+async function ensureCollectionsFile() {
+    await fs.promises.mkdir(DATA_DIR, { recursive: true });
+    try {
+        await fs.promises.writeFile(
+            COLLECTIONS_FILE,
+            JSON.stringify({ nextUp: [] }, null, 2),
+            { flag: 'wx' }
+        );
+    } catch (err) {
+        if (err.code !== 'EEXIST') throw err;
+    }
+}
+
 async function readData() {
     await ensureFile();
     const raw = await fs.promises.readFile(RECIPE_FILE, 'utf8');
@@ -59,6 +74,32 @@ async function readImportConfig() {
 async function writeImportConfig(data) {
     await ensureImportConfigFile();
     await fs.promises.writeFile(CONFIG_FILE, JSON.stringify(data, null, 2));
+}
+
+async function readCollections() {
+    await ensureCollectionsFile();
+    const raw = await fs.promises.readFile(COLLECTIONS_FILE, 'utf8');
+    return JSON.parse(raw);
+}
+
+async function writeCollections(data) {
+    await ensureCollectionsFile();
+    await fs.promises.writeFile(COLLECTIONS_FILE, JSON.stringify(data, null, 2));
+}
+
+async function modifyCollections(fn) {
+    return new Promise((resolve, reject) => {
+        collectionsQueue = collectionsQueue.then(async () => {
+            try {
+                const data = await readCollections();
+                const newData = await fn(data);
+                if (newData != null) await writeCollections(newData);
+                resolve(newData);
+            } catch (err) {
+                reject(err);
+            }
+        });
+    });
 }
 
 async function checkAndUpgradeRecipesFileVersion(data) {
@@ -141,6 +182,9 @@ module.exports = {
     writeData,
     readImportConfig,
     writeImportConfig,
+    readCollections,
+    writeCollections,
+    modifyCollections,
     modifyData,
     modifyImportConfig,
     DATABASE_FILE

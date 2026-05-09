@@ -9,8 +9,8 @@ export class ApiError extends Error {
 
 /**
  * Thin wrapper around `fetch` that
- *   • always sends credentials (cookies) to the API
- *   • on 401/403 tries `/api/refresh` **once** and re-runs the original request
+ *   - always sends credentials (cookies) to the API
+ *   - on 401/403 tries `/api/refresh` **once** and re-runs the original request
  */
 export async function apiFetch(
     path: string,
@@ -19,7 +19,7 @@ export async function apiFetch(
 ): Promise<Response> {
     const { API_URL: baseUrl } = getConfig();
 
-    // Build final URL (robust against “//”)
+    // Build final URL (robust against "//")
     if (baseUrl.endsWith("/") && path.startsWith("/")) {
         path = path.slice(1);
     }
@@ -48,12 +48,38 @@ export async function apiFetch(
             credentials: "include",
         });
         if (refresh.ok) {
-            return apiFetch(path, options, 1);       // second (and final) try
+            return apiFetch(path, options, 1);
         }
         console.warn('[apiFetch] Token refresh failed', { status: refresh.status, url });
     }
 
     return res;
+}
+
+export async function fetchNextUp(): Promise<string[]> {
+    const res = await apiFetch('/api/collections/next-up');
+    if (!res.ok) throw new ApiError(res.status, res.statusText);
+    const data = await res.json();
+    return data.nextUp;
+}
+
+export async function addToNextUp(id: string): Promise<string[]> {
+    const res = await apiFetch(`/api/collections/next-up/${ id }`, { method: 'POST' });
+    if (!res.ok) throw new ApiError(res.status, res.statusText);
+    const data = await res.json();
+    return data.nextUp;
+}
+
+export async function removeFromNextUp(id: string): Promise<string[]> {
+    const res = await apiFetch(`/api/collections/next-up/${ id }`, { method: 'DELETE' });
+    if (!res.ok) throw new ApiError(res.status, res.statusText);
+    const data = await res.json();
+    return data.nextUp;
+}
+
+export async function clearNextUp(): Promise<void> {
+    const res = await apiFetch('/api/collections/next-up', { method: 'DELETE' });
+    if (!res.ok) throw new ApiError(res.status, res.statusText);
 }
 
 export async function updateRecipeStatus(recipeId: string, updates: {

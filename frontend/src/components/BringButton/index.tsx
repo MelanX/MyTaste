@@ -4,24 +4,31 @@ import { Link } from "react-router-dom";
 import { getConfig } from "../../config";
 
 interface BringButtonProps {
-    recipeId: string;
+    recipeId?: string;
+    ids?: string[];
+    label?: string;
 }
 
-const BringButton: React.FC<BringButtonProps> = ({recipeId}) => {
-    let baseUrl = getConfig().API_URL;
+const BringButton: React.FC<BringButtonProps> = ({ recipeId, ids, label = 'Zur Einkaufsliste' }) => {
+    const baseUrl = getConfig().API_URL;
 
-    const recipeDataUrl = `${baseUrl}/api/bring-recipe/${recipeId}`;
-    const bringLink = generateBringImportLink(recipeDataUrl);
+    let dataUrl: string;
+    if (ids !== undefined) {
+        if (ids.length === 0) return null;
+        dataUrl = `${ baseUrl }/api/bring-bulk?ids=${ ids.join(',') }`;
+    } else if (recipeId) {
+        dataUrl = `${ baseUrl }/api/bring-recipe/${ recipeId }`;
+    } else {
+        return null;
+    }
+
+    const bringLink = generateBringImportLink(dataUrl);
 
     return (
         <Link to={bringLink}>
-            <button
-                className={styles.bringButton}
-            >
-                <img src={bringLogo} alt="Bring Logo"
-                     className={styles.bringLogo}
-                />
-                Zur Einkaufsliste
+            <button className={ styles.bringButton }>
+                <img src={ bringLogo } alt="Bring Logo" className={ styles.bringLogo } />
+                { label }
             </button>
         </Link>
     );
@@ -29,11 +36,6 @@ const BringButton: React.FC<BringButtonProps> = ({recipeId}) => {
 
 export default BringButton;
 
-/**
- * Generates a Bring import URL for a recipe
- * @param recipeDataUrl URL to the JSON data for the recipe
- * @returns A URL that can be used to open the Bring app with the recipe data
- */
 const generateBringImportLink = (recipeDataUrl: string): string => {
     const params = new URLSearchParams({
         url: recipeDataUrl,

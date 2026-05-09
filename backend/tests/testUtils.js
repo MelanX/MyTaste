@@ -2,6 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const authRouter = require("../routes/auth");
 const bringRouter = require("../routes/bring");
+const collectionsRouter = require("../routes/collections");
 const recipesRouter = require("../routes/recipes");
 const importRouter = require("../routes/import");
 const uploadRouter = require("../routes/upload");
@@ -15,6 +16,7 @@ function makeApp() {
     app.use("/api",
         authRouter,
         bringRouter,
+        collectionsRouter,
         recipesRouter,
         importRouter,
         uploadRouter,

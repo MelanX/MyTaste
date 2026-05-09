@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import RecipeList from './components/RecipeList';
+import NextUpList from './components/NextUpList';
 import RecipeForm from './components/RecipeForm';
 import RecipeDetail from './components/RecipeDetail';
 import Login from './components/Login';
@@ -16,6 +17,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Config from "./components/Config";
 import { fetchAndCache } from "./utils/recipesCache";
 import { RecipeFiltersProvider } from "./context/RecipeFiltersContext";
+import { NextUpProvider } from "./context/NextUpContext";
 
 function ScrollToTop() {
     const { pathname } = useLocation();
@@ -40,6 +42,7 @@ const App: React.FC = () => {
 
     return (
         <RecipeFiltersProvider>
+            <NextUpProvider>
         <div className="app-container">
             <Sidebar />
             <div className="content">
@@ -95,9 +98,15 @@ const App: React.FC = () => {
                             <RecipeDetail />
                         </RequireLogin>
                     } />
+                    <Route path="/next-up" element={
+                        <RequireLogin>
+                            <NextUpList />
+                        </RequireLogin>
+                    } />
                 </Routes>
             </div>
         </div>
+            </NextUpProvider>
         </RecipeFiltersProvider>
     );
 };

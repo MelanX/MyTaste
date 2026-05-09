@@ -1,0 +1,45 @@
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+.clearButton {
+    padding: 8px 16px;
+    min-height: 40px;
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--color-white);
+    font-family: var(--default-fonts), serif;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.clearButton:hover:not(:disabled) {
+    background-color: var(--color-deny-button);
+}
+
+.clearButton:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.removeButton {
+    padding: 8px 16px;
+    background-color: var(--color-deny-button);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--color-white);
+    font-family: var(--default-fonts), serif;
+    font-weight: 500;
+    width: 100%;
+    text-align: center;
+}
+
+.removeButton:hover {
+    background-color: var(--color-deny-button-dark);
+}

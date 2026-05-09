@@ -7,7 +7,9 @@ require('dotenv').config();
 
 const authRouter = require('./routes/auth');
 const bringRouter = require('./routes/bring');
+const collectionsRouter = require('./routes/collections');
 const configRouter = require('./routes/config');
+const { readCollections } = require('./utils/fileService');
 const recipesRouter = require('./routes/recipes');
 const importRouter = require('./routes/import');
 const uploadRouter = require('./routes/upload');
@@ -53,6 +55,7 @@ if (process.env.REQUIRE_LOGIN === 'true') {
     app.use('/api', authenticateToken);
 }
 
+app.use('/api', collectionsRouter);
 app.use('/api', recipesRouter);
 app.use('/api', importRouter);
 app.use('/api', uploadRouter);

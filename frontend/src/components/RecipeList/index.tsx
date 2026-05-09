@@ -7,9 +7,10 @@ import FilterSection from '../FilterSection';
 import Toast from '../Toast';
 import styles from './styles.module.css';
 import { getConfig } from "../../config";
-import { updateRecipeStatus, ApiError } from "../../utils/api_service";
+import { ApiError, updateRecipeStatus } from "../../utils/api_service";
 import { useRecipes } from "../../hooks/useRecipes";
 import { useRecipeFilters } from "../../context/RecipeFiltersContext";
+import { useNextUpContext } from "../../context/NextUpContext";
 
 const levenshtein = (a: string, b: string): number => {
     const matrix: number[][] = [];
@@ -38,6 +39,7 @@ const RecipeList: React.FC = () => {
     const { isAuthenticated, logout } = useAuth();
 
     const { recipes, loading, error } = useRecipes();
+    const { ids: nextUpIds, add: addToNextUp, remove: removeFromNextUp } = useNextUpContext();
     const [ toastMessage, setToastMessage ] = React.useState<string | null>(null);
 
     React.useEffect(() => {
@@ -326,6 +328,24 @@ const RecipeList: React.FC = () => {
                                     />
                                 )}
                             </div>
+                            {/* next-up bookmark below the favorite icon */ }
+                            { isAuthenticated && (
+                                <div className={ styles.nextUpIcon }>
+                                    { nextUpIds.includes(recipe.id) ? (
+                                        <i
+                                            className="fa-solid fa-bookmark"
+                                            title="Aus Next Up entfernen"
+                                            onClick={ () => removeFromNextUp(recipe.id) }
+                                        />
+                                    ) : (
+                                        <i
+                                            className="fa-regular fa-bookmark"
+                                            title="Zu Next Up hinzufügen"
+                                            onClick={ () => addToNextUp(recipe.id) }
+                                        />
+                                    ) }
+                                </div>
+                            ) }
                             <Link to={ `/recipe/${ recipe.id }` }>
                                 <img
                                     src={
