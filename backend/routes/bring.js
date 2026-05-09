@@ -73,7 +73,7 @@ router.get('/bring-bulk', async (req, res, next) => {
             ...[ ...merged.values() ].map(i => {
                 const item = { itemId: i.itemId };
                 if (i.amount != null) {
-                    item.spec = `${ String(i.amount).replace('.', ',') } ${ i.unit ?? '' }`.trim();
+                    item.spec = `${ String(i.amount || '').replace('.', ',') } ${ i.unit || '' }`.trim();
                 }
                 return item;
             }),
