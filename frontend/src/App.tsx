@@ -18,6 +18,9 @@ import Config from "./components/Config";
 import { fetchAndCache } from "./utils/recipesCache";
 import { RecipeFiltersProvider } from "./context/RecipeFiltersContext";
 import { NextUpProvider } from "./context/NextUpContext";
+import { CollectionsProvider } from "./context/CollectionsContext";
+import CollectionList from "./components/CollectionList";
+import CollectionDetail from "./components/CollectionDetail";
 
 function ScrollToTop() {
     const { pathname } = useLocation();
@@ -43,6 +46,7 @@ const App: React.FC = () => {
     return (
         <RecipeFiltersProvider>
             <NextUpProvider>
+                <CollectionsProvider>
         <div className="app-container">
             <Sidebar />
             <div className="content">
@@ -103,9 +107,20 @@ const App: React.FC = () => {
                             <NextUpList />
                         </RequireLogin>
                     } />
+                    <Route path="/collections" element={
+                        <RequireLogin>
+                            <CollectionList />
+                        </RequireLogin>
+                    } />
+                    <Route path="/collections/:id" element={
+                        <RequireLogin>
+                            <CollectionDetail />
+                        </RequireLogin>
+                    } />
                 </Routes>
             </div>
         </div>
+                </CollectionsProvider>
             </NextUpProvider>
         </RecipeFiltersProvider>
     );

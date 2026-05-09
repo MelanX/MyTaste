@@ -1,6 +1,6 @@
 let recipeData = { recipes: [] };
 let importConfig = { rename_rules: [], spice_rules: { spices: [], spice_map: {} } };
-let collectionsData = { nextUp: [] };
+let collectionsData = { nextUp: [], collections: [] };
 
 const m = {
     readData: jest.fn(async () => JSON.parse(JSON.stringify(recipeData))),

@@ -11,6 +11,7 @@ import { ApiError, updateRecipeStatus } from "../../utils/api_service";
 import { useRecipes } from "../../hooks/useRecipes";
 import { useRecipeFilters } from "../../context/RecipeFiltersContext";
 import { useNextUpContext } from "../../context/NextUpContext";
+import CollectionPicker from "../CollectionPicker";
 
 const levenshtein = (a: string, b: string): number => {
     const matrix: number[][] = [];
@@ -328,6 +329,12 @@ const RecipeList: React.FC = () => {
                                     />
                                 )}
                             </div>
+                            {/* collection picker below the cook icon */ }
+                            { isAuthenticated && (
+                                <div className={ styles.collectionIcon }>
+                                    <CollectionPicker recipeId={ recipe.id } />
+                                </div>
+                            ) }
                             {/* next-up bookmark below the favorite icon */ }
                             { isAuthenticated && (
                                 <div className={ styles.nextUpIcon }>

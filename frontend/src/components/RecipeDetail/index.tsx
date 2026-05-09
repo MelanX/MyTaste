@@ -10,6 +10,7 @@ import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../utils/api_service";
 import { useRecipe } from "../../hooks/useRecipe";
 import { upsertRecipe } from "../../utils/recipesCache";
+import CollectionPicker from "../CollectionPicker";
 
 const RecipeDetail: React.FC = () => {
     const { isAuthenticated, logout } = useAuth();
@@ -62,6 +63,7 @@ const RecipeDetail: React.FC = () => {
                         <div className={ styles.bringButton }>
                             <BringButton recipeId={ recipe.id } />
                         </div>
+                        { isAuthenticated && <CollectionPicker recipeId={ recipe.id } variant="button" /> }
                     </div>
                 </div>
                 <RecipeSidebar recipe={ recipe } updateRecipe={ r => upsertRecipe(r) } />

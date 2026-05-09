@@ -1,0 +1,130 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useCollectionsContext } from '../../context/CollectionsContext';
+import styles from './styles.module.css';
+
+interface Props {
+    recipeId: string;
+    variant?: 'icon' | 'button';
+}
+
+const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
+    const { collections, addRecipe, removeRecipe, create } = useCollectionsContext();
+    const [ open, setOpen ] = useState(false);
+    const [ newName, setNewName ] = useState('');
+    const [ showNew, setShowNew ] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLButtonElement>(null);
+    const [ dropdownPos, setDropdownPos ] = useState<{ top: number; right: number }>({ top: 0, right: 0 });
+
+    useEffect(() => {
+        if (!open) return;
+        const handler = (e: MouseEvent) => {
+            if (
+                containerRef.current && !containerRef.current.contains(e.target as Node) &&
+                dropdownRef.current && !dropdownRef.current.contains(e.target as Node)
+            ) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [ open ]);
+
+    const handleToggle = () => {
+        if (!open && triggerRef.current) {
+            const rect = triggerRef.current.getBoundingClientRect();
+            setDropdownPos({
+                top: rect.bottom + 6,
+                right: window.innerWidth - rect.right,
+            });
+        }
+        setOpen(v => !v);
+    };
+
+    const toggle = async (collectionId: string, inCollection: boolean) => {
+        if (inCollection) {
+            await removeRecipe(collectionId, recipeId);
+        } else {
+            await addRecipe(collectionId, recipeId);
+        }
+    };
+
+    const handleCreate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newName.trim()) return;
+        await create(newName.trim());
+        setNewName('');
+        setShowNew(false);
+    };
+
+    const inCount = collections.filter(c => c.recipeIds.includes(recipeId)).length;
+    const buttonLabel = inCount === 0
+        ? 'Zu Kollektion'
+        : inCount === 1
+            ? 'In 1 Kollektion'
+            : `In ${ inCount } Kollektionen`;
+
+    const dropdown = (
+        <div
+            ref={ dropdownRef }
+            className={ styles.dropdown }
+            style={ { position: 'fixed', top: dropdownPos.top, right: dropdownPos.right, zIndex: 1000 } }
+        >
+            { collections.length === 0 && !showNew && (
+                <p className={ styles.empty }>Keine Kollektionen</p>
+            ) }
+            { collections.map(c => {
+                const checked = c.recipeIds.includes(recipeId);
+                return (
+                    <label key={ c.id } className={ styles.item }>
+                        <input
+                            type="checkbox"
+                            checked={ checked }
+                            onChange={ () => toggle(c.id, checked) }
+                        />
+                        <span>{ c.name }</span>
+                    </label>
+                );
+            }) }
+            <hr className={ styles.separator } />
+            { showNew ? (
+                <form onSubmit={ handleCreate } className={ styles.newForm }>
+                    <input
+                        type="text"
+                        value={ newName }
+                        onChange={ e => setNewName(e.target.value) }
+                        placeholder="Name..."
+                        className={ styles.newInput }
+                        autoFocus
+                    />
+                    <button type="submit" className={ styles.createBtn }>+</button>
+                </form>
+            ) : (
+                <button type="button" className={ styles.newCollectionBtn } onClick={ () => setShowNew(true) }>
+                    <i className="fa-solid fa-plus" /> Neue Kollektion
+                </button>
+            ) }
+        </div>
+    );
+
+    return (
+        <div className={ styles.wrapper } ref={ containerRef }>
+            <button
+                ref={ triggerRef }
+                type="button"
+                className={ variant === 'button' ? styles.triggerButton : styles.trigger }
+                onClick={ handleToggle }
+                title="Zu Kollektion hinzufügen"
+            >
+                <i className="fa-solid fa-folder-plus" />
+                { variant === 'button' && <span> { buttonLabel }</span> }
+            </button>
+
+            { open && createPortal(dropdown, document.body) }
+        </div>
+    );
+};
+
+export default CollectionPicker;

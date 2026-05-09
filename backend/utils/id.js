@@ -2,7 +2,7 @@ const { randomBytes } = require('crypto');
 
 /** Nano-style, URL-friendly ID
  *  @see https://github.com/ai/nanoid
- *  @param {number} length – characters to return (default 21)
+ *  @param {number} length – characters to return (default 10)
  *  @returns {string}      – e.g. "pX75pxW-LF"
  */
 function nanoid(length = 10) {

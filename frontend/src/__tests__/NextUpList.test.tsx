@@ -4,10 +4,12 @@ import userEvent from '@testing-library/user-event';
 
 import NextUpList from '../components/NextUpList';
 import { useNextUpContext } from '../context/NextUpContext';
+import { useCollectionsContext } from '../context/CollectionsContext';
 import { useRecipes } from '../hooks/useRecipes';
 import { useAuth } from '../context/AuthContext';
 
 jest.mock('../context/NextUpContext');
+jest.mock('../context/CollectionsContext');
 jest.mock('../hooks/useRecipes');
 jest.mock('../context/AuthContext');
 jest.mock('../config', () => ({ getConfig: () => ({ API_URL: '', requireLogin: false }) }));
@@ -16,9 +18,11 @@ jest.mock('../components/BringButton', () => ({ ids, recipeId }: { ids?: string[
 );
 jest.mock('react-router-dom', () => ({
     Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={ to }>{ children }</a>,
+    useNavigate: () => jest.fn(),
 }), { virtual: true });
 
 const mockUseNextUp = useNextUpContext as jest.Mock;
+const mockUseCollections = useCollectionsContext as jest.Mock;
 const mockUseRecipes = useRecipes as jest.Mock;
 const mockUseAuth = useAuth as jest.Mock;
 
@@ -38,6 +42,11 @@ function setupMocks({
                         recipes = sampleRecipes,
                     } = {}) {
     mockUseNextUp.mockReturnValue({ ids, loading, error, add: mockAdd, remove: mockRemove, clear: mockClear });
+    mockUseCollections.mockReturnValue({
+        collections: [], loading: false, error: null,
+        create: jest.fn().mockResolvedValue([]), addRecipe: jest.fn(), removeRecipe: jest.fn(),
+        rename: jest.fn(), remove: jest.fn(), clearRecipes: jest.fn(),
+    });
     mockUseRecipes.mockReturnValue({ recipes, loading: false, error: null });
     mockUseAuth.mockReturnValue({ isAuthenticated: true, logout: jest.fn() });
 }

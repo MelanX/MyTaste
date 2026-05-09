@@ -1,4 +1,5 @@
 import { getConfig } from "../config";
+import { Collection } from '../types/Collections';
 
 export class ApiError extends Error {
     constructor(public readonly status: number, message: string) {
@@ -80,6 +81,48 @@ export async function removeFromNextUp(id: string): Promise<string[]> {
 export async function clearNextUp(): Promise<void> {
     const res = await apiFetch('/api/collections/next-up', { method: 'DELETE' });
     if (!res.ok) throw new ApiError(res.status, res.statusText);
+}
+
+export async function fetchCollections(): Promise<Collection[]> {
+    const res = await apiFetch('/api/collections');
+    if (!res.ok) throw new ApiError(res.status, res.statusText);
+    return (await res.json()).collections;
+}
+
+export async function createCollection(name: string): Promise<Collection[]> {
+    const res = await apiFetch('/api/collections', { method: 'POST', body: JSON.stringify({ name }) });
+    if (!res.ok) throw new ApiError(res.status, res.statusText);
+    return (await res.json()).collections;
+}
+
+export async function renameCollection(id: string, name: string): Promise<Collection[]> {
+    const res = await apiFetch(`/api/collections/${ id }`, { method: 'PATCH', body: JSON.stringify({ name }) });
+    if (!res.ok) throw new ApiError(res.status, res.statusText);
+    return (await res.json()).collections;
+}
+
+export async function deleteCollection(id: string): Promise<Collection[]> {
+    const res = await apiFetch(`/api/collections/${ id }`, { method: 'DELETE' });
+    if (!res.ok) throw new ApiError(res.status, res.statusText);
+    return (await res.json()).collections;
+}
+
+export async function addToCollection(collectionId: string, recipeId: string): Promise<Collection[]> {
+    const res = await apiFetch(`/api/collections/${ collectionId }/recipes/${ recipeId }`, { method: 'POST' });
+    if (!res.ok) throw new ApiError(res.status, res.statusText);
+    return (await res.json()).collections;
+}
+
+export async function removeFromCollection(collectionId: string, recipeId: string): Promise<Collection[]> {
+    const res = await apiFetch(`/api/collections/${ collectionId }/recipes/${ recipeId }`, { method: 'DELETE' });
+    if (!res.ok) throw new ApiError(res.status, res.statusText);
+    return (await res.json()).collections;
+}
+
+export async function clearCollection(id: string): Promise<Collection[]> {
+    const res = await apiFetch(`/api/collections/${ id }/recipes`, { method: 'DELETE' });
+    if (!res.ok) throw new ApiError(res.status, res.statusText);
+    return (await res.json()).collections;
 }
 
 export async function updateRecipeStatus(recipeId: string, updates: {

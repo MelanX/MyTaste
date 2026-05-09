@@ -63,6 +63,9 @@ const Sidebar: React.FC = () => {
                                         <Link to="/next-up" onClick={ () => setIsOpen(false) }>Next Up</Link>
                                     </li>
                                     <li>
+                                        <Link to="/collections" onClick={ () => setIsOpen(false) }>Kollektionen</Link>
+                                    </li>
+                                    <li>
                                         <Link to="/new-recipe" onClick={() => setIsOpen(false)}>Rezept hinzufügen</Link>
                                     </li>
                                     <li>

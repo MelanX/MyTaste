@@ -46,7 +46,7 @@ async function ensureCollectionsFile() {
     try {
         await fs.promises.writeFile(
             COLLECTIONS_FILE,
-            JSON.stringify({ nextUp: [] }, null, 2),
+            JSON.stringify({ nextUp: [], collections: [] }, null, 2),
             { flag: 'wx' }
         );
     } catch (err) {
@@ -79,7 +79,9 @@ async function writeImportConfig(data) {
 async function readCollections() {
     await ensureCollectionsFile();
     const raw = await fs.promises.readFile(COLLECTIONS_FILE, 'utf8');
-    return JSON.parse(raw);
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data.collections)) data.collections = [];
+    return data;
 }
 
 async function writeCollections(data) {
