@@ -3,6 +3,7 @@ const multer = require('multer');
 const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
+const { randomBytes } = require('crypto');
 const authenticateToken = require("../middleware/auth");
 
 const router = express.Router();
@@ -61,8 +62,7 @@ router.post('/upload-image', authenticateToken, (req, res, next) => {
         }
 
         try {
-            // deterministic random name → <epoch>-<rand>.webp
-            const filename = `${ Date.now() }-${ Math.round(Math.random() * 1e9) }.webp`;
+            const filename = `${ Date.now() }-${ randomBytes(8).toString('hex') }.webp`;
             const target = path.join(UPLOAD_DIR, filename);
 
             // auto-rotate, optionally down-scale, then encode WebP (quality ≈ 80 %)

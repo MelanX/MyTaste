@@ -1,4 +1,30 @@
 const Joi = require('joi');
+const { isIP } = require('net');
+
+function isPrivateIp(ip) {
+    const v4 = [
+        /^127\./,
+        /^10\./,
+        /^172\.(1[6-9]|2\d|3[01])\./,
+        /^192\.168\./,
+        /^169\.254\./,
+        /^0\./,
+    ];
+    const v6 = [ /^::1$/, /^fc/i, /^fd/i, /^fe[89ab]/i ];
+    if (isIP(ip) === 4) return v4.some(r => r.test(ip));
+    if (isIP(ip) === 6) return v6.some(r => r.test(ip));
+    return false;
+}
+
+function rejectPrivateUrl(url) {
+    let parsed;
+    try { parsed = new URL(url); } catch { return false; }
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return true;
+    const h = parsed.hostname;
+    if (h === 'localhost' || h.endsWith('.localhost')) return true;
+    if (isIP(h) && isPrivateIp(h)) return true;
+    return false;
+}
 
 const recipeIngredients = Joi.array().items(
     Joi.object({
@@ -88,18 +114,10 @@ const loginSchema = Joi.object({
     password: Joi.string().min(1).max(1024).required(),
 });
 
-const unallowedDomains = [];
 const importSchema = Joi.object({
     url: Joi.string().trim().uri().custom((value, helpers) => {
-        const { hostname } = new URL(value);
-
-        const isAllowed = !unallowedDomains.some((base) =>
-            hostname === base || hostname.endsWith(`.${ base }`)
-        );
-
-        return isAllowed
-            ? value
-            : helpers.error('any.invalid');   // triggers custom message below
+        if (rejectPrivateUrl(value)) return helpers.error('any.invalid');
+        return value;
     })
         .required()
         .messages({

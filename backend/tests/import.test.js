@@ -50,4 +50,20 @@ describe('Import route', () => {
         expect(res.status).toBe(200);
         expect(res.body).toEqual(fakeRecipe);
     });
+
+    it.each([
+        'http://127.0.0.1/admin',
+        'http://10.0.0.1/secret',
+        'http://172.16.0.1/internal',
+        'http://192.168.1.1/router',
+        'http://169.254.169.254/latest/meta-data',
+        'http://localhost/admin',
+    ])('400 when URL targets private address: %s', async (url) => {
+        const res = await request(app)
+            .post(endpoint)
+            .set(authHeader())
+            .send({ url });
+        expect(res.status).toBe(400);
+        expect(importGeneric).not.toHaveBeenCalled();
+    });
 });

@@ -41,7 +41,17 @@ app.use(cors({
 app.use(cookieParser());
 app.set('trust proxy', 1);
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '2mb' }));
+
+app.use((_, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    if (process.env.NODE_ENV === 'production') {
+        res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    }
+    next();
+});
 
 // Health check (no auth required)
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));

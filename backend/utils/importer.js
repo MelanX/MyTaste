@@ -1,5 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { isIP } = require('net');
 const { parseLeckerAbnehmen, parseLilyaMomycooks } = require("./customImporter");
 const {
     parseIngredients,
@@ -49,10 +50,29 @@ function extractRecipeLd(html) {
     return recipeData;
 }
 
+function isPrivateIp(ip) {
+    const v4 = [
+        /^127\./, /^10\./, /^172\.(1[6-9]|2\d|3[01])\./, /^192\.168\./, /^169\.254\./, /^0\./,
+    ];
+    const v6 = [ /^::1$/, /^fc/i, /^fd/i, /^fe[89ab]/i ];
+    if (isIP(ip) === 4) return v4.some(r => r.test(ip));
+    if (isIP(ip) === 6) return v6.some(r => r.test(ip));
+    return false;
+}
+
 /**
  * Tries importing using JSON-LD, falling back to custom parsing.
  */
 async function importGeneric(url) {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        throw new Error('Only http and https URLs are allowed.');
+    }
+    const h = parsed.hostname;
+    if (h === 'localhost' || h.endsWith('.localhost') || (isIP(h) && isPrivateIp(h))) {
+        throw new Error('Requests to private addresses are not allowed.');
+    }
+
     const res = await axios.get(url, {
         headers: {
             'User-Agent': 'MelanX/MyTaste',
