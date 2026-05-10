@@ -64,7 +64,7 @@ describe('CollectionList', () => {
         const user = userEvent.setup();
         setupMocks({ collections: [] });
         render(<CollectionList />);
-        await user.click(screen.getByRole('button', { name: /neue kollektion/i }));
+        await user.click(screen.getByRole('button', { name: /neue sammlung/i }));
         expect(screen.getByRole('textbox')).toBeInTheDocument();
     });
 
@@ -72,7 +72,7 @@ describe('CollectionList', () => {
         const user = userEvent.setup();
         setupMocks({ collections: [] });
         render(<CollectionList />);
-        await user.click(screen.getByRole('button', { name: /neue kollektion/i }));
+        await user.click(screen.getByRole('button', { name: /neue sammlung/i }));
         await user.type(screen.getByRole('textbox'), 'My List');
         await user.click(screen.getByRole('button', { name: /erstellen/i }));
         expect(mockCreate).toHaveBeenCalledWith('My List');

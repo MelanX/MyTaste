@@ -104,7 +104,7 @@ describe('CollectionDetail', () => {
     it('shows "Sammlung nicht gefunden" when id is not in collections', () => {
         setupMocks({ collections: [] });
         render(<CollectionDetail />);
-        expect(screen.getByText(/kollektion nicht gefunden/i)).toBeInTheDocument();
+        expect(screen.getByText(/sammlung nicht gefunden/i)).toBeInTheDocument();
     });
 
     it('shows loading spinner while loading=true', () => {

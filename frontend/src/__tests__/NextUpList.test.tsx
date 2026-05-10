@@ -79,11 +79,11 @@ describe('NextUpList', () => {
         expect(mockRemove).toHaveBeenCalledWith('r1');
     });
 
-    it('"Liste leeren" button calls clear after confirm', async () => {
+    it('"Leeren" button calls clear after confirm', async () => {
         const user = userEvent.setup();
         setupMocks({ ids: [ 'r1' ] });
         render(<NextUpList />);
-        const clearBtn = screen.getByRole('button', { name: /liste leeren/i });
+        const clearBtn = screen.getByRole('button', { name: /leeren/i });
         await user.click(clearBtn);
         expect(window.confirm).toHaveBeenCalled();
         expect(mockClear).toHaveBeenCalled();
