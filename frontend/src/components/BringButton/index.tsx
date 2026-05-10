@@ -25,7 +25,7 @@ const BringButton: React.FC<BringButtonProps> = ({ recipeId, ids, label = 'Zur E
     const bringLink = generateBringImportLink(dataUrl);
 
     return (
-        <Link to={bringLink}>
+        <Link to={bringLink} className={ styles.link }>
             <button className={ styles.bringButton }>
                 <img src={ bringLogo } alt="Bring Logo" className={ styles.bringLogo } />
                 { label }
