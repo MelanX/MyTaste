@@ -99,7 +99,9 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
                         className={ styles.newInput }
                         autoFocus
                     />
-                    <button type="submit" className={ styles.createBtn }>+</button>
+                    <button type="submit" className={ styles.createBtn }>
+                        <i className="fa-solid fa-plus" />
+                    </button>
                 </form>
             ) : (
                 <button type="button" className={ styles.newCollectionBtn } onClick={ () => setShowNew(true) }>

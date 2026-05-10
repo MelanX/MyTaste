@@ -60,7 +60,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 14px;
+    padding: 0 14px;
     cursor: pointer;
     font-size: 0.95rem;
     color: var(--color-text);
@@ -88,7 +88,7 @@
 .separator {
     border: none;
     border-top: 1px solid var(--color-border);
-    margin: 4px 12px;
+    margin: 8px 12px;
 }
 
 .newCollectionBtn {
@@ -103,7 +103,6 @@
     font-size: 0.9rem;
     color: var(--color-primary-dark);
     text-align: left;
-
 }
 
 .newCollectionBtn:hover {
@@ -113,7 +112,8 @@
 .newForm {
     display: flex;
     gap: 4px;
-    padding: 6px 10px;
+    padding: 0 10px;
+    margin: 12px 0 4px 0;
 }
 
 .newInput {
@@ -124,6 +124,7 @@
     font-size: 0.9rem;
     background: var(--color-white);
     color: var(--color-text);
+    margin: 0;
 }
 
 .newInput:focus {
@@ -132,14 +133,19 @@
 }
 
 .createBtn {
-    padding: 4px 10px;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    flex-shrink: 0;
     background-color: var(--color-primary);
     border: none;
-    border-radius: 4px;
+    border-radius: 50%;
     cursor: pointer;
     color: var(--color-white);
     font-weight: 700;
-
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .createBtn:hover {
