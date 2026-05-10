@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
@@ -16,14 +16,14 @@ navigator.serviceWorker?.addEventListener('message', (e) => {
     }
 });
 
+const router = createBrowserRouter([{ path: '*', element: <App /> }]);
+
 loadConfig().then(() => {
     const root = ReactDOM.createRoot(document.getElementById('root')!);
     root.render(
         <React.StrictMode>
             <AuthProvider>
-                <BrowserRouter>
-                    <App />
-                </BrowserRouter>
+                <RouterProvider router={router} />
             </AuthProvider>
         </React.StrictMode>
     );

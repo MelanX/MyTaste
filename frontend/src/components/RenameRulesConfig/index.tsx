@@ -7,8 +7,13 @@ interface RenameRule {
     to: string;
 }
 
-const RenameRulesConfig: React.FC = () => {
+interface Props {
+    onDirtyChange?: (dirty: boolean) => void;
+}
+
+const RenameRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
     const [rules, setRules] = useState<RenameRule[]>([]);
+    const [savedRules, setSavedRules] = useState<RenameRule[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [ , setErrors ] = useState<string[]>([]);
@@ -18,6 +23,7 @@ const RenameRulesConfig: React.FC = () => {
             .then(res => res.json())
             .then(data => {
                 setRules(data.rename_rules);
+                setSavedRules(data.rename_rules);
                 setLoading(false);
             })
             .catch(() => {
@@ -25,6 +31,11 @@ const RenameRulesConfig: React.FC = () => {
                 setLoading(false);
             });
     }, []);
+
+    useEffect(() => {
+        if (savedRules === null) return;
+        onDirtyChange?.(JSON.stringify(rules) !== JSON.stringify(savedRules));
+    }, [rules, savedRules, onDirtyChange]);
 
     const updateRule = (index: number, updated: RenameRule) => {
         const newRules = [...rules];
@@ -50,6 +61,7 @@ const RenameRulesConfig: React.FC = () => {
 
         if (response.ok) {
             setRules(rename_rules);
+            setSavedRules(rename_rules);
         } else {
             const json = await response.json();
             setErrors([json.message, ...json.details]);
@@ -92,7 +104,7 @@ const RenameRulesConfig: React.FC = () => {
             ))}
             <div className={styles.actions}>
                 <button onClick={addRule}>Regel hinzufügen</button>
-                <button onClick={saveConfig}>Speichere Konfiguration</button>
+                <button onClick={saveConfig}>Speichern</button>
             </div>
         </div>
     );

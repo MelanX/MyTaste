@@ -55,7 +55,7 @@ const Sidebar: React.FC = () => {
                     <nav>
                         <ul>
                             <li>
-                                <Link to="/" reloadDocument onClick={() => setIsOpen(false)}>Home</Link>
+                                <Link to="/" onClick={() => { if (window.location.pathname === '/') window.location.reload(); setIsOpen(false); }}>Home</Link>
                             </li>
                             {isAuthenticated && (
                                 <>

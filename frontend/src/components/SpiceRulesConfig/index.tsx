@@ -25,11 +25,16 @@ const uiSpiceMapToObject = (map: SpiceAliasRule[]): Record<string, string[]> => 
     );
 };
 
-const SpiceRulesConfig: React.FC = () => {
+interface Props {
+    onDirtyChange?: (dirty: boolean) => void;
+}
+
+const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
     const [rules, setRules] = useState<SpiceRules>({
         spices: [],
         spice_map: [],
     });
+    const [savedRules, setSavedRules] = useState<SpiceRules | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
     const [newSpice, setNewSpice] = useState('');
     const [loading, setLoading] = useState(true);
@@ -40,10 +45,12 @@ const SpiceRulesConfig: React.FC = () => {
             .then(res => res.json())
             .then(data => {
                 const spice_rules = data.spice_rules ?? {spices: [], spice_map: {}};
-                setRules({
+                const loaded: SpiceRules = {
                     spices: spice_rules.spices ?? [],
                     spice_map: apiSpiceMapToArray(spice_rules.spice_map),
-                })
+                };
+                setRules(loaded);
+                setSavedRules(loaded);
                 setLoading(false);
             })
             .catch(() => {
@@ -51,6 +58,11 @@ const SpiceRulesConfig: React.FC = () => {
                 setLoading(false);
             });
     }, []);
+
+    useEffect(() => {
+        if (savedRules === null) return;
+        onDirtyChange?.(JSON.stringify(rules) !== JSON.stringify(savedRules));
+    }, [rules, savedRules, onDirtyChange]);
 
     const upsertAlias = (idx: number, rule: SpiceAliasRule) => {
         const updated = [...rules.spice_map];
@@ -79,6 +91,7 @@ const SpiceRulesConfig: React.FC = () => {
             setErrors([json.message, ...json.details]);
             return;
         }
+        setSavedRules(rules);
     };
 
     const handleAddSpice = () => {

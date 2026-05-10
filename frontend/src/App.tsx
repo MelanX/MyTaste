@@ -53,7 +53,7 @@ const App: React.FC = () => {
                 <PaperGrain
                     grainColor={'#ff0000'}
                 />
-                <Link to="/" reloadDocument className="logo-link">
+                <Link to="/" className="logo-link" onClick={() => { if (window.location.pathname === '/') window.location.reload(); }}>
                     <img
                         src={`${process.env.PUBLIC_URL}/text.png`}
                         alt="MyTaste"
