@@ -100,15 +100,3 @@
     border-color: var(--color-primary);
     background: color-mix(in srgb, var(--color-primary) 6%, transparent);
 }
-
-.hint {
-    font-size: .78rem;
-    color: var(--color-text-muted, #888);
-}
-
-.hint code {
-    font-size: .78rem;
-    background: var(--color-background-alt);
-    padding: .1rem .3rem;
-    border-radius: .2rem;
-}

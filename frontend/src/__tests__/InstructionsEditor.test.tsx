@@ -61,4 +61,85 @@ describe('InstructionsEditor', () => {
         fireEvent.change(input, { target: { value: 'neu' } });
         expect(onChange).toHaveBeenCalledWith(['neu', 'zweiter']);
     });
+
+    it('Ctrl+B wraps selected text with **bold**', () => {
+        const { onChange } = renderEditor(['Tomaten schneiden']);
+        const input = screen.getByDisplayValue('Tomaten schneiden') as HTMLTextAreaElement;
+        input.setSelectionRange(0, 7);
+        fireEvent.keyDown(input, { key: 'b', ctrlKey: true });
+        expect(onChange).toHaveBeenCalledWith(['**Tomaten** schneiden']);
+    });
+
+    it('Ctrl+I wraps selected text with *italic*', () => {
+        const { onChange } = renderEditor(['Tomaten schneiden']);
+        const input = screen.getByDisplayValue('Tomaten schneiden') as HTMLTextAreaElement;
+        input.setSelectionRange(8, 17);
+        fireEvent.keyDown(input, { key: 'i', ctrlKey: true });
+        expect(onChange).toHaveBeenCalledWith(['Tomaten *schneiden*']);
+    });
+
+    it('Ctrl+U wraps selected text with __underline__', () => {
+        const { onChange } = renderEditor(['Tomaten schneiden']);
+        const input = screen.getByDisplayValue('Tomaten schneiden') as HTMLTextAreaElement;
+        input.setSelectionRange(0, 7);
+        fireEvent.keyDown(input, { key: 'u', ctrlKey: true });
+        expect(onChange).toHaveBeenCalledWith(['__Tomaten__ schneiden']);
+    });
+
+    it('Ctrl+B without selection does not call onChange', () => {
+        const { onChange } = renderEditor(['Text']);
+        const input = screen.getByDisplayValue('Text') as HTMLTextAreaElement;
+        input.setSelectionRange(2, 2);
+        fireEvent.keyDown(input, { key: 'b', ctrlKey: true });
+        expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('Ctrl+B on already-bold text removes bold markers (toggle off)', () => {
+        const { onChange } = renderEditor(['**Tomaten** schneiden']);
+        const input = screen.getByDisplayValue('**Tomaten** schneiden') as HTMLTextAreaElement;
+        input.setSelectionRange(2, 9); // select 'Tomaten' inside **...**
+        fireEvent.keyDown(input, { key: 'b', ctrlKey: true });
+        expect(onChange).toHaveBeenCalledWith(['Tomaten schneiden']);
+    });
+
+    it('Ctrl+I on already-italic text removes italic markers (toggle off)', () => {
+        const { onChange } = renderEditor(['*kursiv*']);
+        const input = screen.getByDisplayValue('*kursiv*') as HTMLTextAreaElement;
+        input.setSelectionRange(1, 7); // select 'kursiv' inside *...*
+        fireEvent.keyDown(input, { key: 'i', ctrlKey: true });
+        expect(onChange).toHaveBeenCalledWith(['kursiv']);
+    });
+
+    it('Ctrl+U on already-underlined text removes underline markers (toggle off)', () => {
+        const { onChange } = renderEditor(['__unter__']);
+        const input = screen.getByDisplayValue('__unter__') as HTMLTextAreaElement;
+        input.setSelectionRange(2, 7); // select 'unter' inside __...__
+        fireEvent.keyDown(input, { key: 'u', ctrlKey: true });
+        expect(onChange).toHaveBeenCalledWith(['unter']);
+    });
+
+    it('Ctrl+I does not toggle off when inside ** bold markers', () => {
+        // Selecting 'bold' inside **bold** should ADD italic, creating ***bold***
+        const { onChange } = renderEditor(['**bold**']);
+        const input = screen.getByDisplayValue('**bold**') as HTMLTextAreaElement;
+        input.setSelectionRange(2, 6); // select 'bold' (inside **)
+        fireEvent.keyDown(input, { key: 'i', ctrlKey: true });
+        expect(onChange).toHaveBeenCalledWith(['***bold***']);
+    });
+
+    it('Ctrl+I removes italic from ***text*** leaving **text** (toggle off)', () => {
+        const { onChange } = renderEditor(['***bold***']);
+        const input = screen.getByDisplayValue('***bold***') as HTMLTextAreaElement;
+        input.setSelectionRange(3, 7); // select 'bold' inside ***
+        fireEvent.keyDown(input, { key: 'i', ctrlKey: true });
+        expect(onChange).toHaveBeenCalledWith(['**bold**']);
+    });
+
+    it('Ctrl+B removes bold from ***text*** leaving *text* (toggle off)', () => {
+        const { onChange } = renderEditor(['***bold***']);
+        const input = screen.getByDisplayValue('***bold***') as HTMLTextAreaElement;
+        input.setSelectionRange(3, 7); // select 'bold' inside ***
+        fireEvent.keyDown(input, { key: 'b', ctrlKey: true });
+        expect(onChange).toHaveBeenCalledWith(['*bold*']);
+    });
 });
