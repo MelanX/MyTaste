@@ -1,5 +1,5 @@
 let recipeData = { recipes: [] };
-let importConfig = { rename_rules: [], spice_rules: { spices: [], spice_map: {} } };
+let importConfig = { rename_rules: [], spice_rules: { spices: [], spice_map: {} }, bring_rules: [] };
 let collectionsData = { nextUp: [], collections: [] };
 
 const m = {

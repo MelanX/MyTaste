@@ -18,9 +18,27 @@
 
 .tabBar {
     display: flex;
-    gap: .5rem;
+    flex-direction: column;
+    gap: .35rem;
     margin-bottom: 1rem;
+}
+
+.tabGroup {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
     flex-wrap: wrap;
+}
+
+.groupLabel {
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted, #888);
+    padding-right: .15rem;
+    user-select: none;
+    min-width: 4.5rem;
 }
 
 .tabButton {

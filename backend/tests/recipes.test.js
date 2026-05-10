@@ -19,6 +19,7 @@ beforeEach(() => {
             }
         ]
     });
+    fileService.__setImportConfig({ bring_rules: [], rename_rules: [], spice_rules: { spices: [], spice_map: {} } });
 });
 
 describe('Recipes endpoints', () => {

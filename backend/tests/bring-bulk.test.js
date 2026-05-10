@@ -57,6 +57,7 @@ const seedRecipes = [
 
 beforeEach(() => {
     fileService.__setRecipeData({ recipes: seedRecipes });
+    fileService.__setImportConfig({ bring_rules: [], rename_rules: [], spice_rules: { spices: [], spice_map: {} } });
 });
 
 describe('GET /api/bring-bulk', () => {
@@ -143,5 +144,109 @@ describe('GET /api/bring-bulk', () => {
         const keys = items.map(i => `${ i.itemId }\0${ i.spec ?? '' }`);
         const uniqueKeys = new Set(keys);
         expect(keys.length).toBe(uniqueKeys.size);
+    });
+});
+
+describe('GET /api/bring-recipe with bring_rules normalization', () => {
+    const mixedRecipe = {
+        id: 'mix1',
+        title: 'Käsekuchen',
+        url: '',
+        image: '',
+        ingredient_sections: [
+            { ingredients: [ { name: 'Ei', amount: 1, unit: 'Stück' } ] },
+            { ingredients: [ { name: 'Eier', amount: 3, unit: 'Stück' } ] },
+        ],
+        spices: [],
+        instructions: [],
+        status: { favorite: false, cookState: false },
+    };
+
+    beforeEach(() => {
+        fileService.__setRecipeData({ recipes: [ mixedRecipe ] });
+        fileService.__setImportConfig({
+            bring_rules: [ { from: [ 'Ei' ], to: 'Eier' } ],
+            rename_rules: [],
+            spice_rules: { spices: [], spice_map: {} },
+        });
+    });
+
+    it('merges "Ei" and "Eier" within the same recipe', async () => {
+        const res = await agent.get('/api/bring-recipe/mix1');
+        expect(res.status).toBe(200);
+        const items = res.body.items;
+        const eierItem = items.find(i => i.itemId === 'Eier');
+        expect(eierItem).toBeDefined();
+        expect(eierItem.spec).toBe('4 Stück');
+        expect(items.find(i => i.itemId === 'Ei')).toBeUndefined();
+    });
+
+    it('without bring_rules, Ei and Eier in same recipe stay separate', async () => {
+        fileService.__setImportConfig({ bring_rules: [], rename_rules: [], spice_rules: { spices: [], spice_map: {} } });
+        const res = await agent.get('/api/bring-recipe/mix1');
+        expect(res.status).toBe(200);
+        const items = res.body.items;
+        expect(items.find(i => i.itemId === 'Ei')).toBeDefined();
+        expect(items.find(i => i.itemId === 'Eier')).toBeDefined();
+    });
+});
+
+describe('GET /api/bring-bulk with bring_rules normalization', () => {
+    const eierRecipe = {
+        id: 'egg1',
+        title: 'Eierkuchen',
+        url: '',
+        image: '',
+        ingredient_sections: [ { ingredients: [ { name: 'Eier', amount: 2, unit: 'Stück' } ] } ],
+        spices: [],
+        instructions: [],
+        status: { favorite: false, cookState: false },
+    };
+    const eiRecipe = {
+        id: 'egg2',
+        title: 'Rührei',
+        url: '',
+        image: '',
+        ingredient_sections: [ { ingredients: [ { name: 'Ei', amount: 3, unit: 'Stück' } ] } ],
+        spices: [],
+        instructions: [],
+        status: { favorite: false, cookState: false },
+    };
+
+    beforeEach(() => {
+        fileService.__setRecipeData({ recipes: [ eierRecipe, eiRecipe ] });
+        fileService.__setImportConfig({
+            bring_rules: [ { from: [ 'Ei' ], to: 'Eier' } ],
+            rename_rules: [],
+            spice_rules: { spices: [], spice_map: {} },
+        });
+    });
+
+    it('normalizes "Ei" to "Eier" and merges amounts', async () => {
+        const res = await agent.get('/api/bring-bulk?ids=egg1,egg2');
+        expect(res.status).toBe(200);
+        const items = res.body.items;
+        const eierItem = items.find(i => i.itemId === 'Eier');
+        expect(eierItem).toBeDefined();
+        expect(eierItem.spec).toBe('5 Stück');
+        // "Ei" should not appear as a separate item
+        expect(items.find(i => i.itemId === 'Ei')).toBeUndefined();
+    });
+
+    it('does not duplicate "Eier" when recipe already uses canonical name', async () => {
+        const res = await agent.get('/api/bring-bulk?ids=egg1');
+        expect(res.status).toBe(200);
+        const eierItems = res.body.items.filter(i => i.itemId === 'Eier');
+        expect(eierItems).toHaveLength(1);
+        expect(eierItems[0].spec).toBe('2 Stück');
+    });
+
+    it('without bring_rules, Ei and Eier remain separate', async () => {
+        fileService.__setImportConfig({ bring_rules: [], rename_rules: [], spice_rules: { spices: [], spice_map: {} } });
+        const res = await agent.get('/api/bring-bulk?ids=egg1,egg2');
+        expect(res.status).toBe(200);
+        const items = res.body.items;
+        expect(items.find(i => i.itemId === 'Eier')).toBeDefined();
+        expect(items.find(i => i.itemId === 'Ei')).toBeDefined();
     });
 });

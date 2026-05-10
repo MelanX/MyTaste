@@ -152,7 +152,13 @@ const configSchema = Joi.object({
         }
 
         return invalid.length ? helpers.error('any.invalid', { invalid }) : value;
-    }, 'spice_map items must exist in spices')
+    }, 'spice_map items must exist in spices'),
+    bring_rules: Joi.array().items(
+        Joi.object({
+            from: Joi.array().items(Joi.string()).min(1).required(),
+            to: Joi.string().min(1).required(),
+        })
+    ),
 }).unknown(false).min(1); // at least one key when patching
 
 const recipeStatusSchema = Joi.object({

@@ -11,6 +11,7 @@ beforeEach(() => {
     mockMainConfig = {
         rename_rules: [ { from: [ 'Foo' ], to: 'Bar' } ],
         spice_rules: { spices: [], spice_map: {} },
+        bring_rules: [],
     };
     fileService.__setImportConfig(JSON.parse(JSON.stringify(mockMainConfig)));
 });
@@ -60,5 +61,30 @@ describe('Importer-config endpoints', () => {
         // subsequent GET should return the new config
         const followUp = await agent.get('/api/importer-config');
         expect(followUp.body).toEqual(mergedConfig);
+    });
+
+    it('PATCH /api/importer-config writes bring_rules and echoes them back', async () => {
+        const newCfg = {
+            bring_rules: [ { from: [ 'Ei' ], to: 'Eier' } ],
+        };
+
+        const res = await agent
+            .patch('/api/importer-config')
+            .set(authHeader())
+            .send(newCfg);
+        expect(res.status).toBe(200);
+        expect(res.body.bring_rules).toEqual(newCfg.bring_rules);
+    });
+
+    it('PATCH /api/importer-config rejects malformed bring_rules', async () => {
+        const badCfg = {
+            bring_rules: [ { from: 'not-an-array', to: 'Eier' } ],
+        };
+
+        const res = await agent
+            .patch('/api/importer-config')
+            .set(authHeader())
+            .send(badCfg);
+        expect(res.status).toBe(400);
     });
 });

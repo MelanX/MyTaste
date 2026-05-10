@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useBlocker } from 'react-router-dom';
 import RenameRulesConfig from '../RenameRulesConfig';
 import SpiceRulesConfig from '../SpiceRulesConfig';
+import BringRulesConfig from '../BringRulesConfig';
 import styles from './styles.module.css';
 
 interface TabProps {
@@ -14,15 +15,33 @@ interface TabDef {
     Component: React.ComponentType<TabProps>;
 }
 
-const TABS: TabDef[] = [
-    { id: 'rename', label: 'Umbenennungsregeln', Component: RenameRulesConfig },
-    { id: 'spice', label: 'Gewürzregeln', Component: SpiceRulesConfig },
+interface TabGroup {
+    groupLabel: string;
+    tabs: TabDef[];
+}
+
+const TAB_GROUPS: TabGroup[] = [
+    {
+        groupLabel: 'Bring',
+        tabs: [
+            { id: 'bring', label: 'Vereinheitlichungsregeln', Component: BringRulesConfig },
+        ],
+    },
+    {
+        groupLabel: 'Importer',
+        tabs: [
+            { id: 'rename', label: 'Umbenennungsregeln', Component: RenameRulesConfig },
+            { id: 'spice', label: 'Gewürzregeln', Component: SpiceRulesConfig },
+        ],
+    },
 ];
+
+const ALL_TABS = TAB_GROUPS.flatMap(g => g.tabs);
 
 const Config: React.FC = () => {
     const getInitialTab = () => {
         const tabParam = new URLSearchParams(window.location.search).get('tab');
-        return TABS.some(t => t.id === tabParam) ? tabParam! : 'rename';
+        return ALL_TABS.some(t => t.id === tabParam) ? tabParam! : 'rename';
     };
 
     const [active, setActive] = useState(getInitialTab);
@@ -81,28 +100,35 @@ const Config: React.FC = () => {
         }
     };
 
-    const ActiveComponent = TABS.find(t => t.id === active)!.Component;
+    const ActiveComponent = ALL_TABS.find(t => t.id === active)!.Component;
 
     return (
         <div className={styles.wrapper}>
-            <h1>Importer-Konfiguration</h1>
+            <h1>Konfiguration</h1>
 
             <div className={styles.tabBar}>
-                {TABS.map(t => (
-                    <button
-                        key={t.id}
-                        className={`${styles.tabButton} ${active === t.id ? styles.active : ''}`}
-                        onClick={() => handleTabClick(t.id)}
-                    >
-                        {t.label}
-                        {active === t.id && isDirty && (
-                            <span className={styles.dirtyBadge} data-testid="dirty-indicator" title="Ungespeicherte Änderungen">•</span>
-                        )}
-                    </button>
+                {TAB_GROUPS.map(group => (
+                    <div key={group.groupLabel} className={styles.tabGroup}>
+                        <span className={styles.groupLabel}>{group.groupLabel}</span>
+                        {group.tabs.map(t => (
+                            <button
+                                key={t.id}
+                                className={`${styles.tabButton} ${active === t.id ? styles.active : ''}`}
+                                onClick={() => handleTabClick(t.id)}
+                            >
+                                {t.label}
+                            </button>
+                        ))}
+                    </div>
                 ))}
             </div>
 
             <div className={styles.tabPanel}>
+                {isDirty && (
+                    <div className={styles.dirtyBanner} data-testid="dirty-indicator">
+                        Ungespeicherte Änderungen
+                    </div>
+                )}
                 <ActiveComponent onDirtyChange={setIsDirty} />
             </div>
 

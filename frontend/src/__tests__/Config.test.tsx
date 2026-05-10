@@ -32,6 +32,13 @@ jest.mock('../components/SpiceRulesConfig', () => ({
     },
 }));
 
+jest.mock('../components/BringRulesConfig', () => ({
+    __esModule: true,
+    default: function MockBringRulesConfig() {
+        return <div data-testid="bring-tab">BringRulesConfig</div>;
+    },
+}));
+
 function renderConfig() {
     window.history.replaceState({}, '', '/config');
     return render(<Config />);

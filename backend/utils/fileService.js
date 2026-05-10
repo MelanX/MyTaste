@@ -33,7 +33,7 @@ async function ensureImportConfigFile() {
     try {
         await fs.promises.writeFile(
             CONFIG_FILE,
-            JSON.stringify({ rename_rules: [], spice_rules: { spices: [], spice_map: {} } }, null, 2),
+            JSON.stringify({ rename_rules: [], spice_rules: { spices: [], spice_map: {} }, bring_rules: [] }, null, 2),
             { flag: 'wx' }
         );
     } catch (err) {
