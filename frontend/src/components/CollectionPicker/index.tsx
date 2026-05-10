@@ -16,7 +16,7 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);
-    const [ dropdownPos, setDropdownPos ] = useState<{ top: number; right: number }>({ top: 0, right: 0 });
+    const [ dropdownPos, setDropdownPos ] = useState<{ top?: number; bottom?: number; right: number }>({ right: 0 });
 
     useEffect(() => {
         if (!open) return;
@@ -35,10 +35,14 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
     const handleToggle = () => {
         if (!open && triggerRef.current) {
             const rect = triggerRef.current.getBoundingClientRect();
-            setDropdownPos({
-                top: rect.bottom + 6,
-                right: window.innerWidth - rect.right,
-            });
+            const gap = 6;
+            const maxH = 280;
+            const right = window.innerWidth - rect.right;
+            if (window.innerHeight - rect.bottom - gap >= maxH) {
+                setDropdownPos({ top: rect.bottom + gap, right });
+            } else {
+                setDropdownPos({ bottom: window.innerHeight - rect.top + gap, right });
+            }
         }
         setOpen(v => !v);
     };
@@ -70,7 +74,16 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
         <div
             ref={ dropdownRef }
             className={ styles.dropdown }
-            style={ { position: 'fixed', top: dropdownPos.top, right: dropdownPos.right, zIndex: 1000 } }
+            style={ {
+                position: 'fixed',
+                top: dropdownPos.top,
+                bottom: dropdownPos.bottom,
+                right: dropdownPos.right,
+                zIndex: 1000,
+                maxHeight: dropdownPos.top != null
+                    ? window.innerHeight - dropdownPos.top - 8
+                    : (dropdownPos.bottom != null ? window.innerHeight - dropdownPos.bottom - 8 : 280),
+            } }
         >
             { collections.length === 0 && !showNew && (
                 <p className={ styles.empty }>Keine Sammlungen</p>
