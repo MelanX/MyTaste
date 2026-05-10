@@ -3,6 +3,11 @@
     display: inline-block;
 }
 
+.wrapperFull {
+    display: block;
+    width: 100%;
+}
+
 .trigger {
     background: none;
     border: none;
@@ -23,9 +28,11 @@
 }
 
 .triggerButton {
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
+    width: 100%;
     padding: 0 16px;
     min-height: 40px;
     box-sizing: border-box;
@@ -43,6 +50,16 @@
 
 .triggerButton:hover {
     background-color: var(--color-primary-dark);
+}
+
+@media (min-width: 768px) {
+    .wrapperFull {
+        width: auto;
+    }
+
+    .triggerButton {
+        width: auto;
+    }
 }
 
 .dropdown {

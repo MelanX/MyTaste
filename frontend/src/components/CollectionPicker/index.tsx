@@ -112,7 +112,7 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
     );
 
     return (
-        <div className={ styles.wrapper } ref={ containerRef }>
+        <div className={ `${ styles.wrapper }${ variant === 'button' ? ` ${ styles.wrapperFull }` : '' }` } ref={ containerRef }>
             <button
                 ref={ triggerRef }
                 type="button"
