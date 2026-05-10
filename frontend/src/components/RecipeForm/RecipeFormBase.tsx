@@ -5,6 +5,7 @@ import ImageUpload from "../ImageUpload";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../../utils/api_service";
 import ErrorSection from "../ErrorSection";
+import InstructionsEditor from "../InstructionsEditor";
 
 export interface RecipeFormValues {
     title: string;
@@ -367,14 +368,10 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
 
                     {/* Instructions */ }
                     <div>
-                        <label htmlFor="instructions">Anleitung</label>
-                        <textarea
-                            id="instructions"
-                            rows={ 6 }
-                            value={ instructions.join('\n') }
-                            onChange={ e => setInstructions(e.target.value.split('\n')) }
-                            placeholder="Jede Zeile ist ein Schritt der Anleitung"
-                            required
+                        <label>Anleitung</label>
+                        <InstructionsEditor
+                            value={ instructions.length > 0 ? instructions : [''] }
+                            onChange={ setInstructions }
                         />
                     </div>
 

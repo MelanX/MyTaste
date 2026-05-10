@@ -1,0 +1,114 @@
+.editor {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.stepRow {
+    display: grid;
+    grid-template-columns: 2rem 1fr auto;
+    gap: .75rem;
+    align-items: center;
+}
+
+.stepNumber {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: .9rem;
+    flex-shrink: 0;
+    margin-bottom: 0 !important;
+}
+
+.stepInput {
+    resize: none;
+    overflow: hidden;
+    padding: .5rem .65rem;
+    border: 1px solid var(--color-border);
+    border-radius: .375rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-family: inherit;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 2.4rem;
+    background: var(--color-white);
+    color: var(--color-text);
+}
+
+.stepInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.removeButton {
+    background-color: var(--color-deny-button);
+    color: var(--color-white);
+    width: 1.7rem;
+    height: 1.7rem;
+    padding: 0;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    transition: background-color .15s;
+}
+
+.removeButton:hover:not(:disabled) {
+    background-color: var(--color-deny-button-dark);
+}
+
+.removeButton:disabled {
+    opacity: .35;
+    cursor: default;
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: .25rem;
+    flex-wrap: wrap;
+}
+
+.addButton {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    background: transparent;
+    border: 1px dashed var(--color-border);
+    border-radius: .375rem;
+    padding: .4rem .85rem;
+    cursor: pointer;
+    font-size: .9rem;
+    color: var(--color-text);
+    transition: border-color .15s, background .15s;
+}
+
+.addButton:hover {
+    border-color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+}
+
+.hint {
+    font-size: .78rem;
+    color: var(--color-text-muted, #888);
+}
+
+.hint code {
+    font-size: .78rem;
+    background: var(--color-background-alt);
+    padding: .1rem .3rem;
+    border-radius: .2rem;
+}
