@@ -84,7 +84,7 @@ async function parseLeckerAbnehmen(url, html) {
     const { spices, ingredients } = await parseSpicesAndIngredients(rawIngredients, renameRules);
     const instructions = parseInstructions(rawInstructions);
 
-    return { title, url, image, ingredients, spices, instructions };
+    return { title, url, image, ingredient_sections: [ { title: null, ingredients } ], spices, instructions };
 }
 
 /** Parser for https://lilya.momycooks.com/… */
@@ -113,7 +113,7 @@ async function parseLilyaMomycooks(url, html) {
     const { spices, ingredients } = await parseSpicesAndIngredients(rawIngredients, renameRules);
     const instructions = parseInstructions(rawInstructions);
 
-    return { title, url, image, ingredients, spices, instructions };
+    return { title, url, image, ingredient_sections: [ { title: null, ingredients } ], spices, instructions };
 }
 
 module.exports = {

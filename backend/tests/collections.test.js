@@ -218,6 +218,21 @@ describe('Named Collections', () => {
             const res = await agent.patch('/api/collections/nope').send({ name: 'X' }).set(authHeader());
             expect(res.status).toBe(404);
         });
+
+        it('returns 400 when name is empty string', async () => {
+            const res = await agent.patch('/api/collections/c1').send({ name: '' }).set(authHeader());
+            expect(res.status).toBe(400);
+        });
+
+        it('returns 400 when name is whitespace only', async () => {
+            const res = await agent.patch('/api/collections/c1').send({ name: '   ' }).set(authHeader());
+            expect(res.status).toBe(400);
+        });
+
+        it('returns 400 when name is missing', async () => {
+            const res = await agent.patch('/api/collections/c1').send({}).set(authHeader());
+            expect(res.status).toBe(400);
+        });
     });
 
     describe('DELETE /api/collections/:id', () => {

@@ -73,6 +73,20 @@ describe('Recipes endpoints', () => {
         expect(res.body).toMatchObject({ title: 'Test-Recipe' });
     });
 
+    it('POST /recipes initialises status with favorite and cookState false', async () => {
+        const body = {
+            title: 'Status-Test',
+            ingredient_sections: [ { ingredients: [ { name: 'Salz' } ] } ],
+            instructions: [ 'Salz hinzufügen' ],
+        };
+        const res = await agent
+            .post('/api/recipes')
+            .set(authHeader())
+            .send(body);
+        expect(res.status).toBe(201);
+        expect(res.body.status).toEqual({ favorite: false, cookState: false });
+    });
+
     it('Rejects recipe without title', async () => {
         const res = await agent
             .post('/api/recipes')

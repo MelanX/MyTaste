@@ -98,7 +98,7 @@ async function importGeneric(url) {
         title: ld.name || '',
         url,
         image: Array.isArray(ld.image) ? ld.image[0] : ld.image || '',
-        ingredients,
+        ingredient_sections: [ { title: null, ingredients } ],
         spices,
         instructions,
     };

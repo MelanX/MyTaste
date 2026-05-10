@@ -88,6 +88,9 @@ router.patch('/collections/:id', authenticateToken, async (req, res, next) => {
     try {
         const { id } = req.params;
         const { name } = req.body;
+        if (!name || typeof name !== 'string' || !name.trim()) {
+            return res.status(400).json({ message: 'Name darf nicht leer sein.' });
+        }
         let found = false;
         const updated = await modifyCollections(data => {
             const c = data.collections.find(col => col.id === id);

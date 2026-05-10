@@ -69,6 +69,7 @@ router.post('/recipes', authenticateToken, async (req, res, next) => {
         }
 
         newRecipe.id = nanoid();
+        newRecipe.status = newRecipe.status ?? { favorite: false, cookState: false };
         await modifyData(data => {
             data.recipes.push(newRecipe);
             return data;

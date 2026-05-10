@@ -87,11 +87,11 @@ const recipeSchema = Joi.object({
         .items(
             Joi.string()
                 .min(3)
-                .max(1024)
+                .max(8192)
                 .required()
                 .messages({
                     'string.min': 'Instruction must be at least 3 characters long.',
-                    'string.max': 'Instruction must be at most 1024 characters long.',
+                    'string.max': 'Instruction must be at most 8192 characters long.',
                     'any.required': 'Instruction text is required.',
                 }),
         )
