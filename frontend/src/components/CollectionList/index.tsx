@@ -22,14 +22,14 @@ const CollectionList: React.FC = () => {
     return (
         <div>
             <div className={ recipeStyles.titleRow }>
-                <h2>Kollektionen</h2>
+                <h2>Sammlungen</h2>
                 <div className={ styles.actions }>
                     <button
                         type="button"
                         className={ styles.newButton }
                         onClick={ () => setShowNew(v => !v) }
                     >
-                        Neue Kollektion
+                        Neue Sammlung
                     </button>
                 </div>
             </div>
@@ -40,7 +40,7 @@ const CollectionList: React.FC = () => {
                         type="text"
                         value={ newName }
                         onChange={ e => setNewName(e.target.value) }
-                        placeholder="Name der Kollektion"
+                        placeholder="Name der Sammlung"
                         className={ styles.newInput }
                         autoFocus
                     />
@@ -53,7 +53,7 @@ const CollectionList: React.FC = () => {
 
             { loading && <p>Lade...</p> }
             { error && <p>Fehler: { error.message }</p> }
-            { !loading && !error && collections.length === 0 && <p>Keine Kollektionen</p> }
+            { !loading && !error && collections.length === 0 && <p>Keine Sammlungen</p> }
 
             <div className={ recipeStyles.recipeCardsGrid }>
                 { collections.map(collection => (

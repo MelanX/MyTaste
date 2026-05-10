@@ -47,10 +47,10 @@ beforeEach(() => {
 });
 
 describe('CollectionList', () => {
-    it('shows "Keine Kollektionen" when empty', () => {
+    it('shows "Keine Sammlungen" when empty', () => {
         setupMocks({ collections: [] });
         render(<CollectionList />);
-        expect(screen.getByText(/Keine Kollektionen/i)).toBeInTheDocument();
+        expect(screen.getByText(/Keine Sammlungen/i)).toBeInTheDocument();
     });
 
     it('renders one card per collection', () => {
@@ -60,7 +60,7 @@ describe('CollectionList', () => {
         expect(screen.getByText('Quick Meals')).toBeInTheDocument();
     });
 
-    it('"Neue Kollektion" button reveals a name input', async () => {
+    it('"Neue Sammlung" button reveals a name input', async () => {
         const user = userEvent.setup();
         setupMocks({ collections: [] });
         render(<CollectionList />);

@@ -101,7 +101,7 @@ describe('CollectionDetail', () => {
         expect(btn.getAttribute('data-ids')).toBe('r1,r2');
     });
 
-    it('shows "Kollektion nicht gefunden" when id is not in collections', () => {
+    it('shows "Sammlung nicht gefunden" when id is not in collections', () => {
         setupMocks({ collections: [] });
         render(<CollectionDetail />);
         expect(screen.getByText(/kollektion nicht gefunden/i)).toBeInTheDocument();

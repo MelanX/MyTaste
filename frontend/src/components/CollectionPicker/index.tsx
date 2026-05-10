@@ -61,10 +61,10 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
 
     const inCount = collections.filter(c => c.recipeIds.includes(recipeId)).length;
     const buttonLabel = inCount === 0
-        ? 'Zu Kollektion'
+        ? 'Zu Sammlung'
         : inCount === 1
-            ? 'In 1 Kollektion'
-            : `In ${ inCount } Kollektionen`;
+            ? 'In 1 Sammlung'
+            : `In ${ inCount } Sammlungen`;
 
     const dropdown = (
         <div
@@ -73,7 +73,7 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
             style={ { position: 'fixed', top: dropdownPos.top, right: dropdownPos.right, zIndex: 1000 } }
         >
             { collections.length === 0 && !showNew && (
-                <p className={ styles.empty }>Keine Kollektionen</p>
+                <p className={ styles.empty }>Keine Sammlungen</p>
             ) }
             { collections.map(c => {
                 const checked = c.recipeIds.includes(recipeId);
@@ -105,7 +105,7 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
                 </form>
             ) : (
                 <button type="button" className={ styles.newCollectionBtn } onClick={ () => setShowNew(true) }>
-                    <i className="fa-solid fa-plus" /> Neue Kollektion
+                    <i className="fa-solid fa-plus" /> Neue Sammlung
                 </button>
             ) }
         </div>
@@ -118,7 +118,7 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
                 type="button"
                 className={ variant === 'button' ? styles.triggerButton : styles.trigger }
                 onClick={ handleToggle }
-                title="Zu Kollektion hinzufügen"
+                title="Zu Sammlung hinzufügen"
             >
                 <i className="fa-solid fa-folder-plus" />
                 { variant === 'button' && <span> { buttonLabel }</span> }

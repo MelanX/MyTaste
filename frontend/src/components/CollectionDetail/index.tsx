@@ -21,19 +21,19 @@ const CollectionDetail: React.FC = () => {
     if (error) return <p>Fehler: { error.message }</p>;
 
     const collection = collections.find(c => c.id === id);
-    if (!collection) return <p>Kollektion nicht gefunden</p>;
+    if (!collection) return <p>Sammlung nicht gefunden</p>;
 
     const collectionRecipes = (recipes ?? [])
         .filter(r => collection.recipeIds.includes(r.id))
         .sort((a, b) => collection.recipeIds.indexOf(a.id) - collection.recipeIds.indexOf(b.id));
 
     const handleClear = async () => {
-        if (!window.confirm('Alle Rezepte aus der Kollektion entfernen?')) return;
+        if (!window.confirm('Alle Rezepte aus der Sammlung entfernen?')) return;
         await clearRecipes(collection.id);
     };
 
     const handleDelete = async () => {
-        if (!window.confirm(`Kollektion "${ collection.name }" löschen?`)) return;
+        if (!window.confirm(`Sammlung "${ collection.name }" löschen?`)) return;
         await remove(collection.id);
         navigate('/collections');
     };

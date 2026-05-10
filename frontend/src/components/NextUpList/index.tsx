@@ -57,9 +57,9 @@ const NextUpList: React.FC = () => {
                         className={ styles.saveButton }
                         onClick={ () => setShowSaveAs(v => !v) }
                         disabled={ ids.length === 0 }
-                        title="Als Kollektion speichern"
+                        title="Als Sammlung speichern"
                     >
-                        Als Kollektion speichern
+                        Als Sammlung speichern
                     </button>
                     <button
                         type="button"
@@ -78,7 +78,7 @@ const NextUpList: React.FC = () => {
                         type="text"
                         value={ saveCollectionName }
                         onChange={ e => setSaveCollectionName(e.target.value) }
-                        placeholder="Name der Kollektion"
+                        placeholder="Name der Sammlung"
                         className={ styles.saveAsInput }
                         autoFocus
                         disabled={ saving }
