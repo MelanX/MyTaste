@@ -38,6 +38,7 @@
     font-family: var(--default-fonts), serif;
     font-weight: 500;
     white-space: nowrap;
+
 }
 
 .triggerButton:hover {
@@ -102,6 +103,7 @@
     font-size: 0.9rem;
     color: var(--color-primary-dark);
     text-align: left;
+
 }
 
 .newCollectionBtn:hover {
@@ -137,6 +139,7 @@
     cursor: pointer;
     color: var(--color-white);
     font-weight: 700;
+
 }
 
 .createBtn:hover {

@@ -44,6 +44,7 @@
     font-family: var(--default-fonts), serif;
     font-weight: 500;
     white-space: nowrap;
+
 }
 
 .nextUpButton:hover:not(:disabled) {
@@ -66,6 +67,7 @@
     font-family: var(--default-fonts), serif;
     font-weight: 500;
     white-space: nowrap;
+
 }
 
 .clearButton:hover:not(:disabled) {
@@ -88,6 +90,7 @@
     font-family: var(--default-fonts), serif;
     font-weight: 500;
     white-space: nowrap;
+
 }
 
 .deleteButton:hover {
@@ -106,6 +109,7 @@
     font-weight: 500;
     font-size: 1rem;
     white-space: nowrap;
+
 }
 
 .backLink:hover {
@@ -123,6 +127,7 @@
     font-weight: 500;
     width: 100%;
     text-align: center;
+
 }
 
 .removeButton:hover {

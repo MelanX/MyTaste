@@ -16,6 +16,7 @@
     font-family: var(--default-fonts), serif;
     font-weight: 500;
     white-space: nowrap;
+
 }
 
 .clearButton:hover:not(:disabled) {
@@ -38,6 +39,7 @@
     font-weight: 500;
     width: 100%;
     text-align: center;
+
 }
 
 .removeButton:hover {
@@ -55,6 +57,7 @@
     font-family: var(--default-fonts), serif;
     font-weight: 500;
     white-space: nowrap;
+
 }
 
 .saveButton:hover:not(:disabled) {
@@ -106,6 +109,7 @@
     font-weight: 500;
     white-space: nowrap;
     box-sizing: border-box;
+
 }
 
 .saveAsCreate:hover:not(:disabled) {
@@ -129,6 +133,7 @@
     font-size: 1rem;
     white-space: nowrap;
     box-sizing: border-box;
+
 }
 
 .saveAsCancel:hover:not(:disabled) {

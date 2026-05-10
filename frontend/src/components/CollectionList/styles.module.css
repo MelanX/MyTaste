@@ -16,6 +16,7 @@
     font-family: var(--default-fonts), serif;
     font-weight: 500;
     white-space: nowrap;
+
 }
 
 .newButton:hover {
@@ -56,6 +57,7 @@
     font-family: var(--default-fonts), serif;
     font-weight: 500;
     white-space: nowrap;
+
 }
 
 .createButton:hover {
@@ -71,6 +73,7 @@
     color: var(--color-text-secondary);
     font-family: var(--default-fonts), serif;
     white-space: nowrap;
+
 }
 
 .cancelButton:hover {
