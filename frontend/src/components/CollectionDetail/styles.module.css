@@ -27,10 +27,8 @@
         min-width: 0;
     }
 
-    .actionsRow a,
-    .actionsRow a > button {
+    .actionsRow a {
         width: 100%;
-        display: block;
     }
 }
 
