@@ -20,7 +20,7 @@
 }
 
 .clearButton:hover:not(:disabled) {
-    background-color: var(--color-deny-button);
+    background-color: var(--color-primary-dark);
 }
 
 .clearButton:disabled {
