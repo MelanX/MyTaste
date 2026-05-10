@@ -6,6 +6,34 @@
     flex-wrap: wrap;
 }
 
+.actionsRow {
+    display: contents;
+}
+
+@media (max-width: 600px) {
+    .actions {
+        flex-direction: column;
+        margin-left: 0;
+    }
+
+    .actionsRow {
+        display: flex;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    .actionsRow > * {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .actionsRow a,
+    .actionsRow a > button {
+        width: 100%;
+        display: block;
+    }
+}
+
 .collectionName {
     margin: 0;
     cursor: pointer;

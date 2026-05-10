@@ -80,34 +80,38 @@ const CollectionDetail: React.FC = () => {
                     </h2>
                 ) }
                 <div className={ styles.actions }>
-                    <BringButton ids={ collection.recipeIds } label="Alle zu Bring" />
-                    <button
-                        type="button"
-                        className={ styles.nextUpButton }
-                        onClick={ handleAddAllToNextUp }
-                        disabled={ collection.recipeIds.length === 0 }
-                        title="Alle Rezepte zu Next Up hinzufügen"
-                    >
-                        Alle zu Next Up
-                    </button>
-                    <button
-                        type="button"
-                        className={ styles.clearButton }
-                        onClick={ handleClear }
-                        disabled={ collection.recipeIds.length === 0 }
-                    >
-                        Leeren
-                    </button>
-                    <button
-                        type="button"
-                        className={ styles.deleteButton }
-                        onClick={ handleDelete }
-                    >
-                        Löschen
-                    </button>
-                    <button type="button" className={ styles.backLink }
-                            onClick={ () => navigate('/collections') }>Zurück
-                    </button>
+                    <div className={ styles.actionsRow }>
+                        <BringButton ids={ collection.recipeIds } label="Alle zu Bring" />
+                        <button
+                            type="button"
+                            className={ styles.nextUpButton }
+                            onClick={ handleAddAllToNextUp }
+                            disabled={ collection.recipeIds.length === 0 }
+                            title="Alle Rezepte zu Next Up hinzufügen"
+                        >
+                            Alle zu Next Up
+                        </button>
+                    </div>
+                    <div className={ styles.actionsRow }>
+                        <button
+                            type="button"
+                            className={ styles.clearButton }
+                            onClick={ handleClear }
+                            disabled={ collection.recipeIds.length === 0 }
+                        >
+                            Leeren
+                        </button>
+                        <button
+                            type="button"
+                            className={ styles.deleteButton }
+                            onClick={ handleDelete }
+                        >
+                            Löschen
+                        </button>
+                        <button type="button" className={ styles.backLink }
+                                onClick={ () => navigate('/collections') }>Zurück
+                        </button>
+                    </div>
                 </div>
             </div>
 
