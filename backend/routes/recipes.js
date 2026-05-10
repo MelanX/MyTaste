@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const authenticateToken = require('../middleware/auth');
-const { readData, modifyData } = require('../utils/fileService');
+const { readData, modifyData, modifyCollections } = require('../utils/fileService');
 const nanoid = require("../utils/id");
 const { recipeSchema, recipeStatusSchema } = require("../utils/schemes");
 
@@ -167,6 +167,13 @@ router.delete('/recipe/:id', authenticateToken, async (req, res, next) => {
         });
         if (!found) return res.status(404).send('Recipe not found');
         if (imageToDelete) await tryDeleteUpload(imageToDelete);
+        await modifyCollections(data => {
+            data.nextUp = data.nextUp.filter(rid => rid !== id);
+            data.collections.forEach(c => {
+                c.recipeIds = c.recipeIds.filter(rid => rid !== id);
+            });
+            return data;
+        });
         res.sendStatus(204);
     } catch (err) {
         next(err);

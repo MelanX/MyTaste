@@ -214,6 +214,25 @@ describe('DELETE /recipe/:id', () => {
         expect(fetchB.status).toBe(200);
         expect(fetchB.body.title).toBe('Keep');
     });
+
+    it('removes deleted recipe from nextUp', async () => {
+        fileService.__setCollectionsData({ nextUp: [ '1' ], collections: [] });
+        await request(app).delete('/api/recipe/1').set(authHeader());
+        const res = await request(app).get('/api/collections/next-up');
+        expect(res.body.nextUp).not.toContain('1');
+    });
+
+    it('removes deleted recipe from named collections', async () => {
+        fileService.__setCollectionsData({
+            nextUp: [],
+            collections: [ { id: 'c1', name: 'Test', recipeIds: [ '1', '99' ], createdAt: '', updatedAt: '' } ],
+        });
+        await request(app).delete('/api/recipe/1').set(authHeader());
+        const res = await request(app).get('/api/collections');
+        const col = res.body.collections.find(c => c.id === 'c1');
+        expect(col.recipeIds).not.toContain('1');
+        expect(col.recipeIds).toContain('99');
+    });
 });
 
 describe('GET /api/recipes sorting', () => {
