@@ -67,7 +67,7 @@ const NextUpList: React.FC = () => {
                         onClick={ handleClear }
                         disabled={ ids.length === 0 }
                     >
-                        Liste leeren
+                        Leeren
                     </button>
                 </div>
             </div>
