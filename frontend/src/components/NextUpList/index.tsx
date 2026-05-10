@@ -37,9 +37,7 @@ const NextUpList: React.FC = () => {
         try {
             const updated = await create(name);
             const newCollection = updated[updated.length - 1];
-            for (const id of ids) {
-                await addRecipe(newCollection.id, id);
-            }
+            await Promise.all(ids.map(id => addRecipe(newCollection.id, id)));
             navigate(`/collections/${ newCollection.id }`);
         } finally {
             setSaving(false);
@@ -96,6 +94,21 @@ const NextUpList: React.FC = () => {
             { loading && <p>Lade...</p> }
             { error && <p>Fehler: { error.message }</p> }
             { !loading && !error && ids.length === 0 && <p>Liste ist leer</p> }
+            { !loading && recipes && ids.length > nextUpRecipes.length && (
+                <p>
+                    { ids.length - nextUpRecipes.length } Rezept{ ids.length - nextUpRecipes.length !== 1 ? 'e' : '' } konnten nicht mehr gefunden werden.{ ' ' }
+                    <button
+                        type="button"
+                        onClick={ () => {
+                            const found = new Set(nextUpRecipes.map(r => r.id));
+                            ids.filter(id => !found.has(id)).forEach(id => remove(id));
+                        } }
+                        style={ { background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', padding: 0 } }
+                    >
+                        Bereinigen
+                    </button>
+                </p>
+            ) }
 
             <div className={ recipeStyles.recipeCardsGrid }>
                 { nextUpRecipes.map(recipe => (

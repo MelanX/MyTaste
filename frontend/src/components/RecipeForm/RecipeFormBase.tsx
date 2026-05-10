@@ -705,7 +705,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                     <label>Gewürze</label>
                     <div className={ styles.spicesContainer }>
                         { spices.map((s, i) => (
-                            <div key={ i } className={ styles.spiceTag }
+                            <div key={ s } className={ styles.spiceTag }
                                  onClick={ () => handleRemoveSpice(i) }>{ s }</div>
                         )) }
                     </div>

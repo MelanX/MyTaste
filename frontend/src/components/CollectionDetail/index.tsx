@@ -4,6 +4,7 @@ import { useCollectionsContext } from '../../context/CollectionsContext';
 import { useNextUpContext } from '../../context/NextUpContext';
 import { useRecipes } from '../../hooks/useRecipes';
 import BringButton from '../BringButton';
+import Toast from '../Toast';
 import styles from './styles.module.css';
 import recipeStyles from '../RecipeList/styles.module.css';
 import { getConfig } from '../../config';
@@ -11,11 +12,14 @@ import { getConfig } from '../../config';
 const CollectionDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const { collections, loading, error, removeRecipe, clearRecipes, rename, remove } = useCollectionsContext();
-    const { add: addToNextUp } = useNextUpContext();
+    const { ids: nextUpIds, add: addToNextUp } = useNextUpContext();
     const navigate = useNavigate();
     const { recipes } = useRecipes();
     const [ renaming, setRenaming ] = useState(false);
     const [ nameInput, setNameInput ] = useState('');
+    const [ addingToNextUp, setAddingToNextUp ] = useState(false);
+    const [ toastMessage, setToastMessage ] = useState<string | null>(null);
+    const [ toastType, setToastType ] = useState<'success' | 'error' | 'info'>('success');
 
     if (loading) return <p>Lade...</p>;
     if (error) return <p>Fehler: { error.message }</p>;
@@ -39,8 +43,21 @@ const CollectionDetail: React.FC = () => {
     };
 
     const handleAddAllToNextUp = async () => {
-        for (const recipeId of collection.recipeIds) {
-            await addToNextUp(recipeId);
+        setAddingToNextUp(true);
+        try {
+            const alreadyPresent = collection.recipeIds.filter(rid => nextUpIds.includes(rid)).length;
+            await Promise.allSettled(collection.recipeIds.map(rid => addToNextUp(rid)));
+            const newlyAdded = collection.recipeIds.length - alreadyPresent;
+            const parts: string[] = [];
+            if (newlyAdded > 0) parts.push(`${ newlyAdded } hinzugefügt`);
+            if (alreadyPresent > 0) parts.push(`${ alreadyPresent } bereits vorhanden`);
+            setToastType('success');
+            setToastMessage(parts.join(', '));
+        } catch {
+            setToastType('error');
+            setToastMessage('Fehler beim Hinzufügen zu Next Up');
+        } finally {
+            setAddingToNextUp(false);
         }
     };
 
@@ -86,10 +103,10 @@ const CollectionDetail: React.FC = () => {
                             type="button"
                             className={ styles.nextUpButton }
                             onClick={ handleAddAllToNextUp }
-                            disabled={ collection.recipeIds.length === 0 }
+                            disabled={ collection.recipeIds.length === 0 || addingToNextUp }
                             title="Alle Rezepte zu Next Up hinzufügen"
                         >
-                            Alle zu Next Up
+                            { addingToNextUp ? 'Wird hinzugefügt…' : 'Alle zu Next Up' }
                         </button>
                     </div>
                     <div className={ styles.actionsRow }>
@@ -153,6 +170,12 @@ const CollectionDetail: React.FC = () => {
                     </div>
                 )) }
             </div>
+
+            <Toast
+                message={ toastMessage }
+                onDismiss={ () => setToastMessage(null) }
+                type={ toastType }
+            />
         </div>
     );
 };

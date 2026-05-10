@@ -5,6 +5,7 @@ import { formatAmount } from '../../utils/formatters';
 import { getConfig } from "../../config";
 import { updateRecipeStatus } from "../../utils/api_service";
 import { useAuth } from "../../context/AuthContext";
+import { upsertRecipe } from "../../utils/recipesCache";
 
 interface RecipeSidebarProps {
     recipe: Recipe;
@@ -20,7 +21,9 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({recipe, hideImage = false,
         const newState: boolean = !recipe.status?.cookState;
         try {
             const updated = await updateRecipeStatus(recipe.id, {cookState: newState});
-            updateRecipe({...recipe, status: {...recipe.status, cookState: updated.cookState}});
+            const next = {...recipe, status: {...recipe.status, cookState: updated.cookState}};
+            updateRecipe(next);
+            upsertRecipe(next);
         } catch (err) {
             console.error(err);
         }
@@ -31,7 +34,9 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({recipe, hideImage = false,
         const newFav = !recipe.status?.favorite;
         try {
             const updated = await updateRecipeStatus(recipe.id, {favorite: newFav});
-            updateRecipe({...recipe, status: {...recipe.status, favorite: updated.favorite}});
+            const next = {...recipe, status: {...recipe.status, favorite: updated.favorite}};
+            updateRecipe(next);
+            upsertRecipe(next);
         } catch (err) {
             console.error(err);
         }
@@ -173,8 +178,8 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({recipe, hideImage = false,
                         <div className={styles.spicesCard}>
                             <h3 className={styles.spicesTitle}>Gewürze</h3>
                             <div className={styles.spicesContainer}>
-                                {recipe.spices.map((spice, index) => (
-                                    <div key={index} className={styles.spiceTag}>
+                                {recipe.spices.map((spice) => (
+                                    <div key={spice} className={styles.spiceTag}>
                                         {spice}
                                     </div>
                                 ))}

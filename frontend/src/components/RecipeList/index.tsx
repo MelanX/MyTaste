@@ -119,7 +119,7 @@ const RecipeList: React.FC = () => {
                 )
             );
         } catch (err) {
-            console.error(err);
+            setToastMessage(err instanceof Error ? err.message : 'Fehler beim Aktualisieren');
         }
     }
 
@@ -134,7 +134,7 @@ const RecipeList: React.FC = () => {
                 )
             );
         } catch (err) {
-            console.error(err);
+            setToastMessage(err instanceof Error ? err.message : 'Fehler beim Aktualisieren');
         }
     }
 
@@ -309,7 +309,11 @@ const RecipeList: React.FC = () => {
                                     <i
                                         className="fa-solid fa-question"
                                         title="Noch nicht gekocht"
-                                        onClick={e => markCooked(recipe.id)}
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={() => markCooked(recipe.id)}
+                                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') markCooked(recipe.id); }}
+                                        aria-label="Als gekocht markieren"
                                     />
                                 </div>
                             )}
@@ -319,13 +323,21 @@ const RecipeList: React.FC = () => {
                                     <i
                                         className="fa-solid fa-heart"
                                         title="Favorit"
-                                        onClick={e => handleToggleFavorite(recipe.id, false)}
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={() => handleToggleFavorite(recipe.id, false)}
+                                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleToggleFavorite(recipe.id, false); }}
+                                        aria-label="Favorit entfernen"
                                     />
                                 ) : (
                                     <i
                                         className="fa-regular fa-heart"
                                         title="Kein Favorit"
-                                        onClick={e => handleToggleFavorite(recipe.id, true)}
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={() => handleToggleFavorite(recipe.id, true)}
+                                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleToggleFavorite(recipe.id, true); }}
+                                        aria-label="Als Favorit markieren"
                                     />
                                 )}
                             </div>
@@ -342,13 +354,21 @@ const RecipeList: React.FC = () => {
                                         <i
                                             className="fa-solid fa-bookmark"
                                             title="Aus Next Up entfernen"
+                                            role="button"
+                                            tabIndex={0}
                                             onClick={ () => removeFromNextUp(recipe.id) }
+                                            onKeyDown={ e => { if (e.key === 'Enter' || e.key === ' ') removeFromNextUp(recipe.id); } }
+                                            aria-label="Aus Next Up entfernen"
                                         />
                                     ) : (
                                         <i
                                             className="fa-regular fa-bookmark"
                                             title="Zu Next Up hinzufügen"
+                                            role="button"
+                                            tabIndex={0}
                                             onClick={ () => addToNextUp(recipe.id) }
+                                            onKeyDown={ e => { if (e.key === 'Enter' || e.key === ' ') addToNextUp(recipe.id); } }
+                                            aria-label="Zu Next Up hinzufügen"
                                         />
                                     ) }
                                 </div>

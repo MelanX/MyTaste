@@ -13,6 +13,7 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
     const [ open, setOpen ] = useState(false);
     const [ newName, setNewName ] = useState('');
     const [ showNew, setShowNew ] = useState(false);
+    const [ pickerError, setPickerError ] = useState<string | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);
@@ -48,19 +49,27 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
     };
 
     const toggle = async (collectionId: string, inCollection: boolean) => {
-        if (inCollection) {
-            await removeRecipe(collectionId, recipeId);
-        } else {
-            await addRecipe(collectionId, recipeId);
+        try {
+            if (inCollection) {
+                await removeRecipe(collectionId, recipeId);
+            } else {
+                await addRecipe(collectionId, recipeId);
+            }
+        } catch (err) {
+            setPickerError(err instanceof Error ? err.message : 'Fehler beim Aktualisieren');
         }
     };
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newName.trim()) return;
-        await create(newName.trim());
-        setNewName('');
-        setShowNew(false);
+        try {
+            await create(newName.trim());
+            setNewName('');
+            setShowNew(false);
+        } catch (err) {
+            setPickerError(err instanceof Error ? err.message : 'Fehler beim Erstellen');
+        }
     };
 
     const inCount = collections.filter(c => c.recipeIds.includes(recipeId)).length;
@@ -85,6 +94,9 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
                     : (dropdownPos.bottom != null ? window.innerHeight - dropdownPos.bottom - 8 : 280),
             } }
         >
+            { pickerError && (
+                <p className={ styles.pickerError }>{ pickerError }</p>
+            ) }
             { collections.length === 0 && !showNew && (
                 <p className={ styles.empty }>Keine Sammlungen</p>
             ) }

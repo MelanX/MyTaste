@@ -3,15 +3,21 @@ import { useNavigate, useParams } from 'react-router-dom';
 import RecipeFormBase, { RecipeFormValues } from '../RecipeForm/RecipeFormBase';
 import { Recipe } from '../../types/Recipe';
 import { apiFetch } from "../../utils/api_service";
+import Toast from '../Toast';
 
 const EditRecipe: React.FC = () => {
     const {id} = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [initial, setInitial] = useState<RecipeFormValues | null>(null);
+    const [loadError, setLoadError] = useState<string | null>(null);
 
     useEffect(() => {
-        apiFetch(`/api/recipe/${id}`)
-            .then(r => r.json())
+        const controller = new AbortController();
+        apiFetch(`/api/recipe/${id}`, { signal: controller.signal })
+            .then(r => {
+                if (!r.ok) throw new Error('Rezept nicht gefunden');
+                return r.json();
+            })
             .then((recipe: Recipe) => {
                 setInitial({
                     title: recipe.title,
@@ -23,7 +29,11 @@ const EditRecipe: React.FC = () => {
                     recipeType: recipe.recipeType,
                     dietaryRestrictions: recipe.dietaryRestrictions,
                 });
+            })
+            .catch(err => {
+                if (err.name !== 'AbortError') setLoadError(err.message ?? 'Fehler beim Laden');
             });
+        return () => controller.abort();
     }, [id]);
 
     const handleUpdate = async (values: RecipeFormValues): Promise<Response> => {
@@ -51,6 +61,13 @@ const EditRecipe: React.FC = () => {
 
         return response;
     }
+
+    if (loadError) return (
+        <div>
+            <p>Fehler: {loadError}</p>
+            <Toast message={loadError} onDismiss={() => setLoadError(null)} type="error" />
+        </div>
+    );
 
     if (!initial) return <div>Lade Rezept…</div>;
 
