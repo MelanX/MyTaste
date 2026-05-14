@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from '../Config/styles.module.css';
 import { apiFetch } from '../../utils/api_service';
+import FromPillInput from '../FromPillInput';
 
 interface BringRule {
     from: string[];
@@ -71,15 +72,9 @@ const BringRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
                 <div key={idx} className={styles.ruleRow}>
                     <div className={styles.fromGroup}>
                         <label>Von</label>
-                        <input
-                            type="text"
-                            value={rule.from.join(', ')}
-                            onChange={e =>
-                                updateRule(idx, {
-                                    ...rule,
-                                    from: e.target.value.split(',').map(s => s.trim()),
-                                })
-                            }
+                        <FromPillInput
+                            value={rule.from}
+                            onChange={from => updateRule(idx, { ...rule, from })}
                         />
                     </div>
                     <div className={styles.toGroup}>
