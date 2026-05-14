@@ -12,7 +12,7 @@ const agent = request(app);
 const token = jwt.sign({ user: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
 const auth = { Authorization: `Bearer ${ token }` };
 
-describe('PATCH /api/importer-config', () => {
+describe('PATCH /api/config-rules', () => {
     beforeEach(() => {
         mockCfg = {
             rename_rules: [ { from: [ 'Foo' ], to: 'Bar' } ],
@@ -24,7 +24,7 @@ describe('PATCH /api/importer-config', () => {
     it('merges when only rename_rules are sent', async () => {
         const patch = { rename_rules: [ { from: [ 'A' ], to: 'Alpha' } ] };
         const { status, body } = await agent
-            .patch('/api/importer-config')
+            .patch('/api/config-rules')
             .set(auth)
             .send(patch);
 
@@ -36,7 +36,7 @@ describe('PATCH /api/importer-config', () => {
 
     it('merges when only spice_rules are sent', async () => {
         const patch = { spice_rules: { spices: [ 'Muskat' ], spice_map: {} } };
-        const res = await agent.patch('/api/importer-config').set(auth).send(patch);
+        const res = await agent.patch('/api/config-rules').set(auth).send(patch);
 
         expect(res.status).toBe(200);
         expect(res.body.spice_rules).toEqual(patch.spice_rules);
@@ -45,12 +45,12 @@ describe('PATCH /api/importer-config', () => {
     });
 
     it('401 without credentials', async () => {
-        await agent.patch('/api/importer-config').send({ rename_rules: [] }).expect(401);
+        await agent.patch('/api/config-rules').send({ rename_rules: [] }).expect(401);
     });
 
     it('400 when payload type is invalid   ⟵ expected to fail', async () => {
         const bad = { rename_rules: 'not an array' };
-        const res = await agent.patch('/api/importer-config').set(auth).send(bad);
+        const res = await agent.patch('/api/config-rules').set(auth).send(bad);
         expect(res.status).toBe(400);
     });
 });

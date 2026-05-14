@@ -16,9 +16,9 @@ beforeEach(() => {
     fileService.__setImportConfig(JSON.parse(JSON.stringify(mockMainConfig)));
 });
 
-describe('Importer-config endpoints', () => {
-    it('GET /api/importer-config returns the current importer configuration', async () => {
-        const res = await agent.get('/api/importer-config');
+describe('Config-rules endpoints', () => {
+    it('GET /api/config-rules returns the current importer configuration', async () => {
+        const res = await agent.get('/api/config-rules');
         expect(res.status).toBe(200);
         expect(res.body).toEqual(mockMainConfig);
         // ensure the mock helper was called
@@ -26,7 +26,7 @@ describe('Importer-config endpoints', () => {
         expect(readImportConfig).toHaveBeenCalledTimes(1);
     });
 
-    it('PATCH /api/importer-config is unauthorized without credentials', async () => {
+    it('PATCH /api/config-rules is unauthorized without credentials', async () => {
         const newCfg = {
             rename_rules: [
                 { from: [ 'A', 'B' ], to: 'Alpha' },
@@ -34,11 +34,11 @@ describe('Importer-config endpoints', () => {
             ],
         };
 
-        const res = await agent.patch('/api/importer-config').send(newCfg);
+        const res = await agent.patch('/api/config-rules').send(newCfg);
         expect(res.status).toBe(401);
     });
 
-    it('PATCH /api/importer-config writes the new config and echoes it back', async () => {
+    it('PATCH /api/config-rules writes the new config and echoes it back', async () => {
         const newCfg = {
             rename_rules: [
                 { from: [ 'A', 'B' ], to: 'Alpha' },
@@ -47,7 +47,7 @@ describe('Importer-config endpoints', () => {
         };
 
         const res = await agent
-            .patch('/api/importer-config')
+            .patch('/api/config-rules')
             .set(authHeader())
             .send(newCfg);
         expect(res.status).toBe(200);
@@ -59,30 +59,30 @@ describe('Importer-config endpoints', () => {
         expect(writeImportConfig).toHaveBeenCalledTimes(1);
 
         // subsequent GET should return the new config
-        const followUp = await agent.get('/api/importer-config');
+        const followUp = await agent.get('/api/config-rules');
         expect(followUp.body).toEqual(mergedConfig);
     });
 
-    it('PATCH /api/importer-config writes bring_rules and echoes them back', async () => {
+    it('PATCH /api/config-rules writes bring_rules and echoes them back', async () => {
         const newCfg = {
             bring_rules: [ { from: [ 'Ei' ], to: 'Eier' } ],
         };
 
         const res = await agent
-            .patch('/api/importer-config')
+            .patch('/api/config-rules')
             .set(authHeader())
             .send(newCfg);
         expect(res.status).toBe(200);
         expect(res.body.bring_rules).toEqual(newCfg.bring_rules);
     });
 
-    it('PATCH /api/importer-config rejects malformed bring_rules', async () => {
+    it('PATCH /api/config-rules rejects malformed bring_rules', async () => {
         const badCfg = {
             bring_rules: [ { from: 'not-an-array', to: 'Eier' } ],
         };
 
         const res = await agent
-            .patch('/api/importer-config')
+            .patch('/api/config-rules')
             .set(authHeader())
             .send(badCfg);
         expect(res.status).toBe(400);

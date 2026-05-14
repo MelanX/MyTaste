@@ -19,7 +19,7 @@ const RenameRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
     const [ , setErrors ] = useState<string[]>([]);
 
     useEffect(() => {
-        apiFetch('/api/importer-config')
+        apiFetch('/api/config-rules')
             .then(res => res.json())
             .then(data => {
                 setRules(data.rename_rules);
@@ -53,7 +53,7 @@ const RenameRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
 
     const saveConfig = async () => {
         const rename_rules = rules.filter(rule => rule.from.length > 0 && rule.to);
-        const response = await apiFetch('/api/importer-config', {
+        const response = await apiFetch('/api/config-rules', {
             method: 'PATCH',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({rename_rules}),

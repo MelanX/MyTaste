@@ -18,7 +18,7 @@ const BringRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        apiFetch('/api/importer-config')
+        apiFetch('/api/config-rules')
             .then(res => res.json())
             .then(data => {
                 const loaded = data.bring_rules ?? [];
@@ -49,7 +49,7 @@ const BringRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
 
     const save = async () => {
         const bring_rules = rules.filter(rule => rule.from.length > 0 && rule.to);
-        const response = await apiFetch('/api/importer-config', {
+        const response = await apiFetch('/api/config-rules', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ bring_rules }),

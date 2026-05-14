@@ -41,7 +41,7 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        apiFetch('/api/importer-config')
+        apiFetch('/api/config-rules')
             .then(res => res.json())
             .then(data => {
                 const spice_rules = data.spice_rules ?? {spices: [], spice_map: {}};
@@ -75,7 +75,7 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
 
     const save = async () => {
         setErrors([]);
-        const response = await apiFetch('/api/importer-config', {
+        const response = await apiFetch('/api/config-rules', {
             method: 'PATCH',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
