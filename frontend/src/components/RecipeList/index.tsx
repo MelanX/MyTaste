@@ -436,6 +436,14 @@ const RecipeList: React.FC = () => {
             </div>
         </div>
         <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
+        { isAuthenticated && (
+            <Link to="/next-up" className={ styles.nextUpFab } aria-label="Next Up öffnen" title="Next Up">
+                <i className="fa-solid fa-bookmark" />
+                { nextUpIds.length > 0 && (
+                    <span className={ styles.nextUpFabBadge }>{ nextUpIds.length }</span>
+                ) }
+            </Link>
+        ) }
         </>
     );
 };
