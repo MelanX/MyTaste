@@ -39,7 +39,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
       <div className="relative h-[200px] w-full overflow-hidden">
         {/* cook-state in top-left */}
         {!recipe.status?.cookState && (
-          <div className="absolute left-2 top-2 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-white/80 p-[0.3rem] text-[1.2rem] [&_i]:text-danger-bright">
+          <div className="absolute left-2 top-2 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-surface/80 p-[0.3rem] text-[1.2rem] [&_i]:text-danger-bright">
             <i
               className="fa-solid fa-question"
               title="Noch nicht gekocht"
@@ -54,7 +54,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
           </div>
         )}
         {/* favorite in top-right */}
-        <div className="absolute right-2 top-2 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-white/80 p-[0.3rem] text-[1.2rem] [&_i[title='Favorit']]:text-danger-bright">
+        <div className="absolute right-2 top-2 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-surface/80 p-[0.3rem] text-[1.2rem] [&_i[title='Favorit']]:text-danger-bright">
           {recipe.status?.favorite ? (
             <i
               className="fa-solid fa-heart"
@@ -83,13 +83,13 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         </div>
         {/* collection picker below the cook icon */}
         {isAuthenticated && (
-          <div className="absolute right-2 top-[5.5rem] z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-white/80 p-[0.3rem] text-[1.2rem]">
+          <div className="absolute right-2 top-[5.5rem] z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-surface/80 p-[0.3rem] text-[1.2rem]">
             <CollectionPicker recipeId={recipe.id} />
           </div>
         )}
         {/* next-up bookmark below the favorite icon */}
         {isAuthenticated && (
-          <div className="absolute right-2 top-12 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-white/80 p-[0.3rem] text-[1.2rem] [&_i[title='Aus_Next_Up_entfernen']]:text-action">
+          <div className="absolute right-2 top-12 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-surface/80 p-[0.3rem] text-[1.2rem] [&_i[title='Aus_Next_Up_entfernen']]:text-action">
             {inNextUp ? (
               <i
                 className="fa-solid fa-bookmark"

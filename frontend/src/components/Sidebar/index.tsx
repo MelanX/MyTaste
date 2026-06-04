@@ -46,7 +46,7 @@ const Sidebar: React.FC = () => {
     <>
       <button
         ref={toggleButtonRef}
-        className="no-print fixed top-5 left-5 z-[1001] flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-none text-2xl text-white shadow-[0_2px_5px_var(--color-shadow-strong)]"
+        className="no-print fixed top-5 left-5 z-[1001] box-border flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-none bg-accent p-0 text-2xl text-white shadow-[0_2px_5px_var(--color-shadow-strong)]"
         onClick={toggleSidebar}
       >
         <i className={`fa-solid fa-${isOpen ? 'xmark' : 'bars'}`} />

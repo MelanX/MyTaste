@@ -15,7 +15,7 @@ const RecipeInstructions: React.FC<RecipeInstructionsProps> = ({ instructions })
             <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-[0.9rem] font-semibold text-white md:h-[34px] md:w-[34px] md:text-base">
               {index + 1}
             </div>
-            <div className="break-words py-1 text-on-accent">{renderInlineMarkdown(paragraph)}</div>
+            <div className="break-words py-1 text-fg">{renderInlineMarkdown(paragraph)}</div>
           </div>
         ))}
       </div>

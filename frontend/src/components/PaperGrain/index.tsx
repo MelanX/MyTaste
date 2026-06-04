@@ -32,18 +32,12 @@ const PaperGrain: React.FC<PaperGrainProps> = ({
     const context = canvas.getContext('2d');
     if (!context) return;
 
-    const resolvedBackground = backgroundColor ?? resolveToken('--color-bg', 'rgb(248 244 233)');
-
-    // Make canvas fullscreen
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      drawGrain();
-    };
-
-    // Draw the grain pattern
+    // Draw the grain pattern. Re-reads the background token each call so a theme
+    // switch (data-theme change) repaints with the new --color-bg.
     const drawGrain = () => {
-      // Clear canvas and set background
+      const resolvedBackground = backgroundColor ?? resolveToken('--color-bg', 'rgb(248 244 233)');
+
+      context.globalAlpha = 1;
       context.fillStyle = resolvedBackground;
       context.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -63,7 +57,27 @@ const PaperGrain: React.FC<PaperGrainProps> = ({
       }
     };
 
+    // Make canvas fullscreen
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      drawGrain();
+    };
+
     resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Repaint immediately when the theme is toggled (ThemeToggle dispatches
+    // this event), and also catch any external data-theme change.
+    window.addEventListener('mytaste:themechange', drawGrain);
+    const themeObserver = new MutationObserver(drawGrain);
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener('mytaste:themechange', drawGrain);
+      themeObserver.disconnect();
+    };
   }, [backgroundColor, grainColor, grainDensity, grainOpacity, maxGrainSize]);
 
   return (

@@ -43,7 +43,7 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({ recipe, hideImage = false
 
   const status = recipe.status || { cookState: false, favorite: false };
   const iconBase =
-    'no-print absolute top-2 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-white/80 p-[0.3rem] text-[1.2rem]';
+    'no-print absolute top-2 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-surface/80 p-[0.3rem] text-[1.2rem]';
   return (
     <div className="w-[min(100%,30rem)]">
       <div className="overflow-hidden rounded-lg bg-surface shadow-[0_4px_8px_var(--color-shadow-soft)]">
