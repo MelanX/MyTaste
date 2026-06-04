@@ -2,18 +2,21 @@
   "name": "mytaste-backend",
   "version": "1.4.0",
   "description": "",
-  "main": "server.js",
+  "type": "module",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:ci": "jest --coverage"
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [],
   "author": "MelanX",
   "license": "MIT",
   "dependencies": {
     "axios": "^1.18.1",
-    "body-parser": "^2.3.0",
     "cheerio": "^1.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -23,12 +26,19 @@
     "joi": "^18.2.1",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.2.0",
-    "sharp": "^0.35.3",
-    "sqlite3": "^6.0.1"
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
-    "baseline-browser-mapping": "^2.10.8",
-    "jest": "^30.4.2",
-    "supertest": "^7.2.2"
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^25.5.0",
+    "@types/supertest": "^7.2.0",
+    "supertest": "^7.2.2",
+    "tsx": "^4.19.0",
+    "typescript": "^6",
+    "vitest": "^4.1.0"
   }
 }

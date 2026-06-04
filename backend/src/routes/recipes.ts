@@ -1,0 +1,188 @@
+import express from 'express';
+import type { Request, Response, NextFunction } from 'express';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import authenticateToken from '../middleware/auth.js';
+import { readData, modifyData, modifyCollections } from '../utils/fileService.js';
+import type { Recipe } from '../utils/fileService.js';
+import nanoid from '../utils/id.js';
+import { recipeSchema, recipeStatusSchema } from '../utils/schemes.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const UPLOAD_DIR = path.resolve(__dirname, '..', '..', 'uploads');
+
+function isLocalUpload(image: unknown): image is string {
+  return typeof image === 'string' && image.startsWith('/uploads/');
+}
+
+async function tryDeleteUpload(imagePath: string): Promise<void> {
+  const filename = path.basename(imagePath);
+  try {
+    await fs.promises.unlink(path.join(UPLOAD_DIR, filename));
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== 'ENOENT') console.error(`Failed to delete upload ${filename}:`, (err as Error).message);
+  }
+}
+
+const router = express.Router();
+
+// GET all recipes
+router.get('/recipes', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await readData();
+    data.recipes.sort((a, b) => {
+      if (a.status?.favorite && !b.status?.favorite) return -1;
+      if (!a.status?.favorite && b.status?.favorite) return 1;
+      if (a.status?.cookState && !b.status?.cookState) return -1;
+      if (!a.status?.cookState && b.status?.cookState) return 1;
+      return a.title.localeCompare(b.title);
+    });
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET a single recipe by ID
+router.get('/recipe/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const data = await readData();
+    const recipe = data.recipes.find((r) => r.id === id);
+    if (!recipe) return res.status(404).send('Recipe not found');
+    res.json(recipe);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST create a new recipe
+router.post('/recipes', authenticateToken, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { value: newRecipe, error } = recipeSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        message: 'Validation failed',
+        details: error.details.map((d) => d.message),
+      });
+    }
+
+    newRecipe.id = nanoid();
+    newRecipe.status = newRecipe.status ?? { favorite: false, cookState: false };
+    await modifyData((data) => {
+      data.recipes.push(newRecipe);
+      return data;
+    });
+    res.status(201).json(newRecipe);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PUT update an existing recipe
+router.put('/recipe/:id', authenticateToken, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+
+    const { value: updated, error } = recipeSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        message: 'Validation failed',
+        details: error.details.map((d) => d.message),
+      });
+    }
+
+    updated.id = id;
+    let result: Recipe | null = null;
+    let imageToDelete: string | null = null;
+    await modifyData((data) => {
+      const idx = data.recipes.findIndex((r) => r.id === id);
+      if (idx < 0) return null;
+      const oldImage = data.recipes[idx].image;
+      data.recipes[idx] = { ...data.recipes[idx], ...updated };
+      result = data.recipes[idx];
+      if (oldImage !== result.image && isLocalUpload(oldImage) && !data.recipes.some((r) => r.image === oldImage)) {
+        imageToDelete = oldImage;
+      }
+      return data;
+    });
+    if (!result) return res.status(404).send('Recipe not found');
+    if (imageToDelete) await tryDeleteUpload(imageToDelete);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.patch('/recipe/:id/status', authenticateToken, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { value, error } = recipeStatusSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      return res.status(400).json({
+        message: 'Validation failed',
+        details: error.details.map((d) => d.message),
+      });
+    }
+
+    const { id } = req.params;
+    let result: Recipe['status'] | null = null;
+    await modifyData((data) => {
+      const idx = data.recipes.findIndex((r) => r.id === id);
+      if (idx < 0) return null;
+      data.recipes[idx].status = { ...data.recipes[idx].status, ...value.status };
+      result = data.recipes[idx].status!;
+      return data;
+    });
+    if (!result) return res.status(404).send('Recipe not found');
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE an existing recipe
+router.delete('/recipe/:id', authenticateToken, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    let found = false;
+    let imageToDelete: string | null = null;
+    await modifyData((data) => {
+      const idx = data.recipes.findIndex((r) => r.id === id);
+      if (idx < 0) return null;
+      const oldImage = data.recipes[idx].image;
+      data.recipes.splice(idx, 1);
+      found = true;
+      if (isLocalUpload(oldImage) && !data.recipes.some((r) => r.image === oldImage)) {
+        imageToDelete = oldImage;
+      }
+      return data;
+    });
+    if (!found) return res.status(404).send('Recipe not found');
+    if (imageToDelete) await tryDeleteUpload(imageToDelete);
+    await modifyCollections((data) => {
+      data.nextUp = data.nextUp.filter((rid) => rid !== id);
+      data.collections.forEach((c) => {
+        c.recipeIds = c.recipeIds.filter((rid) => rid !== id);
+      });
+      return data;
+    });
+    res.sendStatus(204);
+  } catch (err) {
+    next(err);
+  }
+});
+
+export default router;

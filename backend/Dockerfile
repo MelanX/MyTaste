@@ -2,16 +2,23 @@ FROM node:24-alpine AS base
 RUN apk add --no-cache tini \
     && addgroup -S appgroup && adduser -S appuser -G appgroup
 
+# ── Build stage: install all deps and compile TypeScript → dist/ ──
+FROM base AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY tsconfig.json ./
+COPY src/ ./src/
+RUN npm run build
+
+# ── Runtime stage: only production deps + compiled dist/ ──
 FROM base
 WORKDIR /app
 ENV NODE_ENV=production
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev \
     && mkdir -p data uploads
-COPY server.js ./
-COPY routes/ ./routes/
-COPY middleware/ ./middleware/
-COPY utils/ ./utils/
+COPY --from=build /app/dist ./dist
 RUN chown -R appuser:appgroup /app
 VOLUME ["/app/data", "/app/uploads"]
 EXPOSE 5000
@@ -19,4 +26,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD wget -qO- http://127.0.0.1:5000/api/health || exit 1
 USER appuser
 ENTRYPOINT ["tini", "--"]
-CMD ["node", "server.js"]
+CMD ["node", "dist/index.js"]
