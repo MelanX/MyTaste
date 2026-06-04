@@ -76,7 +76,7 @@ describe('RecipeFormBase', () => {
       renderForm();
       const btn = screen.getByRole('button', { name: 'Backen' });
       await userEvent.click(btn);
-      expect(btn.className).toMatch(/pillActive/);
+      expect(btn.className).toMatch(/text-white/);
     });
 
     it('clicking selected type pill deselects it', async () => {
@@ -89,9 +89,9 @@ describe('RecipeFormBase', () => {
         },
       });
       const btn = screen.getByRole('button', { name: 'Backen' });
-      expect(btn.className).toMatch(/pillActive/);
+      expect(btn.className).toMatch(/text-white/);
       await userEvent.click(btn);
-      expect(btn.className).not.toMatch(/pillActive/);
+      expect(btn.className).not.toMatch(/text-white/);
     });
 
     it('pre-selects the type from initial values', () => {
@@ -103,7 +103,7 @@ describe('RecipeFormBase', () => {
           recipeType: 'cooking',
         },
       });
-      expect(screen.getByRole('button', { name: 'Kochen' }).className).toMatch(/pillActive/);
+      expect(screen.getByRole('button', { name: 'Kochen' }).className).toMatch(/text-white/);
     });
   });
 
@@ -119,16 +119,16 @@ describe('RecipeFormBase', () => {
       renderForm();
       await userEvent.click(screen.getByRole('button', { name: 'Vegan' }));
       await userEvent.click(screen.getByRole('button', { name: 'Glutenfrei' }));
-      expect(screen.getByRole('button', { name: 'Vegan' }).className).toMatch(/pillActive/);
-      expect(screen.getByRole('button', { name: 'Glutenfrei' }).className).toMatch(/pillActive/);
-      expect(screen.getByRole('button', { name: 'Vegetarisch' }).className).not.toMatch(/pillActive/);
+      expect(screen.getByRole('button', { name: 'Vegan' }).className).toMatch(/text-white/);
+      expect(screen.getByRole('button', { name: 'Glutenfrei' }).className).toMatch(/text-white/);
+      expect(screen.getByRole('button', { name: 'Vegetarisch' }).className).not.toMatch(/text-white/);
     });
 
     it('deselects a dietary pill on second click', async () => {
       renderForm();
       await userEvent.click(screen.getByRole('button', { name: 'Vegan' }));
       await userEvent.click(screen.getByRole('button', { name: 'Vegan' }));
-      expect(screen.getByRole('button', { name: 'Vegan' }).className).not.toMatch(/pillActive/);
+      expect(screen.getByRole('button', { name: 'Vegan' }).className).not.toMatch(/text-white/);
     });
 
     it('pre-selects dietary values from initial', () => {
@@ -140,9 +140,9 @@ describe('RecipeFormBase', () => {
           dietaryRestrictions: ['vegan', 'glutenfree'],
         },
       });
-      expect(screen.getByRole('button', { name: 'Vegan' }).className).toMatch(/pillActive/);
-      expect(screen.getByRole('button', { name: 'Glutenfrei' }).className).toMatch(/pillActive/);
-      expect(screen.getByRole('button', { name: 'Laktosefrei' }).className).not.toMatch(/pillActive/);
+      expect(screen.getByRole('button', { name: 'Vegan' }).className).toMatch(/text-white/);
+      expect(screen.getByRole('button', { name: 'Glutenfrei' }).className).toMatch(/text-white/);
+      expect(screen.getByRole('button', { name: 'Laktosefrei' }).className).not.toMatch(/text-white/);
     });
   });
 });

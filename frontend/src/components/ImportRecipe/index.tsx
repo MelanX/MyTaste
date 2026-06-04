@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RecipeFormBase, { type RecipeFormValues } from '../RecipeForm/RecipeFormBase';
-import styles from './styles.module.css';
 import { apiFetch } from '../../utils/api_service';
 import ErrorSection from '../ErrorSection';
 
@@ -70,10 +69,10 @@ const ImportRecipe: React.FC = () => {
   }
 
   return (
-    <div className={styles.importContainer}>
-      <h2>Rezept importieren</h2>
-      <form onSubmit={handleSubmit} className={styles.importForm}>
-        <label>
+    <div className="mx-auto my-8 max-w-[600px] rounded-[8px] bg-surface p-6 shadow-[0_2px_6px_var(--color-shadow-soft)]">
+      <h2 className="mb-4 text-fg">Rezept importieren</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <label className="flex flex-col font-medium text-fg">
           Rezept-URL
           <input
             type="url"
@@ -81,10 +80,15 @@ const ImportRecipe: React.FC = () => {
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://www.chefkoch.de/rezepte/..."
             required
+            className="mt-2"
           />
         </label>
         {errors.length > 0 && <ErrorSection title={errors[0]} details={errors.slice(1)} />}
-        <button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-fit cursor-pointer self-center rounded text-[1.2rem] disabled:cursor-not-allowed disabled:opacity-60"
+        >
           {loading ? 'Importiere…' : 'Import starten'}
         </button>
       </form>

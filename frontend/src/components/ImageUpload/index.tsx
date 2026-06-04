@@ -1,6 +1,5 @@
 import React from 'react';
 import { useDropzone } from 'react-dropzone';
-import styles from './styles.module.css';
 
 interface Props {
   file: File | null;
@@ -35,10 +34,10 @@ const ImageUpload: React.FC<Props> = ({ onFile, url, onUrl }) => {
   const display = preview || url || '/placeholder.webp';
 
   return (
-    <div {...getRootProps({ className: styles.dropzone })}>
+    <div {...getRootProps({ className: 'cursor-pointer rounded-lg border-2 border-dashed border-fg-subtle p-4 text-center' })}>
       <input {...getInputProps()} />
       {display ? (
-        <img src={display} alt="" className={styles.preview} />
+        <img src={display} alt="" className="mt-2 h-auto max-h-[30rem] max-w-full rounded-lg" />
       ) : isDragActive ? (
         <p>Bild hier ablegen …</p>
       ) : (

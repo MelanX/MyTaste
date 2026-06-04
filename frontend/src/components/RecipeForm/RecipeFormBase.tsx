@@ -1,6 +1,5 @@
 import React, { type FormEvent, useEffect, useRef, useState } from 'react';
 import type { Ingredient, IngredientSection } from '../../types/Recipe';
-import styles from './styles.module.css';
 import ImageUpload from '../ImageUpload';
 import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../../utils/api_service';
@@ -37,6 +36,30 @@ const parseAmount = (value: string): number | undefined => {
   const n = Number(value.replace(',', '.'));
   return Number.isNaN(n) ? undefined : n;
 };
+
+// Shared class strings (ported from styles.module.css)
+const labelClass = 'block text-[1.2rem] font-semibold text-fg';
+const pillBase =
+  'cursor-pointer rounded-[5rem] border border-line bg-bg-alt px-[14px] py-[6px] text-[0.9rem] text-fg-muted hover:bg-accent-dark';
+const pillActive = 'border-accent-dark bg-accent text-white';
+const addButtonClass =
+  'flex h-8 w-8 flex-[0_0_auto] cursor-pointer items-center justify-center self-center rounded-full border-none p-0 max-[600px]:self-end';
+const ingredientInputClass = 'rounded-[0.25rem] border border-line-soft px-[0.4rem] py-[0.3rem] text-[0.9rem]';
+const sectionAddRowClass = 'grid grid-cols-[1fr_auto] items-center gap-[0.4rem]';
+const sectionAddInputsClass = 'grid min-w-0 grid-cols-[repeat(auto-fit,minmax(7.5rem,1fr))] items-center gap-2';
+const sectionAddActionsClass = 'flex items-center justify-end gap-[0.4rem] whitespace-nowrap';
+const sectionDeleteButtonClass =
+  'ml-auto h-8 cursor-pointer rounded-[2rem] border-none bg-danger px-3 py-[0.35rem] text-[0.85rem] font-medium text-white hover:bg-danger-strong';
+
+const ingredientsTableClass =
+  'my-2 max-h-[20rem] overflow-y-auto rounded-[4px] border border-line bg-surface p-[10px] shadow-[0_2px_6px_var(--color-shadow-soft)]';
+const ingredientRowClass = 'relative flex cursor-move items-center gap-2 rounded-[0.25rem] px-[0.4rem] py-[0.3rem] hover:bg-bg';
+const ingredientRowDropBeforeClass =
+  "before:absolute before:-top-[0.125rem] before:right-0 before:left-0 before:h-[0.125rem] before:rounded-[62.5rem] before:bg-accent before:content-['']";
+const removeButtonClass =
+  'mr-[0.6rem] flex h-[1.7rem] w-[1.7rem] shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-danger p-0 text-[1.2rem] leading-none text-white transition-colors hover:bg-danger-strong disabled:cursor-not-allowed disabled:bg-disabled';
+const dropZoneClass = 'mt-[0.3rem] rounded-[0.25rem] border border-dashed border-line-soft px-[0.4rem] py-1 text-[0.75rem] text-fg-subtle';
+const dropZoneActiveClass = 'border-accent bg-accent-soft text-fg-subtle';
 
 const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
   initial = {
@@ -306,39 +329,43 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
   const isSectionMode = ingredientSections.length > 1;
 
   return (
-    <div className={styles.recipeFormContainer}>
-      <div className={styles.titleRow}>
+    <div className="mx-auto max-w-[800px] rounded-[8px] bg-surface p-5 shadow-[0_2px_6px_var(--color-shadow-soft)]">
+      <div className="flex items-center gap-[10px] px-5">
         <h2>{submitLabel}</h2>
         {showImportButton && (
-          <button type="button" className={styles.importButton} onClick={redirectToImport}>
+          <button type="button" className="ml-auto text-base font-medium" onClick={redirectToImport}>
             Lieber importieren!
           </button>
         )}
       </div>
-      <form onSubmit={handleSubmit}>
-        <div className={styles.firstFormGroup}>
+      <form onSubmit={handleSubmit} className="p-5">
+        <div className="[&_div]:mb-4">
           {/* Title */}
           <div>
-            <label htmlFor="title">Titel</label>
+            <label htmlFor="title" className={labelClass}>
+              Titel
+            </label>
             <input id="title" type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
           </div>
 
           {/* Instructions */}
           <div>
-            <label>Anleitung</label>
+            <label className={labelClass}>Anleitung</label>
             <InstructionsEditor value={instructions.length > 0 ? instructions : ['']} onChange={setInstructions} />
           </div>
 
           {/* Original URL */}
           <div>
-            <label htmlFor="url">Originalrezept-URL</label>
+            <label htmlFor="url" className={labelClass}>
+              Originalrezept-URL
+            </label>
             <input id="url" type="url" value={url} onChange={(e) => setUrl(e.target.value)} />
           </div>
 
           {/* Recipe Type */}
           <div>
-            <label>Rezepttyp</label>
-            <div className={styles.pillGroup}>
+            <label className={labelClass}>Rezepttyp</label>
+            <div className="mt-[0.4rem] flex flex-wrap gap-2">
               {(
                 [
                   ['cooking', 'Kochen'],
@@ -350,7 +377,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                 <button
                   key={value}
                   type="button"
-                  className={`${styles.pill} ${recipeType === value ? styles.pillActive : ''}`}
+                  className={`${pillBase} ${recipeType === value ? pillActive : ''}`}
                   onClick={() => setRecipeType((v) => (v === value ? '' : value))}
                 >
                   {label}
@@ -361,10 +388,10 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
 
           {/* Dietary Restrictions */}
           <div>
-            <label>
-              Ernährung <span className={styles.pillHint}>(Mehrfachauswahl)</span>
+            <label className={labelClass}>
+              Ernährung <span className="text-[0.75rem] font-normal text-fg-muted">(Mehrfachauswahl)</span>
             </label>
-            <div className={styles.pillGroup}>
+            <div className="mt-[0.4rem] flex flex-wrap gap-2">
               {(
                 [
                   ['vegan', 'Vegan'],
@@ -376,7 +403,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                 <button
                   key={value}
                   type="button"
-                  className={`${styles.pill} ${dietaryRestrictions.includes(value) ? styles.pillActive : ''}`}
+                  className={`${pillBase} ${dietaryRestrictions.includes(value) ? pillActive : ''}`}
                   onClick={() => toggleDietary(value)}
                 >
                   {label}
@@ -387,7 +414,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
 
           {/* Image */}
           <div>
-            <label>Vorschaubild</label>
+            <label className={labelClass}>Vorschaubild</label>
             <ImageUpload file={imageFile} onFile={setImageFile} url={image} onUrl={setImage} />
             <small>…oder externe URL eingeben:</small>
             <input
@@ -401,27 +428,34 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
         </div>
 
         {/* Ingredients */}
-        <div className={styles.formSection}>
+        <div className="mt-5 border-t border-line pt-[15px]">
           {/* --- Zutaten / sections toggle --- */}
-          <div className={styles.sectionToggleRow}>
-            <label>Zutaten</label>
+          <div className="mb-3 flex">
+            <label className={labelClass}>Zutaten</label>
 
-            <button type="button" className={styles.addSectionButton} onClick={addSection}>
+            <button
+              type="button"
+              className="ml-auto cursor-pointer rounded-[62.5rem] border-none bg-accent px-3 py-[0.35rem] text-[0.9rem] font-semibold text-white"
+              onClick={addSection}
+            >
               + Sektion hinzufügen
             </button>
           </div>
 
           {/* --- SECTION MODE --- */}
           {isSectionMode ? (
-            <div className={styles.sectionsWrapper}>
+            <div className="flex flex-col gap-2">
               {ingredientSections.map((section, sectionIndex) => {
                 const isCollapsed = !!collapsedSections[sectionIndex];
 
                 return (
-                  <div key={sectionIndex} className={styles.sectionCard}>
-                    <div className={styles.sectionHeader}>
+                  <div
+                    key={sectionIndex}
+                    className="mb-3 rounded-[1.5rem] bg-bg px-4 pt-3 pb-[0.9rem] shadow-[inset_0_1px_3px_rgba(0,0,0,0.18)]"
+                  >
+                    <div className="flex items-center gap-3">
                       <input
-                        className={styles.sectionTitleInput}
+                        className="flex-1 rounded-[0.25rem] border border-line-soft px-2 py-[0.3rem] font-semibold"
                         value={section.title ?? ''}
                         onChange={(e) => updateSectionTitle(sectionIndex, e.target.value)}
                         ref={(el) => {
@@ -436,28 +470,28 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                       />
                       <button
                         type="button"
-                        className={styles.addButton}
+                        className={addButtonClass}
                         onClick={() => toggleSectionCollapsed(sectionIndex)}
                         aria-label={isCollapsed ? 'Sektion anzeigen' : 'Sektion ausblenden'}
                         title={isCollapsed ? 'Sektion anzeigen' : 'Sektion ausblenden'}
                       >
                         <i className={isCollapsed ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'} />
                       </button>
-                      <button type="button" className={styles.sectionDeleteButton} onClick={() => removeSection(sectionIndex)}>
+                      <button type="button" className={sectionDeleteButtonClass} onClick={() => removeSection(sectionIndex)}>
                         Sektion entfernen
                       </button>
                     </div>
 
-                    <div className={`${styles.sectionBody} ${isCollapsed ? styles.sectionBodyHidden : ''}`}>
+                    <div className={`flex flex-col gap-2 ${isCollapsed ? 'hidden' : ''}`}>
                       {/* existing list but draggable */}
-                      <div className={styles.ingredientsTable}>
+                      <div className={ingredientsTableClass}>
                         {section.ingredients.map((ingredient, ingredientIndex) => (
                           <div
                             key={ingredientIndex}
                             className={
-                              styles.ingredientRowDraggable +
+                              ingredientRowClass +
                               (dragTarget && dragTarget.sectionIndex === sectionIndex && dragTarget.ingredientIndex === ingredientIndex
-                                ? ' ' + styles.ingredientRowDropBefore
+                                ? ' ' + ingredientRowDropBeforeClass
                                 : '')
                             }
                             draggable
@@ -478,7 +512,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                           >
                             <button
                               type="button"
-                              className={styles.removeButton}
+                              className={removeButtonClass}
                               onClick={(e) => {
                                 e.stopPropagation(); // don't start editing when deleting
                                 removeIngredientFromSection(sectionIndex, ingredientIndex);
@@ -487,26 +521,28 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                               <i className="fa-solid fa-minus" />
                             </button>
 
-                            <div className={styles.ingredientAmount}>
+                            <div className="w-[4.375rem] text-[0.9rem] font-medium">
                               {ingredient.amount}
                               {ingredient.unit ? ` ${ingredient.unit}` : ''}
                             </div>
 
-                            <div className={styles.ingredientName}>
+                            <div className="flex flex-1 flex-col break-words text-[0.9rem]">
                               {ingredient.name}
-                              {ingredient.note && <span className={styles.ingredientNote}>{ingredient.note}</span>}
+                              {ingredient.note && (
+                                <span className="mt-1 flex items-start text-[0.8rem] text-fg-subtle italic">{ingredient.note}</span>
+                              )}
                             </div>
 
-                            <span className={styles.dragHandle}>::</span>
+                            <span className="px-1 text-[0.8rem] opacity-60">::</span>
                           </div>
                         ))}
 
                         {/* drop at end of section */}
                         <div
                           className={
-                            styles.dropZone +
+                            dropZoneClass +
                             (dragTarget && dragTarget.sectionIndex === sectionIndex && dragTarget.ingredientIndex === null
-                              ? ' ' + styles.dropZoneActive
+                              ? ' ' + dropZoneActiveClass
                               : '')
                           }
                           onDragOver={(e) => {
@@ -541,20 +577,20 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
               })}
 
               {ingredientSections.length === 0 && (
-                <p className={styles.sectionsEmptyHint}>Noch keine Sektionen. Klicke auf „Sektion hinzufügen“, um zu starten.</p>
+                <p className="mt-1 text-[0.85rem] text-fg-subtle">Noch keine Sektionen. Klicke auf „Sektion hinzufügen“, um zu starten.</p>
               )}
             </div>
           ) : (
             /* FLAT MODE */
-            <div className={styles.ingredientsCard}>
-              <div className={styles.ingredientsTable}>
+            <div>
+              <div className={ingredientsTableClass}>
                 {(ingredientSections[0]?.ingredients ?? []).map((ingredient, idx) => (
                   <div
                     key={idx}
                     className={
-                      styles.ingredientRowDraggable +
+                      ingredientRowClass +
                       (dragTarget && dragTarget.sectionIndex === 0 && dragTarget.ingredientIndex === idx
-                        ? ' ' + styles.ingredientRowDropBefore
+                        ? ' ' + ingredientRowDropBeforeClass
                         : '')
                     }
                     draggable
@@ -574,7 +610,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                   >
                     <button
                       type="button"
-                      className={styles.removeButton}
+                      className={removeButtonClass}
                       onClick={(e) => {
                         e.stopPropagation();
                         removeIngredientFromSection(0, idx);
@@ -583,24 +619,26 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
                       <i className="fa-solid fa-minus" />
                     </button>
 
-                    <div className={styles.ingredientAmount}>
+                    <div className="w-[4.375rem] text-[0.9rem] font-medium">
                       {ingredient.amount}
                       {ingredient.unit ? ` ${ingredient.unit}` : ''}
                     </div>
 
-                    <div className={styles.ingredientName}>
+                    <div className="flex flex-1 flex-col break-words text-[0.9rem]">
                       {ingredient.name}
-                      {ingredient.note && <span className={styles.ingredientNote}>{ingredient.note}</span>}
+                      {ingredient.note && (
+                        <span className="mt-1 flex items-start text-[0.8rem] text-fg-subtle italic">{ingredient.note}</span>
+                      )}
                     </div>
 
-                    <span className={styles.dragHandle}>::</span>
+                    <span className="px-1 text-[0.8rem] opacity-60">::</span>
                   </div>
                 ))}
 
                 <div
                   className={
-                    styles.dropZone +
-                    (dragTarget && dragTarget.sectionIndex === 0 && dragTarget.ingredientIndex === null ? ' ' + styles.dropZoneActive : '')
+                    dropZoneClass +
+                    (dragTarget && dragTarget.sectionIndex === 0 && dragTarget.ingredientIndex === null ? ' ' + dropZoneActiveClass : '')
                   }
                   onDragOver={(e) => {
                     e.preventDefault();
@@ -631,15 +669,19 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
           )}
 
           {/* Spices */}
-          <label>Gewürze</label>
-          <div className={styles.spicesContainer}>
+          <label className={labelClass}>Gewürze</label>
+          <div className="flex flex-wrap gap-2 [&:has(div)]:mt-4 [&:has(div)]:mb-2">
             {spices.map((s, i) => (
-              <div key={s} className={styles.spiceTag} onClick={() => handleRemoveSpice(i)}>
+              <div
+                key={s}
+                className="inline-flex cursor-pointer items-center rounded-2xl bg-bg-alt px-3 py-[5px] text-[0.9rem] transition-colors hover:bg-danger"
+                onClick={() => handleRemoveSpice(i)}
+              >
                 {s}
               </div>
             ))}
           </div>
-          <div className={styles.spiceInputRow}>
+          <div className="grid grid-cols-[1fr_auto] items-center gap-[0.4rem] max-[600px]:flex max-[600px]:flex-col">
             <input
               type="text"
               value={newSpice}
@@ -652,8 +694,8 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
               }}
               placeholder="Neues Gewürz"
             />
-            <div className={styles.sectionAddActions}>
-              <button type="button" className={styles.addButton} onClick={handleAddSpice} disabled={!newSpice.trim()}>
+            <div className={sectionAddActionsClass}>
+              <button type="button" className={addButtonClass} onClick={handleAddSpice} disabled={!newSpice.trim()}>
                 <i className="fa-solid fa-plus" />
               </button>
             </div>
@@ -661,25 +703,33 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
         </div>
 
         {errors.length > 0 && <ErrorSection title={errors[0]} details={errors.slice(1)} />}
-        <div className={styles.formActions}>
+        <div className="mt-8 flex items-center gap-2 text-right max-[600px]:flex-col max-[600px]:items-stretch max-[600px]:text-left">
           {onDelete &&
             (confirmingDelete ? (
-              <div className={styles.deleteConfirm}>
-                <span className={styles.confirmText}>Bist du sicher?</span>
-                <button type="button" className={styles.confirmDeleteButton} onClick={handleDelete}>
+              <div className="mr-auto flex items-center gap-2 max-[600px]:mr-0 max-[600px]:flex-col max-[600px]:items-stretch">
+                <span className="font-semibold text-danger">Bist du sicher?</span>
+                <button
+                  type="button"
+                  className="bg-danger px-5 py-[10px] text-base font-semibold hover:bg-danger-strong"
+                  onClick={handleDelete}
+                >
                   Ja, löschen
                 </button>
-                <button type="button" className={styles.cancelDeleteButton} onClick={() => setConfirmingDelete(false)}>
+                <button type="button" className="px-5 py-[10px] text-base font-semibold" onClick={() => setConfirmingDelete(false)}>
                   Abbrechen
                 </button>
               </div>
             ) : (
-              <button type="button" className={styles.deleteButton} onClick={() => setConfirmingDelete(true)}>
+              <button
+                type="button"
+                className="mr-auto bg-danger px-5 py-[10px] text-base font-semibold hover:bg-danger-strong max-[600px]:mr-0"
+                onClick={() => setConfirmingDelete(true)}
+              >
                 <i className="fa-solid fa-trash-can" /> Lösche Rezept
               </button>
             ))}
-          <div className={styles.formActionsDivider} />
-          <button type="submit" className={styles.submitButton}>
+          <div className="hidden max-[600px]:block max-[600px]:border-t max-[600px]:border-line" />
+          <button type="submit" className="px-5 py-[10px] text-base font-semibold">
             {submitLabel}
           </button>
         </div>
@@ -773,11 +823,11 @@ const SectionAddRow: React.FC<SectionAddRowProps> = ({
   };
 
   return (
-    <div className={styles.sectionAddRow}>
-      <div className={styles.sectionAddInputs}>
+    <div className={sectionAddRowClass}>
+      <div className={sectionAddInputsClass}>
         <input
           ref={amountInputRef}
-          className={styles.amountInput}
+          className={ingredientInputClass}
           placeholder="Menge"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
@@ -785,7 +835,7 @@ const SectionAddRow: React.FC<SectionAddRowProps> = ({
         />
 
         <input
-          className={styles.unitInput}
+          className={ingredientInputClass}
           placeholder="Einheit"
           value={unit}
           onChange={(e) => setUnit(e.target.value)}
@@ -793,7 +843,7 @@ const SectionAddRow: React.FC<SectionAddRowProps> = ({
         />
 
         <input
-          className={styles.nameInput}
+          className={ingredientInputClass}
           placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -801,7 +851,7 @@ const SectionAddRow: React.FC<SectionAddRowProps> = ({
         />
 
         <input
-          className={styles.noteInput}
+          className={ingredientInputClass}
           placeholder="Anmerkung (optional)"
           value={note}
           onChange={(e) => setNote(e.target.value)}
@@ -809,13 +859,13 @@ const SectionAddRow: React.FC<SectionAddRowProps> = ({
         />
       </div>
 
-      <div className={styles.sectionAddActions}>
-        <button type="button" className={styles.addButton} onClick={handleSave}>
+      <div className={sectionAddActionsClass}>
+        <button type="button" className={addButtonClass} onClick={handleSave}>
           {isEditing ? <i className="fa-solid fa-check" /> : <i className="fa-solid fa-plus" />}
         </button>
 
         {isEditing && (
-          <button type="button" className={styles.sectionDeleteButton} onClick={handleCancel}>
+          <button type="button" className={sectionDeleteButtonClass} onClick={handleCancel}>
             Abbrechen
           </button>
         )}

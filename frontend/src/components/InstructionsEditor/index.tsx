@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import styles from './styles.module.css';
 
 interface Props {
   value: string[];
@@ -105,16 +104,18 @@ const InstructionsEditor: React.FC<Props> = ({ value, onChange }) => {
   };
 
   return (
-    <div className={styles.editor}>
+    <div className="flex flex-col gap-2">
       {value.map((step, index) => (
-        <div key={index} className={styles.stepRow}>
-          <div className={styles.stepNumber}>{index + 1}</div>
+        <div key={index} className="grid grid-cols-[2rem_1fr_auto] items-center gap-3">
+          <div className="mb-0 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-[0.9rem] font-semibold text-white">
+            {index + 1}
+          </div>
           <textarea
             ref={(el) => {
               inputRefs.current[index] = el;
               autoResize(el);
             }}
-            className={styles.stepInput}
+            className="box-border min-h-[2.4rem] w-full resize-none overflow-hidden rounded-md border border-line bg-surface px-[0.65rem] py-2 font-[inherit] text-base leading-normal text-fg focus:border-accent focus:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-accent)_20%,transparent)] focus:outline-none"
             value={step}
             rows={1}
             placeholder="Schritt beschreiben…"
@@ -126,7 +127,7 @@ const InstructionsEditor: React.FC<Props> = ({ value, onChange }) => {
           />
           <button
             type="button"
-            className={styles.removeButton}
+            className="flex h-[1.7rem] w-[1.7rem] shrink-0 items-center justify-center rounded-full border-none bg-danger p-0 text-[1.1rem] text-white transition-colors hover:not-disabled:bg-danger-strong disabled:cursor-default disabled:opacity-35"
             aria-label="Schritt entfernen"
             onClick={() => removeStep(index)}
             disabled={value.length <= 1}
@@ -135,8 +136,12 @@ const InstructionsEditor: React.FC<Props> = ({ value, onChange }) => {
           </button>
         </div>
       ))}
-      <div className={styles.footer}>
-        <button type="button" className={styles.addButton} onClick={() => addStep()}>
+      <div className="mt-1 flex flex-wrap items-center gap-4">
+        <button
+          type="button"
+          className="flex cursor-pointer items-center gap-[0.4rem] rounded-md border border-dashed border-line bg-transparent px-[0.85rem] py-[0.4rem] text-[0.9rem] text-fg transition-[border-color,background] hover:border-accent hover:bg-[color-mix(in_srgb,var(--color-accent)_6%,transparent)]"
+          onClick={() => addStep()}
+        >
           <i className="fa-solid fa-plus" /> Schritt hinzufügen
         </button>
       </div>
