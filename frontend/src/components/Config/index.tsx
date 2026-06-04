@@ -3,7 +3,6 @@ import { useBlocker } from 'react-router-dom';
 import RenameRulesConfig from '../RenameRulesConfig';
 import SpiceRulesConfig from '../SpiceRulesConfig';
 import BringRulesConfig from '../BringRulesConfig';
-import styles from './styles.module.css';
 
 interface TabProps {
   onDirtyChange?: (dirty: boolean) => void;
@@ -98,17 +97,21 @@ const Config: React.FC = () => {
   const ActiveComponent = ALL_TABS.find((t) => t.id === active)!.Component;
 
   return (
-    <div className={styles.wrapper}>
+    <div className="mx-auto max-w-[960px]">
       <h1>Konfiguration</h1>
 
-      <div className={styles.tabBar}>
+      <div className="mb-4 flex flex-col gap-[0.35rem]">
         {TAB_GROUPS.map((group) => (
-          <div key={group.groupLabel} className={styles.tabGroup}>
-            <span className={styles.groupLabel}>{group.groupLabel}</span>
+          <div key={group.groupLabel} className="flex flex-wrap items-center gap-2">
+            <span className="min-w-[4.5rem] select-none pr-[0.15rem] text-xs font-semibold uppercase tracking-[0.06em] text-fg-subtle">
+              {group.groupLabel}
+            </span>
             {group.tabs.map((t) => (
               <button
                 key={t.id}
-                className={`${styles.tabButton} ${active === t.id ? styles.active : ''}`}
+                className={`text-[1.2rem] ${
+                  active === t.id ? 'bg-success-bright text-white hover:cursor-default hover:bg-success-bright' : ''
+                }`}
                 onClick={() => handleTabClick(t.id)}
               >
                 {t.label}
@@ -118,9 +121,12 @@ const Config: React.FC = () => {
         ))}
       </div>
 
-      <div className={styles.tabPanel}>
+      <div className="mt-4">
         {isDirty && (
-          <div className={styles.dirtyBanner} data-testid="dirty-indicator">
+          <div
+            className="mb-4 rounded-md border border-warning bg-warning/15 px-3.5 py-2 text-sm font-medium text-warning-fg"
+            data-testid="dirty-indicator"
+          >
             Ungespeicherte Änderungen
           </div>
         )}
@@ -128,14 +134,20 @@ const Config: React.FC = () => {
       </div>
 
       {isDialogOpen && (
-        <div className={styles.dialogOverlay}>
-          <div className={styles.dialog}>
-            <p>Du hast ungespeicherte Änderungen. Trotzdem wechseln?</p>
-            <div className={styles.dialogActions}>
-              <button className={styles.dialogCancel} onClick={handleCancel}>
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/45">
+          <div className="w-[90%] max-w-[420px] rounded-lg bg-surface px-8 py-6 shadow-[0_4px_24px_var(--color-shadow-strong)]">
+            <p className="m-0 mb-5 text-base leading-normal">Du hast ungespeicherte Änderungen. Trotzdem wechseln?</p>
+            <div className="flex justify-end gap-3">
+              <button
+                className="cursor-pointer rounded border-none bg-accent px-[1.1rem] py-2 text-[0.95rem] text-white hover:bg-accent-dark"
+                onClick={handleCancel}
+              >
                 Abbrechen
               </button>
-              <button className={styles.dialogConfirm} onClick={handleConfirm}>
+              <button
+                className="cursor-pointer rounded border-none bg-danger px-[1.1rem] py-2 text-[0.95rem] text-white hover:bg-danger-strong"
+                onClick={handleConfirm}
+              >
                 Trotzdem wechseln
               </button>
             </div>

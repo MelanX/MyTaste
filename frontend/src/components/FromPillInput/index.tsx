@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styles from '../Config/styles.module.css';
 
 interface Props {
   value: string[];
@@ -63,10 +62,10 @@ const FromPillInput: React.FC<Props> = ({ value, onChange, placeholder }) => {
   };
 
   return (
-    <div className={styles.pillInputWrapper}>
+    <div className="flex flex-col gap-[6px]">
       <input
         ref={inputRef}
-        className={styles.pillText}
+        className="m-0 h-10 rounded border border-line p-2"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
@@ -74,9 +73,15 @@ const FromPillInput: React.FC<Props> = ({ value, onChange, placeholder }) => {
         placeholder={placeholder}
       />
       {value.length > 0 && (
-        <div className={styles.pillsRow}>
+        <div className="flex flex-wrap gap-1">
           {value.map((pill, i) => (
-            <span key={i} className={`${styles.pill}${modifierHeld ? ` ${styles.pillDanger}` : ''}`} onClick={() => handlePillClick(i)}>
+            <span
+              key={i}
+              className={`inline-flex cursor-pointer select-none items-center rounded-xl bg-bg-alt px-2.5 py-0.5 text-sm leading-[1.4] hover:text-white ${
+                modifierHeld ? 'hover:bg-danger' : 'hover:bg-accent-dark'
+              }`}
+              onClick={() => handlePillClick(i)}
+            >
               {pill}
             </span>
           ))}

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import styles from '../Config/styles.module.css';
 import { apiFetch } from '../../utils/api_service';
 import FromPillInput from '../FromPillInput';
 
@@ -63,29 +62,47 @@ const BringRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
   };
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div className={styles.error}>{error}</div>;
+  if (error) return <div className="my-4 text-danger">{error}</div>;
 
   return (
-    <div className={styles.container}>
+    <div className="mx-auto my-8 rounded-lg bg-surface p-4 shadow-[0_2px_6px_var(--color-shadow-soft)]">
       <h2>Bring Vereinheitlichungsregeln</h2>
       {rules.map((rule, idx) => (
-        <div key={idx} className={styles.ruleRow}>
-          <div className={styles.fromGroup}>
-            <label>Von</label>
+        <div key={idx} className="mb-4 flex items-start gap-4">
+          <div className="flex flex-1 flex-col">
+            <label className="mb-1 font-medium">Von</label>
             <FromPillInput value={rule.from} onChange={(from) => updateRule(idx, { ...rule, from })} />
           </div>
-          <div className={styles.toGroup}>
-            <label>Zu</label>
-            <input type="text" value={rule.to} onChange={(e) => updateRule(idx, { ...rule, to: e.target.value })} />
+          <div className="flex flex-1 flex-col">
+            <label className="mb-1 font-medium">Zu</label>
+            <input
+              type="text"
+              className="m-0 h-10 rounded border border-line p-2"
+              value={rule.to}
+              onChange={(e) => updateRule(idx, { ...rule, to: e.target.value })}
+            />
           </div>
-          <button className={styles.removeButton} onClick={() => removeRule(idx)}>
+          <button
+            className="mt-[calc(1.5rem+0.25rem)] h-10 w-10 cursor-pointer self-start rounded border-none bg-danger p-2 text-[1.4rem] text-white hover:bg-danger-strong"
+            onClick={() => removeRule(idx)}
+          >
             <i className="fa-solid fa-trash-can" />
           </button>
         </div>
       ))}
-      <div className={styles.actions}>
-        <button onClick={addRule}>Regel hinzufügen</button>
-        <button onClick={save}>Speichern</button>
+      <div className="mt-6 flex gap-4">
+        <button
+          className="cursor-pointer rounded border-none bg-accent px-6 py-3 text-base text-white transition-colors hover:bg-accent-dark"
+          onClick={addRule}
+        >
+          Regel hinzufügen
+        </button>
+        <button
+          className="cursor-pointer rounded border-none bg-accent px-6 py-3 text-base text-white transition-colors hover:bg-accent-dark"
+          onClick={save}
+        >
+          Speichern
+        </button>
       </div>
     </div>
   );

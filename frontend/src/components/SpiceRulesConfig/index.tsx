@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import styles from '../Config/styles.module.css';
 import { apiFetch } from '../../utils/api_service';
 import ErrorSection from '../ErrorSection';
 
@@ -98,7 +97,7 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
   const handleRemoveSpice = (idx: number) => setRules((r) => ({ ...r, spices: r.spices.filter((_, i) => i !== idx) }));
 
   if (loading) return <div>Loading…</div>;
-  if (error) return <div className={styles.error}>{error}</div>;
+  if (error) return <div className="my-4 text-danger">{error}</div>;
 
   const errorDetails = errors.slice(1).map((err, i) => {
     if (err && typeof err === 'object' && 'alias' in err && Array.isArray((err as { missing?: unknown }).missing)) {
@@ -106,7 +105,7 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
       return (
         <span key={i}>
           <code>{alias}</code>&nbsp;→&nbsp;
-          <span className={styles.missing}>{missing.join(', ')}</span>
+          <span>{missing.join(', ')}</span>
         </span>
       );
     }
@@ -115,7 +114,7 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
       return (
         <span key={i}>
           <code>{alias}</code>&nbsp;→&nbsp;
-          <span className={styles.missing}>{list.join(', ')}</span>
+          <span>{list.join(', ')}</span>
         </span>
       );
     }
@@ -124,22 +123,27 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
   });
 
   return (
-    <div className={styles.container}>
-      <div className={styles.mainTitle}>Gewürz-Konfiguration</div>
+    <div className="mx-auto my-8 rounded-lg bg-surface p-4 shadow-[0_2px_6px_var(--color-shadow-soft)]">
+      <div className="mb-4 text-[2rem] font-semibold text-fg">Gewürz-Konfiguration</div>
 
       {/* simple spices list */}
-      <div className={styles.secondaryTitle}>Gewürze</div>
-      <div className={styles.spicesContainer}>
+      <div className="my-4 text-[1.4rem] font-medium">Gewürze</div>
+      <div className="mb-4 mt-2 flex flex-wrap gap-2">
         {rules.spices.map((s, i) => (
-          <div key={i} className={styles.spiceTag} onClick={() => handleRemoveSpice(i)}>
+          <div
+            key={i}
+            className="cursor-pointer rounded-2xl bg-bg-alt px-3 py-[5px] text-[0.9rem] hover:bg-danger hover:text-white"
+            onClick={() => handleRemoveSpice(i)}
+          >
             {s}
           </div>
         ))}
       </div>
-      <div className={styles.spiceInputRow}>
-        <div className={styles.formGroup}>
+      <div className="flex gap-2.5">
+        <div>
           <input
             type="text"
+            className="rounded border border-line p-2"
             value={newSpice}
             onChange={(e) => setNewSpice(e.target.value)}
             onKeyDown={(e) => {
@@ -148,13 +152,18 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
             placeholder="Neues Gewürz"
           />
         </div>
-        <button type="button" className={styles.addButton} onClick={handleAddSpice} disabled={!newSpice.trim()}>
+        <button
+          type="button"
+          className="flex h-8 w-8 cursor-pointer self-center justify-center rounded-full border-none"
+          onClick={handleAddSpice}
+          disabled={!newSpice.trim()}
+        >
           <i className="fa-solid fa-plus" />
         </button>
       </div>
 
       {/* alias-map table */}
-      <div className={styles.secondaryTitle}>Alias</div>
+      <div className="my-4 text-[1.4rem] font-medium">Alias</div>
       {rules.spice_map.map((r, i) => {
         /* helper: toggle a spice tag on / off */
         const toggleSpice = (spice: string) => {
@@ -164,18 +173,24 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
         };
 
         return (
-          <div key={i} className={styles.aliasRow}>
+          <div key={i} className="mb-4 grid grid-cols-[minmax(180px,280px)_1fr_auto] items-center gap-4 border-b border-line pb-4">
             {/*  left -> the alias input */}
-            <div className={styles.fromGroup}>
+            <div className="flex flex-1 flex-col">
               <input value={r.alias} onChange={(e) => upsertAlias(i, { ...r, alias: e.target.value })} />
             </div>
 
             {/*  right -> selectable spice tags */}
-            <div className={styles.tagsGroup}>
+            <div className="flex flex-1 flex-wrap gap-2">
               {rules.spices.map((sp) => {
                 const selected = r.spices.includes(sp);
                 return (
-                  <span key={sp} className={`${styles.tag} ${selected ? styles.selected : ''}`} onClick={() => toggleSpice(sp)}>
+                  <span
+                    key={sp}
+                    className={`cursor-pointer select-none rounded-[14px] px-2.5 py-1 text-[0.85rem] hover:bg-accent-dark hover:text-white ${
+                      selected ? 'bg-accent text-white' : 'bg-bg-alt'
+                    }`}
+                    onClick={() => toggleSpice(sp)}
+                  >
                     {sp}
                   </span>
                 );
@@ -183,7 +198,10 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
             </div>
 
             {/* delete button stays unchanged */}
-            <button className={styles.removeButton} onClick={() => removeAlias(i)}>
+            <button
+              className="h-10 w-10 cursor-pointer justify-self-end self-center rounded border-none bg-danger p-2 text-[1.4rem] text-white hover:bg-danger-strong"
+              onClick={() => removeAlias(i)}
+            >
               <i className="fa-solid fa-trash-can" />
             </button>
           </div>
@@ -192,9 +210,19 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
 
       {errors.length > 0 && <ErrorSection title={errors[0]} details={errorDetails} />}
 
-      <div className={styles.actions}>
-        <button onClick={addAlias}>Alias hinzufügen</button>
-        <button onClick={save}>Speichern</button>
+      <div className="mt-6 flex gap-4">
+        <button
+          className="cursor-pointer rounded border-none bg-accent px-6 py-3 text-base text-white transition-colors hover:bg-accent-dark"
+          onClick={addAlias}
+        >
+          Alias hinzufügen
+        </button>
+        <button
+          className="cursor-pointer rounded border-none bg-accent px-6 py-3 text-base text-white transition-colors hover:bg-accent-dark"
+          onClick={save}
+        >
+          Speichern
+        </button>
       </div>
     </div>
   );
