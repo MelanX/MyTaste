@@ -6,7 +6,7 @@ import RecipeInstructions from './Instructions';
 import Toast from '../Toast';
 import { QRCodeSVG } from 'qrcode.react';
 import { useAuth } from '../../context/AuthContext';
-import { ApiError } from '../../utils/apiService';
+import { isAuthError } from '../../utils/apiService';
 import { useRecipe } from '../../hooks/useRecipe';
 import { upsertRecipe } from '../../utils/recipesCache';
 import CollectionPicker from '../CollectionPicker';
@@ -19,8 +19,7 @@ const RecipeDetail: React.FC = () => {
 
   React.useEffect(() => {
     if (!error) return;
-    const isAuthError = error instanceof ApiError && (error.status === 401 || error.status === 403);
-    if (isAuthError) {
+    if (isAuthError(error)) {
       logout();
     } else if (recipe !== null) {
       setToastMessage(error.message);

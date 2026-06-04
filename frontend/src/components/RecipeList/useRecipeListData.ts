@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import type { Recipe } from '../../types/Recipe';
-import { ApiError, updateRecipeStatus } from '../../utils/apiService';
+import { isAuthError, updateRecipeStatus } from '../../utils/apiService';
 import { useRecipes } from '../../hooks/useRecipes';
 import { useRecipeFilters } from '../../context/RecipeFiltersContext';
 import { levenshtein } from './levenshtein';
@@ -34,8 +34,7 @@ export const useRecipeListData = (): RecipeListData => {
 
   React.useEffect(() => {
     if (!error) return;
-    const isAuthError = error instanceof ApiError && (error.status === 401 || error.status === 403);
-    if (isAuthError) {
+    if (isAuthError(error)) {
       logout();
     } else if (recipes !== null) {
       setToastMessage(error.message);

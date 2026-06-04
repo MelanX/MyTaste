@@ -11,6 +11,11 @@ export class ApiError extends Error {
   }
 }
 
+/** True for an ApiError indicating the session is no longer valid (401/403). */
+export function isAuthError(error: unknown): boolean {
+  return error instanceof ApiError && (error.status === 401 || error.status === 403);
+}
+
 /**
  * Thin wrapper around `fetch` that
  *   - always sends credentials (cookies) to the API
