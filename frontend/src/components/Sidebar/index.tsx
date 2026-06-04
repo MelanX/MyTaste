@@ -6,6 +6,7 @@ import ThemeToggle from '../ThemeToggle';
 const linkClass = 'block py-2 text-[1.1rem] text-fg no-underline hover:text-accent-dark';
 // Reset the global `li` card styling (App.css) for the nav items.
 const navItemClass = 'm-0 border-none bg-transparent p-0 shadow-none';
+const authButtonClass = 'rounded-md bg-accent px-5 py-2.5 text-on-accent hover:bg-accent-dark';
 
 const Sidebar: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
@@ -61,7 +62,7 @@ const Sidebar: React.FC = () => {
           <ThemeToggle />
         </div>
 
-        <div className="flex h-full flex-col overflow-y-auto px-5 pt-20 pb-5">
+        <div className="h-full overflow-y-auto px-5 pt-20 pb-5">
           <nav>
             <ul className="m-0 list-none p-0">
               <li className={navItemClass}>
@@ -107,39 +108,38 @@ const Sidebar: React.FC = () => {
               )}
             </ul>
           </nav>
+        </div>
 
-          <div className="mt-auto flex flex-col items-center gap-4 pt-6">
-            {isAuthenticated ? (
-              <button
-                className="w-4/5 rounded-md bg-accent px-5 py-2.5 text-on-accent hover:bg-accent-dark"
-                onClick={async () => {
-                  await logout();
-                  setIsOpen(false);
-                }}
-              >
-                Logout
-              </button>
-            ) : (
-              <Link to="/login" className="w-4/5" onClick={() => setIsOpen(false)}>
-                <button className="w-full rounded-md bg-accent px-5 py-2.5 text-on-accent hover:bg-accent-dark">Login</button>
-              </Link>
-            )}
+        {/* Auth button + version pinned to the bottom of the fixed sidebar (as on main). */}
+        {isAuthenticated ? (
+          <button
+            className={`absolute bottom-5 left-1/2 w-4/5 -translate-x-1/2 ${authButtonClass}`}
+            onClick={async () => {
+              await logout();
+              setIsOpen(false);
+            }}
+          >
+            Logout
+          </button>
+        ) : (
+          <Link to="/login" className="absolute bottom-5 left-1/2 w-4/5 -translate-x-1/2" onClick={() => setIsOpen(false)}>
+            <button className={`w-full ${authButtonClass}`}>Login</button>
+          </Link>
+        )}
 
-            <div className="max-w-full truncate text-center text-[0.75rem] text-fg-subtle">
-              {import.meta.env.VITE_COMMIT_URL ? (
-                <a
-                  href={import.meta.env.VITE_COMMIT_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-inherit no-underline hover:underline"
-                >
-                  {import.meta.env.VITE_VERSION ?? 'dev'}
-                </a>
-              ) : (
-                (import.meta.env.VITE_VERSION ?? 'dev')
-              )}
-            </div>
-          </div>
+        <div className="absolute right-0 bottom-1 left-0 truncate px-4 text-center text-[0.75rem] text-fg-subtle">
+          {import.meta.env.VITE_COMMIT_URL ? (
+            <a
+              href={import.meta.env.VITE_COMMIT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-inherit no-underline hover:underline"
+            >
+              {import.meta.env.VITE_VERSION ?? 'dev'}
+            </a>
+          ) : (
+            (import.meta.env.VITE_VERSION ?? 'dev')
+          )}
         </div>
       </div>
     </>
