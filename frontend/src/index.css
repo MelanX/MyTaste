@@ -1,5 +1,138 @@
+/*
+ * Tailwind v4 — theme + utilities only (Preflight is intentionally omitted
+ * during the CSS-Modules -> Tailwind migration so un-ported components keep
+ * their UA-default styling; Preflight is added in the Phase-4 cleanup commit).
+ */
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/*
+ * ── Design tokens (single source of truth, raw hex) ───────────────────────
+ * Light is the default (MyTaste's cream/orange identity). Dark overrides the
+ * same tokens below via [data-theme='dark']. Components use semantic utilities
+ * generated from these names, e.g. bg-accent, text-fg, border-line, text-danger.
+ *
+ * Stray-hex consolidation map (old component hex -> token):
+ *   #e6b17e accent · #e6c996 accent-bright · #d99c5e accent-dark
+ *   #372101 on-accent · #fff7f2 accent-soft
+ *   #f8f4e9 bg · #f3f3f3 bg-alt · #ffffff surface
+ *   #333 fg · #555 fg-muted · #666/#777/#888/#6c757d fg-subtle
+ *   #ced4da line · #ddd line-soft
+ *   #28a745 success · #72c55b/#35d100 success-bright · #3a7a52 success-fg
+ *   #e8f4ee/#f2fff5 success-bg · #b2d4c0 success-line
+ *   #dc3545 danger · #ff5151/#d81b47 danger-bright · #b00020 danger-strong
+ *   #fff2f2/#fff5f7 danger-bg
+ *   #f59e0b warning · #92400e warning-fg
+ *   #0d6efd info · #f2f8ff info-bg
+ *   #4a90d9 action · #3a7ec4/#3d7cc9 action-dark
+ *   #37474f bring · #2c393f bring-dark
+ */
+@theme {
+  --color-accent: #e6b17e;
+  --color-accent-bright: #e6c996;
+  --color-accent-dark: #d99c5e;
+  --color-accent-soft: #fff7f2;
+  --color-on-accent: #372101;
+
+  --color-bg: #f8f4e9;
+  --color-bg-alt: #f3f3f3;
+  --color-surface: #ffffff;
+
+  --color-fg: #333333;
+  --color-fg-muted: #555555;
+  --color-fg-subtle: #6c757d;
+
+  --color-line: #ced4da;
+  --color-line-soft: #dddddd;
+
+  --color-success: #28a745;
+  --color-success-bright: #72c55b;
+  --color-success-fg: #3a7a52;
+  --color-success-bg: #e8f4ee;
+  --color-success-line: #b2d4c0;
+
+  --color-danger: #dc3545;
+  --color-danger-bright: #ff5151;
+  --color-danger-strong: #b00020;
+  --color-danger-bg: #fff2f2;
+
+  --color-warning: #f59e0b;
+  --color-warning-fg: #92400e;
+
+  --color-info: #0d6efd;
+  --color-info-bg: #f2f8ff;
+
+  --color-action: #4a90d9;
+  --color-action-dark: #3a7ec4;
+
+  --color-bring: #37474f;
+  --color-bring-dark: #2c393f;
+
+  --color-disabled: #6c757d;
+
+  --color-shadow-soft: #0000001a;
+  --color-shadow-strong: #00000026;
+}
+
+/* ── Dark theme — overrides the same tokens (raw hex) ──────────────────────── */
+[data-theme='dark'] {
+  --color-accent: #e6b17e;
+  --color-accent-bright: #f0c89a;
+  --color-accent-dark: #c98a4e;
+  --color-accent-soft: #3a2c1d;
+  --color-on-accent: #2a1800;
+
+  --color-bg: #1b1916;
+  --color-bg-alt: #232019;
+  --color-surface: #262320;
+
+  --color-fg: #e8e3d8;
+  --color-fg-muted: #c2bbac;
+  --color-fg-subtle: #9a9284;
+
+  --color-line: #3d3933;
+  --color-line-soft: #332f29;
+
+  --color-success: #4ade80;
+  --color-success-bright: #86efac;
+  --color-success-fg: #86efac;
+  --color-success-bg: #16271c;
+  --color-success-line: #2f4636;
+
+  --color-danger: #f87171;
+  --color-danger-bright: #ff8a8a;
+  --color-danger-strong: #fca5a5;
+  --color-danger-bg: #2e1b1b;
+
+  --color-warning: #fbbf24;
+  --color-warning-fg: #fcd34d;
+
+  --color-info: #60a5fa;
+  --color-info-bg: #18202e;
+
+  --color-action: #5b9fe0;
+  --color-action-dark: #4a90d9;
+
+  --color-bring: #455a64;
+  --color-bring-dark: #37474f;
+
+  --color-disabled: #5a554c;
+
+  --color-shadow-soft: #00000066;
+  --color-shadow-strong: #00000099;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+}
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
 .app-loading {
-  background: #f8f4e9;
+  background: var(--color-bg);
   min-height: 100vh;
   width: 100%;
 }
@@ -31,13 +164,22 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: var(--color-text);
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+/*
+ * Legacy CSS-Module tokens — kept verbatim so un-ported components render
+ * exactly as before during the migration. Removed in the Phase-4 cleanup
+ * commit once every component uses Tailwind utilities.
+ */
 :root {
   --default-fonts:
     'Delius', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',

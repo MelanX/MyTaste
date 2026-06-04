@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import ThemeToggle from '../ThemeToggle';
 import styles from './styles.module.css';
 
 const Sidebar: React.FC = () => {
@@ -105,6 +106,10 @@ const Sidebar: React.FC = () => {
               </li>
             </ul>
           </nav>
+          <div className="mt-4 flex items-center gap-2 px-4">
+            <ThemeToggle />
+            <span className="text-sm text-fg-subtle">Design</span>
+          </div>
           <div className={styles.version}>
             {import.meta.env.VITE_COMMIT_URL ? (
               <a href={import.meta.env.VITE_COMMIT_URL} target="_blank" rel="noopener noreferrer">
