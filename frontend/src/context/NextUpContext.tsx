@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext } from 'react';
+import React, { createContext, type ReactNode, useContext } from 'react';
 import { useNextUp } from '../hooks/useNextUp';
 
 type NextUpContextType = ReturnType<typeof useNextUp>;

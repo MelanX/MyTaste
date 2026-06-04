@@ -106,12 +106,12 @@ const Sidebar: React.FC = () => {
             </ul>
           </nav>
           <div className={styles.version}>
-            {process.env.REACT_APP_COMMIT_URL ? (
-              <a href={process.env.REACT_APP_COMMIT_URL} target="_blank" rel="noopener noreferrer">
-                {process.env.REACT_APP_VERSION ?? 'dev'}
+            {import.meta.env.VITE_COMMIT_URL ? (
+              <a href={import.meta.env.VITE_COMMIT_URL} target="_blank" rel="noopener noreferrer">
+                {import.meta.env.VITE_VERSION ?? 'dev'}
               </a>
             ) : (
-              (process.env.REACT_APP_VERSION ?? 'dev')
+              (import.meta.env.VITE_VERSION ?? 'dev')
             )}
           </div>
         </div>

@@ -1,22 +1,22 @@
+import { type Mock } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { useBlocker } from 'react-router-dom';
 import Config from '../components/Config';
 
 let mockRenameOnDirtyChange: ((dirty: boolean) => void) | undefined;
-let mockSpiceOnDirtyChange: ((dirty: boolean) => void) | undefined;
 
 const mockBlocker = {
   state: 'unblocked' as 'unblocked' | 'blocked' | 'proceeding',
-  proceed: jest.fn(),
-  reset: jest.fn(),
+  proceed: vi.fn(),
+  reset: vi.fn(),
 };
 
-jest.mock('react-router-dom', () => ({
-  useBlocker: jest.fn(),
+vi.mock('react-router-dom', () => ({
+  useBlocker: vi.fn(),
 }));
 
-jest.mock('../components/RenameRulesConfig', () => ({
+vi.mock('../components/RenameRulesConfig', () => ({
   __esModule: true,
   default: function MockRenameRulesConfig({ onDirtyChange }: { onDirtyChange?: (d: boolean) => void }) {
     mockRenameOnDirtyChange = onDirtyChange;
@@ -24,15 +24,14 @@ jest.mock('../components/RenameRulesConfig', () => ({
   },
 }));
 
-jest.mock('../components/SpiceRulesConfig', () => ({
+vi.mock('../components/SpiceRulesConfig', () => ({
   __esModule: true,
-  default: function MockSpiceRulesConfig({ onDirtyChange }: { onDirtyChange?: (d: boolean) => void }) {
-    mockSpiceOnDirtyChange = onDirtyChange;
+  default: function MockSpiceRulesConfig() {
     return <div data-testid="spice-tab">SpiceRulesConfig</div>;
   },
 }));
 
-jest.mock('../components/BringRulesConfig', () => ({
+vi.mock('../components/BringRulesConfig', () => ({
   __esModule: true,
   default: function MockBringRulesConfig() {
     return <div data-testid="bring-tab">BringRulesConfig</div>;
@@ -50,11 +49,10 @@ const getAbbrechenButton = () => screen.getByRole('button', { name: /^Abbrechen$
 describe('Config', () => {
   beforeEach(() => {
     mockRenameOnDirtyChange = undefined;
-    mockSpiceOnDirtyChange = undefined;
     mockBlocker.state = 'unblocked';
     mockBlocker.proceed.mockClear();
     mockBlocker.reset.mockClear();
-    (useBlocker as jest.Mock).mockReturnValue(mockBlocker);
+    (useBlocker as Mock).mockReturnValue(mockBlocker);
     window.history.replaceState({}, '', '/config');
   });
 

@@ -18,8 +18,8 @@ async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Respons
 
 export async function loadConfig() {
   let apiUrl = '';
-  if (process.env.NODE_ENV === 'development') {
-    apiUrl = process.env.REACT_APP_API_URL || '';
+  if (import.meta.env.DEV) {
+    apiUrl = import.meta.env.VITE_API_URL || '';
   } else {
     try {
       const res = await fetchWithTimeout('/config.json', 3000);

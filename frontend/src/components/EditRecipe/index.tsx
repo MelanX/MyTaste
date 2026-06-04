@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import RecipeFormBase, { RecipeFormValues } from '../RecipeForm/RecipeFormBase';
-import { Recipe } from '../../types/Recipe';
+import RecipeFormBase, { type RecipeFormValues } from '../RecipeForm/RecipeFormBase';
+import type { Recipe } from '../../types/Recipe';
 import { apiFetch } from '../../utils/api_service';
 import Toast from '../Toast';
 

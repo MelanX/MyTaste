@@ -4,56 +4,42 @@
   "description": "The frontend of MyTaste - Digital Recipe Book",
   "author": "MelanX",
   "license": "MIT",
-  "proxy": "http://localhost:5000",
+  "type": "module",
   "dependencies": {
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/jest": "^30.0.0",
-    "@types/node": "^26.1.0",
-    "@types/react": "^19.2.8",
-    "@types/react-dom": "^19.2.2",
-    "@types/react-router-dom": "^5.3.3",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-dropzone": "^15.0.0",
     "react-router-dom": "^7.18.1",
-    "react-scripts": "^5.0.1",
-    "typescript": "^4.9.5",
-    "web-vitals": "^5.3.0",
-    "workbox-background-sync": "^7.4.0",
-    "workbox-broadcast-update": "^7.4.0",
-    "workbox-cacheable-response": "^7.4.0",
-    "workbox-core": "^7.4.0",
-    "workbox-expiration": "^7.4.0",
-    "workbox-navigation-preload": "^7.4.0",
-    "workbox-precaching": "^7.4.0",
-    "workbox-range-requests": "^7.4.0",
-    "workbox-routing": "^7.4.0",
-    "workbox-strategies": "^7.3.0",
-    "workbox-streams": "^7.4.0"
+    "web-vitals": "^5.3.0"
   },
   "scripts": {
-    "backend-start": "cd ../backend && node server.js",
-    "frontend-start": "react-scripts start",
-    "start": "npx concurrently \"npm run backend-start\" \"npm run frontend-start\"",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "test:ci": "react-scripts test --watchAll=false",
-    "eject": "react-scripts eject"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "jest": {
-    "moduleNameMapper": {
-      "^react-router-dom$": "<rootDir>/node_modules/react-router-dom/dist/index.js"
-    }
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^26.1.0",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^6.0.0",
+    "eslint": "^10.0.3",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.4.0",
+    "jsdom": "^25.0.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.57.1",
+    "vite": "^8.0.0",
+    "vitest": "^4.1.0"
   },
   "browserslist": {
     "production": [

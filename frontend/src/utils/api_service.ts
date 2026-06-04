@@ -1,12 +1,12 @@
 import { getConfig } from '../config';
-import { Collection } from '../types/Collections';
+import type { Collection } from '../types/Collections';
 
 export class ApiError extends Error {
-  constructor(
-    public readonly status: number,
-    message: string,
-  ) {
+  public readonly status: number;
+
+  constructor(status: number, message: string) {
     super(message || `HTTP ${status}`);
+    this.status = status;
     this.name = 'ApiError';
   }
 }

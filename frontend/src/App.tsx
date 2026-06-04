@@ -9,7 +9,7 @@ import ImportRecipe from './components/ImportRecipe';
 import PaperGrain from './components/PaperGrain';
 import Sidebar from './components/Sidebar';
 import './App.css';
-import { RecipeFormValues } from './components/RecipeForm/RecipeFormBase';
+import type { RecipeFormValues } from './components/RecipeForm/RecipeFormBase';
 import EditRecipe from './components/EditRecipe';
 import { apiFetch } from './utils/api_service';
 import RequireLogin from './components/RequireLogin';
@@ -60,7 +60,7 @@ const App: React.FC = () => {
                   if (window.location.pathname === '/') window.location.reload();
                 }}
               >
-                <img src={`${process.env.PUBLIC_URL}/text.png`} alt="MyTaste" className="logo-image" />
+                <img src="/text.png" alt="MyTaste" className="logo-image" />
               </Link>
               <ScrollToTop />
               <Routes>

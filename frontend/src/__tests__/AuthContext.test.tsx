@@ -1,14 +1,15 @@
+import { type Mock } from 'vitest';
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { apiFetch } from '../utils/api_service';
 
-jest.mock('../utils/api_service', () => ({
-  apiFetch: jest.fn(),
+vi.mock('../utils/api_service', () => ({
+  apiFetch: vi.fn(),
 }));
 
-const mockApiFetch = apiFetch as jest.Mock;
+const mockApiFetch = apiFetch as Mock;
 
 const TestConsumer: React.FC<{ onError?: (e: Error) => void }> = ({ onError }) => {
   const { isAuthenticated, login, logout } = useAuth();
@@ -64,7 +65,7 @@ describe('AuthProvider', () => {
   });
 
   it('login() does not set isAuthenticated to true on failure', async () => {
-    const onError = jest.fn();
+    const onError = vi.fn();
     mockApiFetch
       .mockResolvedValueOnce({ ok: false }) // initial refresh
       .mockResolvedValueOnce({ ok: false }); // failed login

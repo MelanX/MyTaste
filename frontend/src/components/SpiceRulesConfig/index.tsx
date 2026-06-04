@@ -101,7 +101,7 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
   if (error) return <div className={styles.error}>{error}</div>;
 
   const errorDetails = errors.slice(1).map((err, i) => {
-    if (err && typeof err === 'object' && 'alias' in err && Array.isArray((err as any).missing)) {
+    if (err && typeof err === 'object' && 'alias' in err && Array.isArray((err as { missing?: unknown }).missing)) {
       const { alias, missing } = err as { alias: string; missing: string[] };
       return (
         <span key={i}>

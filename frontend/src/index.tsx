@@ -3,12 +3,9 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { loadConfig } from './config';
-
-serviceWorkerRegistration.register();
 
 navigator.serviceWorker?.addEventListener('message', (e) => {
   if (e.data?.type === 'recipes-updated') {

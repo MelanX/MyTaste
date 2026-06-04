@@ -3,13 +3,13 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import RecipeFormBase from '../components/RecipeForm/RecipeFormBase';
 
-jest.mock('react-router-dom', () => ({ useNavigate: () => jest.fn() }), { virtual: true });
-jest.mock('../utils/api_service', () => ({ apiFetch: jest.fn() }));
-jest.mock('../components/ImageUpload', () => () => null);
+vi.mock('react-router-dom', () => ({ useNavigate: () => vi.fn() }));
+vi.mock('../utils/api_service', () => ({ apiFetch: vi.fn() }));
+vi.mock('../components/ImageUpload', () => ({ default: () => null }));
 
 const defaultProps = {
   submitLabel: 'Speichern',
-  onSubmit: jest.fn().mockResolvedValue({ ok: true }),
+  onSubmit: vi.fn().mockResolvedValue({ ok: true }),
 };
 
 function renderForm(props: Partial<React.ComponentProps<typeof RecipeFormBase>> = {}) {
@@ -28,7 +28,7 @@ describe('RecipeFormBase', () => {
   });
 
   describe('delete confirmation', () => {
-    const onDelete = jest.fn().mockResolvedValue({ ok: true });
+    const onDelete = vi.fn().mockResolvedValue({ ok: true });
 
     beforeEach(() => onDelete.mockReset());
 
@@ -38,7 +38,7 @@ describe('RecipeFormBase', () => {
     });
 
     it('clicking delete shows inline confirmation and does not call window.confirm', async () => {
-      const confirmSpy = jest.spyOn(window, 'confirm');
+      const confirmSpy = vi.spyOn(window, 'confirm');
       renderForm({ onDelete });
       await userEvent.click(screen.getByRole('button', { name: /lösche rezept/i }));
       expect(confirmSpy).not.toHaveBeenCalled();

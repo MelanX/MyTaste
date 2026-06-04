@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import FromPillInput from '../components/FromPillInput';
 
-function renderInput(value: string[], onChange = jest.fn()) {
+function renderInput(value: string[], onChange = vi.fn()) {
   return { onChange, ...render(<FromPillInput value={value} onChange={onChange} />) };
 }
 

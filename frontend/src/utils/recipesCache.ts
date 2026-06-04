@@ -1,4 +1,4 @@
-import { Recipe } from '../types/Recipe';
+import type { Recipe } from '../types/Recipe';
 import { apiFetch, ApiError } from './api_service';
 
 const KEY = 'recipes-cache-v1';
@@ -19,7 +19,9 @@ export function writeCache(data: Recipe[]): void {
     localStorage.setItem(KEY, JSON.stringify(data));
     /* wake up any other tabs */
     window.dispatchEvent(new Event('recipes-updated'));
-  } catch {}
+  } catch {
+    /* ignore localStorage write failures (quota, private mode) */
+  }
 }
 
 /** Fetch from network **and** update cache */

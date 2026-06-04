@@ -5,13 +5,13 @@ import FilterSection from '../components/FilterSection';
 
 const defaultProps = {
   selectedTypes: [],
-  onTypeToggle: jest.fn(),
+  onTypeToggle: vi.fn(),
   typeMode: 'or' as const,
-  onTypeModeChange: jest.fn(),
+  onTypeModeChange: vi.fn(),
   selectedDietary: [],
-  onDietaryToggle: jest.fn(),
+  onDietaryToggle: vi.fn(),
   dietaryMode: 'or' as const,
-  onDietaryModeChange: jest.fn(),
+  onDietaryModeChange: vi.fn(),
 };
 
 function renderFilter(props: Partial<React.ComponentProps<typeof FilterSection>> = {}) {
@@ -19,7 +19,7 @@ function renderFilter(props: Partial<React.ComponentProps<typeof FilterSection>>
 }
 
 describe('FilterSection', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => vi.clearAllMocks());
 
   it('renders the toggle chip', () => {
     renderFilter();
@@ -58,7 +58,7 @@ describe('FilterSection', () => {
   });
 
   it('calls onTypeToggle when a type pill is clicked', async () => {
-    const onTypeToggle = jest.fn();
+    const onTypeToggle = vi.fn();
     renderFilter({ onTypeToggle });
     await userEvent.click(screen.getByRole('button', { name: /mehr filter/i }));
     await userEvent.click(screen.getByRole('button', { name: 'Kochen' }));
@@ -66,7 +66,7 @@ describe('FilterSection', () => {
   });
 
   it('calls onDietaryToggle when a dietary pill is clicked', async () => {
-    const onDietaryToggle = jest.fn();
+    const onDietaryToggle = vi.fn();
     renderFilter({ onDietaryToggle });
     await userEvent.click(screen.getByRole('button', { name: /mehr filter/i }));
     await userEvent.click(screen.getByRole('button', { name: 'Vegan' }));
@@ -79,7 +79,7 @@ describe('FilterSection', () => {
   });
 
   it('calls onTypeModeChange when UND toggle is clicked', async () => {
-    const onTypeModeChange = jest.fn();
+    const onTypeModeChange = vi.fn();
     renderFilter({ onTypeModeChange });
     await userEvent.click(screen.getByRole('button', { name: /mehr filter/i }));
     const undButtons = screen.getAllByRole('button', { name: 'UND' });
@@ -88,7 +88,7 @@ describe('FilterSection', () => {
   });
 
   it('calls onDietaryModeChange when UND toggle is clicked for dietary', async () => {
-    const onDietaryModeChange = jest.fn();
+    const onDietaryModeChange = vi.fn();
     renderFilter({ onDietaryModeChange });
     await userEvent.click(screen.getByRole('button', { name: /mehr filter/i }));
     const undButtons = screen.getAllByRole('button', { name: 'UND' });

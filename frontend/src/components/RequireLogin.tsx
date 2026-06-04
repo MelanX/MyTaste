@@ -4,7 +4,7 @@ import { getConfig } from '../config';
 
 /**
  * Wrap any element in <RequireLogin> to make it conditionally private.
- * If REACT_APP_REQUIRE_LOGIN !== 'true' it simply renders its children.
+ * If the loaded config's `requireLogin` is false it simply renders its children.
  */
 const RequireLogin: React.FC<{ children: React.ReactElement }> = ({ children }) => {
   const mustLogin = getConfig().requireLogin;

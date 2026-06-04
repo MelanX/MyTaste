@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Collection } from '../types/Collections';
+import type { Collection } from '../types/Collections';
 import {
   addToCollection,
   clearCollection,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Recipe } from '../../types/Recipe';
+import type { Recipe } from '../../types/Recipe';
 import BringButton from '../BringButton';
 import FilterSection from '../FilterSection';
 import Toast from '../Toast';

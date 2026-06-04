@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Collection } from '../../types/Collections';
-import { Recipe } from '../../types/Recipe';
+import type { Collection } from '../../types/Collections';
+import type { Recipe } from '../../types/Recipe';
 import { getConfig } from '../../config';
 import styles from './styles.module.css';
 

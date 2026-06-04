@@ -9,7 +9,7 @@ interface Props {
   onUrl: (url: string) => void;
 }
 
-const ImageUpload: React.FC<Props> = ({ file, onFile, url, onUrl }) => {
+const ImageUpload: React.FC<Props> = ({ onFile, url, onUrl }) => {
   const [preview, setPreview] = React.useState<string | null>(null);
 
   const onDrop = React.useCallback(

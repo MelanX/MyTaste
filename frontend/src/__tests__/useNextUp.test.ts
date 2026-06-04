@@ -1,22 +1,23 @@
+import { type Mock } from 'vitest';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useNextUp } from '../hooks/useNextUp';
 import * as api from '../utils/api_service';
 
-jest.mock('../utils/api_service', () => ({
-  fetchNextUp: jest.fn(),
-  addToNextUp: jest.fn(),
-  removeFromNextUp: jest.fn(),
-  clearNextUp: jest.fn(),
+vi.mock('../utils/api_service', () => ({
+  fetchNextUp: vi.fn(),
+  addToNextUp: vi.fn(),
+  removeFromNextUp: vi.fn(),
+  clearNextUp: vi.fn(),
 }));
 
-const mockFetchNextUp = api.fetchNextUp as jest.Mock;
-const mockAddToNextUp = api.addToNextUp as jest.Mock;
-const mockRemoveFromNextUp = api.removeFromNextUp as jest.Mock;
-const mockClearNextUp = api.clearNextUp as jest.Mock;
+const mockFetchNextUp = api.fetchNextUp as Mock;
+const mockAddToNextUp = api.addToNextUp as Mock;
+const mockRemoveFromNextUp = api.removeFromNextUp as Mock;
+const mockClearNextUp = api.clearNextUp as Mock;
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 describe('useNextUp', () => {

@@ -1,9 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import InstructionsEditor from '../components/InstructionsEditor';
 
-function renderEditor(steps: string[] = [''], onChange = jest.fn()) {
+function renderEditor(steps: string[] = [''], onChange = vi.fn()) {
   return { onChange, ...render(<InstructionsEditor value={steps} onChange={onChange} />) };
 }
 

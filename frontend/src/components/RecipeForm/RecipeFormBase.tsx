@@ -1,5 +1,5 @@
-import React, { FormEvent, useEffect, useRef, useState } from 'react';
-import { Ingredient, IngredientSection } from '../../types/Recipe';
+import React, { type FormEvent, useEffect, useRef, useState } from 'react';
+import type { Ingredient, IngredientSection } from '../../types/Recipe';
 import styles from './styles.module.css';
 import ImageUpload from '../ImageUpload';
 import { useNavigate } from 'react-router-dom';
@@ -134,7 +134,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
 
   const addSection = () => {
     setIngredientSections((prev) => {
-      let next = prev.length > 0 ? prev.map((s) => ({ ...s })) : [{ ingredients: [] }];
+      const next = prev.length > 0 ? prev.map((s) => ({ ...s })) : [{ ingredients: [] }];
 
       // If this is the first time we go from flat -> sections, ensure section 0 has a title
       if (next.length === 1) {
@@ -299,7 +299,7 @@ const RecipeFormBase: React.FC<RecipeFormBaseProps> = ({
     }
   };
 
-  const redirectToImport = async (e: FormEvent) => {
+  const redirectToImport = async () => {
     navigate('/import-recipe');
   };
 

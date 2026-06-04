@@ -1,5 +1,5 @@
 import React from 'react';
-import RecipeFormBase, { RecipeFormValues } from './RecipeFormBase';
+import RecipeFormBase, { type RecipeFormValues } from './RecipeFormBase';
 
 interface Props {
   onSubmit: (values: RecipeFormValues) => Promise<Response>;

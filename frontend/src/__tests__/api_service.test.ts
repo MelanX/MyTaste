@@ -1,10 +1,10 @@
 import { apiFetch } from '../utils/api_service';
 
-jest.mock('../config', () => ({
+vi.mock('../config', () => ({
   getConfig: () => ({ API_URL: '', requireLogin: false }),
 }));
 
-const mockFetch = jest.fn();
+const mockFetch = vi.fn();
 
 beforeEach(() => {
   global.fetch = mockFetch;

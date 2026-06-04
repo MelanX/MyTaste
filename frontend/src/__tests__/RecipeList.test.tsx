@@ -1,3 +1,4 @@
+import { type Mock } from 'vitest';
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -8,10 +9,10 @@ import { useRecipes } from '../hooks/useRecipes';
 import { useAuth } from '../context/AuthContext';
 import { useRecipeFilters } from '../context/RecipeFiltersContext';
 
-jest.mock('../hooks/useRecipes');
-jest.mock('../context/AuthContext');
-jest.mock('../context/RecipeFiltersContext');
-jest.mock('../context/NextUpContext', () => ({
+vi.mock('../hooks/useRecipes');
+vi.mock('../context/AuthContext');
+vi.mock('../context/RecipeFiltersContext');
+vi.mock('../context/NextUpContext', async () => ({
   useNextUpContext: () => ({
     ids: [],
     loading: false,
@@ -21,26 +22,22 @@ jest.mock('../context/NextUpContext', () => ({
     clear: () => Promise.resolve(),
   }),
 }));
-jest.mock('../config', () => ({ getConfig: () => ({ API_URL: '', requireLogin: false }) }));
-jest.mock('../utils/api_service', () => ({
-  ...jest.requireActual('../utils/api_service'),
-  updateRecipeStatus: jest.fn(),
+vi.mock('../config', async () => ({ getConfig: () => ({ API_URL: '', requireLogin: false }) }));
+vi.mock('../utils/api_service', async () => ({
+  ...(await vi.importActual('../utils/api_service')),
+  updateRecipeStatus: vi.fn(),
 }));
-jest.mock('../components/BringButton', () => () => null);
-jest.mock('../components/FilterSection', () => () => null);
-jest.mock(
-  'react-router-dom',
-  () => ({
-    Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
-  }),
-  { virtual: true },
-);
+vi.mock('../components/BringButton', () => ({ default: () => null }));
+vi.mock('../components/FilterSection', () => ({ default: () => null }));
+vi.mock('react-router-dom', () => ({
+  Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
+}));
 
-const mockUseRecipes = useRecipes as jest.Mock;
-const mockUseAuth = useAuth as jest.Mock;
-const mockUseRecipeFilters = useRecipeFilters as jest.Mock;
+const mockUseRecipes = useRecipes as Mock;
+const mockUseAuth = useAuth as Mock;
+const mockUseRecipeFilters = useRecipeFilters as Mock;
 
-const mockLogout = jest.fn();
+const mockLogout = vi.fn();
 
 const sampleRecipes: Recipe[] = [
   {
@@ -53,26 +50,26 @@ const sampleRecipes: Recipe[] = [
 
 const defaultFilters = {
   titleFilter: '',
-  setTitleFilter: jest.fn(),
+  setTitleFilter: vi.fn(),
   selectedTypes: [],
-  setSelectedTypes: jest.fn(),
+  setSelectedTypes: vi.fn(),
   typeMode: 'or' as const,
-  setTypeMode: jest.fn(),
+  setTypeMode: vi.fn(),
   selectedDietary: [],
-  setSelectedDietary: jest.fn(),
+  setSelectedDietary: vi.fn(),
   dietaryMode: 'or' as const,
-  setDietaryMode: jest.fn(),
+  setDietaryMode: vi.fn(),
   favFilter: false,
-  setFavFilter: jest.fn(),
+  setFavFilter: vi.fn(),
   cookFilter: null,
-  setCookFilter: jest.fn(),
+  setCookFilter: vi.fn(),
   sortMode: 'alpha-asc' as const,
-  setSortMode: jest.fn(),
-  resetFilters: jest.fn(),
+  setSortMode: vi.fn(),
+  resetFilters: vi.fn(),
 };
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   mockUseAuth.mockReturnValue({ isAuthenticated: false, logout: mockLogout });
   mockUseRecipeFilters.mockReturnValue(defaultFilters);
 });

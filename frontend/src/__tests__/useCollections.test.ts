@@ -1,29 +1,30 @@
+import { type Mock } from 'vitest';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { useCollections } from '../hooks/useCollections';
 import * as api from '../utils/api_service';
 
-jest.mock('../utils/api_service', () => ({
-  fetchCollections: jest.fn(),
-  createCollection: jest.fn(),
-  renameCollection: jest.fn(),
-  deleteCollection: jest.fn(),
-  addToCollection: jest.fn(),
-  removeFromCollection: jest.fn(),
-  clearCollection: jest.fn(),
+vi.mock('../utils/api_service', () => ({
+  fetchCollections: vi.fn(),
+  createCollection: vi.fn(),
+  renameCollection: vi.fn(),
+  deleteCollection: vi.fn(),
+  addToCollection: vi.fn(),
+  removeFromCollection: vi.fn(),
+  clearCollection: vi.fn(),
 }));
 
-const mockFetchCollections = api.fetchCollections as jest.Mock;
-const mockCreateCollection = api.createCollection as jest.Mock;
-const mockRenameCollection = api.renameCollection as jest.Mock;
-const mockDeleteCollection = api.deleteCollection as jest.Mock;
-const mockAddToCollection = api.addToCollection as jest.Mock;
-const mockRemoveFromCollection = api.removeFromCollection as jest.Mock;
-const mockClearCollection = api.clearCollection as jest.Mock;
+const mockFetchCollections = api.fetchCollections as Mock;
+const mockCreateCollection = api.createCollection as Mock;
+const mockRenameCollection = api.renameCollection as Mock;
+const mockDeleteCollection = api.deleteCollection as Mock;
+const mockAddToCollection = api.addToCollection as Mock;
+const mockRemoveFromCollection = api.removeFromCollection as Mock;
+const mockClearCollection = api.clearCollection as Mock;
 
 const sampleCollections = [{ id: 'c1', name: 'Sunday Dinners', recipeIds: ['r1'], createdAt: '2024-01-01', updatedAt: '2024-01-01' }];
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 describe('useCollections', () => {

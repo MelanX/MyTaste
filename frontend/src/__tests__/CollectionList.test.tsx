@@ -1,3 +1,4 @@
+import { type Mock } from 'vitest';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -6,22 +7,18 @@ import CollectionList from '../components/CollectionList';
 import { useCollectionsContext } from '../context/CollectionsContext';
 import { useRecipes } from '../hooks/useRecipes';
 
-jest.mock('../context/CollectionsContext');
-jest.mock('../hooks/useRecipes');
-jest.mock('../config', () => ({ getConfig: () => ({ API_URL: '', requireLogin: false }) }));
-jest.mock(
-  'react-router-dom',
-  () => ({
-    Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
-  }),
-  { virtual: true },
-);
+vi.mock('../context/CollectionsContext');
+vi.mock('../hooks/useRecipes');
+vi.mock('../config', () => ({ getConfig: () => ({ API_URL: '', requireLogin: false }) }));
+vi.mock('react-router-dom', () => ({
+  Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
+}));
 
-const mockUseCollections = useCollectionsContext as jest.Mock;
-const mockUseRecipes = useRecipes as jest.Mock;
+const mockUseCollections = useCollectionsContext as Mock;
+const mockUseRecipes = useRecipes as Mock;
 
-const mockCreate = jest.fn();
-const mockRemove = jest.fn();
+const mockCreate = vi.fn();
+const mockRemove = vi.fn();
 
 const sampleCollections = [
   { id: 'c1', name: 'Sunday Dinners', recipeIds: ['r1'], createdAt: 'x', updatedAt: 'x' },
@@ -37,17 +34,17 @@ function setupMocks({ collections = [] as typeof sampleCollections, loading = fa
     error,
     create: mockCreate,
     remove: mockRemove,
-    rename: jest.fn(),
-    addRecipe: jest.fn(),
-    removeRecipe: jest.fn(),
-    clearRecipes: jest.fn(),
+    rename: vi.fn(),
+    addRecipe: vi.fn(),
+    removeRecipe: vi.fn(),
+    clearRecipes: vi.fn(),
   });
   mockUseRecipes.mockReturnValue({ recipes: sampleRecipes, loading: false, error: null });
 }
 
 beforeEach(() => {
-  jest.clearAllMocks();
-  window.confirm = jest.fn(() => true);
+  vi.clearAllMocks();
+  window.confirm = vi.fn(() => true);
 });
 
 describe('CollectionList', () => {

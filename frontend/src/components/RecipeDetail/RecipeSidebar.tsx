@@ -1,5 +1,5 @@
 import React from 'react';
-import { Recipe } from '../../types/Recipe';
+import type { Recipe } from '../../types/Recipe';
 import styles from './styles.module.css';
 import { formatAmount } from '../../utils/formatters';
 import { getConfig } from '../../config';

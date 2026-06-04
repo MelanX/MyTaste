@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext } from 'react';
+import React, { createContext, type ReactNode, useContext } from 'react';
 import { useCollections } from '../hooks/useCollections';
 
 type CollectionsContextType = ReturnType<typeof useCollections>;

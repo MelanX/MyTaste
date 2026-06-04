@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import RecipeFormBase, { RecipeFormValues } from '../RecipeForm/RecipeFormBase';
+import RecipeFormBase, { type RecipeFormValues } from '../RecipeForm/RecipeFormBase';
 import styles from './styles.module.css';
 import { apiFetch } from '../../utils/api_service';
 import ErrorSection from '../ErrorSection';

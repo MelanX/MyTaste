@@ -1,3 +1,4 @@
+import { type Mock } from 'vitest';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -7,35 +8,29 @@ import { useCollectionsContext } from '../context/CollectionsContext';
 import { useNextUpContext } from '../context/NextUpContext';
 import { useRecipes } from '../hooks/useRecipes';
 
-jest.mock('../context/CollectionsContext');
-jest.mock('../context/NextUpContext');
-jest.mock('../hooks/useRecipes');
-jest.mock('../config', () => ({ getConfig: () => ({ API_URL: '', requireLogin: false }) }));
-jest.mock(
-  '../components/BringButton',
-  () =>
-    ({ ids, recipeId }: { ids?: string[]; recipeId?: string }) =>
-      ids !== undefined ? <div data-testid="bring-bulk-button" data-ids={ids.join(',')} /> : null,
-);
-jest.mock(
-  'react-router-dom',
-  () => ({
-    Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
-    useParams: () => ({ id: 'c1' }),
-    useNavigate: () => mockNavigate,
-  }),
-  { virtual: true },
-);
+vi.mock('../context/CollectionsContext');
+vi.mock('../context/NextUpContext');
+vi.mock('../hooks/useRecipes');
+vi.mock('../config', () => ({ getConfig: () => ({ API_URL: '', requireLogin: false }) }));
+vi.mock('../components/BringButton', () => ({
+  default: ({ ids }: { ids?: string[]; recipeId?: string }) =>
+    ids !== undefined ? <div data-testid="bring-bulk-button" data-ids={ids.join(',')} /> : null,
+}));
+vi.mock('react-router-dom', () => ({
+  Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
+  useParams: () => ({ id: 'c1' }),
+  useNavigate: () => mockNavigate,
+}));
 
-const mockUseCollections = useCollectionsContext as jest.Mock;
-const mockUseNextUp = useNextUpContext as jest.Mock;
-const mockUseRecipes = useRecipes as jest.Mock;
+const mockUseCollections = useCollectionsContext as Mock;
+const mockUseNextUp = useNextUpContext as Mock;
+const mockUseRecipes = useRecipes as Mock;
 
-const mockNavigate = jest.fn();
-const mockRemoveRecipe = jest.fn();
-const mockClearRecipes = jest.fn();
-const mockRename = jest.fn();
-const mockRemove = jest.fn();
+const mockNavigate = vi.fn();
+const mockRemoveRecipe = vi.fn();
+const mockClearRecipes = vi.fn();
+const mockRename = vi.fn();
+const mockRemove = vi.fn();
 
 const sampleCollections = [{ id: 'c1', name: 'Sunday Dinners', recipeIds: ['r1', 'r2'], createdAt: 'x', updatedAt: 'x' }];
 
@@ -53,23 +48,23 @@ function setupMocks({ collections = sampleCollections, loading = false, error = 
     clearRecipes: mockClearRecipes,
     rename: mockRename,
     remove: mockRemove,
-    create: jest.fn(),
-    addRecipe: jest.fn(),
+    create: vi.fn(),
+    addRecipe: vi.fn(),
   });
   mockUseNextUp.mockReturnValue({
     ids: [],
     loading: false,
     error: null,
-    add: jest.fn(),
-    remove: jest.fn(),
-    clear: jest.fn(),
+    add: vi.fn(),
+    remove: vi.fn(),
+    clear: vi.fn(),
   });
   mockUseRecipes.mockReturnValue({ recipes, loading: false, error: null });
 }
 
 beforeEach(() => {
-  jest.clearAllMocks();
-  window.confirm = jest.fn(() => true);
+  vi.clearAllMocks();
+  window.confirm = vi.fn(() => true);
 });
 
 describe('CollectionDetail', () => {

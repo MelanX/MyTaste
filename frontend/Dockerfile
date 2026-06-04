@@ -1,19 +1,21 @@
 FROM node:24-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 COPY public ./public
 COPY src ./src
-COPY tsconfig.json ./
-ARG REACT_APP_VERSION
-ARG REACT_APP_COMMIT_URL
-ENV REACT_APP_VERSION=$REACT_APP_VERSION
-ENV REACT_APP_COMMIT_URL=$REACT_APP_COMMIT_URL
+COPY index.html ./
+COPY tsconfig.json tsconfig.app.json tsconfig.node.json ./
+COPY vite.config.ts ./
+ARG VITE_VERSION
+ARG VITE_COMMIT_URL
+ENV VITE_VERSION=$VITE_VERSION
+ENV VITE_COMMIT_URL=$VITE_COMMIT_URL
 RUN npm run build
 
 FROM nginx:stable-alpine
 RUN apk add --no-cache tini gettext
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 COPY config.template.json /app/config.template.json
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh

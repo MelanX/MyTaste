@@ -28,7 +28,9 @@ function loadFromSession(): PersistedFilters {
   try {
     const raw = sessionStorage.getItem(SESSION_KEY);
     if (raw) return { ...defaults, ...JSON.parse(raw) };
-  } catch {}
+  } catch {
+    /* ignore malformed sessionStorage */
+  }
   return defaults;
 }
 
@@ -41,7 +43,9 @@ function usePersistedState<T>(key: keyof PersistedFilters, initial: T) {
       try {
         const stored = JSON.parse(sessionStorage.getItem(SESSION_KEY) || '{}');
         sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ...stored, [key]: next }));
-      } catch {}
+      } catch {
+        /* ignore sessionStorage write failures */
+      }
       return next;
     });
   };
