@@ -4,8 +4,6 @@ import { useNextUpContext } from '../../context/NextUpContext';
 import { useCollectionsContext } from '../../context/CollectionsContext';
 import { useRecipes } from '../../hooks/useRecipes';
 import BringButton from '../BringButton';
-import styles from './styles.module.css';
-import recipeStyles from '../RecipeList/styles.module.css';
 import { getConfig } from '../../config';
 
 const NextUpList: React.FC = () => {
@@ -44,40 +42,54 @@ const NextUpList: React.FC = () => {
 
   return (
     <div>
-      <div className={recipeStyles.titleRow}>
+      <div className="mb-4 flex items-center gap-4 [&>h2]:m-0 [&>h2]:whitespace-nowrap max-[600px]:mb-3 max-[600px]:flex-col max-[600px]:items-stretch max-[600px]:gap-2">
         <h2>Next Up</h2>
-        <div className={styles.actions}>
+        <div className="ml-auto flex items-center gap-2 max-[600px]:ml-0 max-[600px]:flex-col max-[600px]:items-stretch max-[600px]:[&>*]:w-full max-[600px]:[&_a]:w-full">
           <BringButton ids={ids} label="Alle zu Bring" />
           <button
             type="button"
-            className={styles.saveButton}
+            className="min-h-[40px] cursor-pointer whitespace-nowrap rounded border-none bg-action px-4 py-2 font-medium text-white hover:not-disabled:bg-action-dark disabled:cursor-default disabled:opacity-40"
             onClick={() => setShowSaveAs((v) => !v)}
             disabled={ids.length === 0}
             title="Als Sammlung speichern"
           >
             Als Sammlung speichern
           </button>
-          <button type="button" className={styles.clearButton} onClick={handleClear} disabled={ids.length === 0}>
+          <button
+            type="button"
+            className="min-h-[40px] cursor-pointer whitespace-nowrap rounded border-none bg-accent px-4 py-2 font-medium text-white hover:not-disabled:bg-accent-dark disabled:cursor-default disabled:opacity-40"
+            onClick={handleClear}
+            disabled={ids.length === 0}
+          >
             Leeren
           </button>
         </div>
       </div>
 
       {showSaveAs && (
-        <form onSubmit={handleSaveAsCollection} className={styles.saveAsForm}>
+        <form onSubmit={handleSaveAsCollection} className="mb-4 flex flex-wrap items-center gap-2">
           <input
             type="text"
             value={saveCollectionName}
             onChange={(e) => setSaveCollectionName(e.target.value)}
             placeholder="Name der Sammlung"
-            className={styles.saveAsInput}
+            className="m-0 box-border h-10 min-w-[180px] flex-1 rounded border border-line bg-surface px-3 text-base text-fg focus:border-accent focus:outline-none"
             autoFocus
             disabled={saving}
           />
-          <button type="submit" className={styles.saveAsCreate} disabled={saving}>
+          <button
+            type="submit"
+            className="box-border h-10 cursor-pointer whitespace-nowrap rounded border-none bg-accent px-4 text-base font-medium text-white hover:not-disabled:bg-accent-dark disabled:cursor-default disabled:opacity-60"
+            disabled={saving}
+          >
             {saving ? 'Speichern...' : 'Erstellen'}
           </button>
-          <button type="button" className={styles.saveAsCancel} onClick={() => setShowSaveAs(false)} disabled={saving}>
+          <button
+            type="button"
+            className="box-border h-10 cursor-pointer whitespace-nowrap rounded border border-danger bg-transparent px-4 text-base text-danger hover:not-disabled:bg-danger hover:not-disabled:text-white"
+            onClick={() => setShowSaveAs(false)}
+            disabled={saving}
+          >
             Abbrechen
           </button>
         </form>
@@ -102,11 +114,14 @@ const NextUpList: React.FC = () => {
         </p>
       )}
 
-      <div className={recipeStyles.recipeCardsGrid}>
+      <div className="mt-5 grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-5">
         {nextUpRecipes.map((recipe) => (
-          <div key={recipe.id} className={recipeStyles.recipeCard}>
-            <div className={recipeStyles.recipeCardImageContainer}>
-              <div className={recipeStyles.favIcon}>
+          <div
+            key={recipe.id}
+            className="group flex h-full flex-col overflow-hidden rounded-lg bg-surface shadow-[0_4px_8px_var(--color-shadow-soft)] transition-[transform,box-shadow] duration-300 ease-in-out hover:-translate-y-[5px] hover:shadow-[0_8px_16px_var(--color-shadow-strong)]"
+          >
+            <div className="relative h-[200px] w-full overflow-hidden">
+              <div className="absolute right-2 top-2 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-white/80 p-[0.3rem] text-[1.2rem]">
                 <i className="fa-solid fa-bookmark" title="Aus Next Up entfernen" onClick={() => remove(recipe.id)} />
               </div>
               <Link to={`/recipe/${recipe.id}`}>
@@ -119,17 +134,24 @@ const NextUpList: React.FC = () => {
                       : '/placeholder.webp'
                   }
                   alt={recipe.title}
-                  className={recipeStyles.recipeCardImage}
+                  className="h-full w-full object-cover transition-transform duration-500 ease-in-out hover:scale-105"
                 />
               </Link>
             </div>
-            <div className={recipeStyles.recipeCardContent}>
-              <h3 className={recipeStyles.recipeCardTitle}>{recipe.title}</h3>
-              <div className={recipeStyles.recipeCardBottom}>
-                <Link to={`/recipe/${recipe.id}`} className={recipeStyles.recipeCardButton}>
+            <div className="flex grow flex-col gap-2.5 p-4">
+              <h3 className="mb-1.5 mt-0 text-[1.2rem] font-semibold">{recipe.title}</h3>
+              <div className="mt-auto flex flex-col gap-2.5">
+                <Link
+                  to={`/recipe/${recipe.id}`}
+                  className="rounded bg-accent px-4 py-2 text-center text-base font-medium text-white no-underline transition-colors duration-300 hover:bg-accent-dark hover:no-underline"
+                >
                   Rezept ansehen
                 </Link>
-                <button type="button" className={styles.removeButton} onClick={() => remove(recipe.id)}>
+                <button
+                  type="button"
+                  className="w-full cursor-pointer rounded border-none bg-danger px-4 py-2 text-center font-medium text-white hover:bg-danger-strong"
+                  onClick={() => remove(recipe.id)}
+                >
                   Entfernen
                 </button>
               </div>

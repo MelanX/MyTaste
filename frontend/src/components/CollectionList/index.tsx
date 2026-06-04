@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useCollectionsContext } from '../../context/CollectionsContext';
 import { useRecipes } from '../../hooks/useRecipes';
 import CollectionCard from '../CollectionCard';
-import styles from './styles.module.css';
-import recipeStyles from '../RecipeList/styles.module.css';
 
 const CollectionList: React.FC = () => {
   const { collections, loading, error, create } = useCollectionsContext();
@@ -21,29 +19,40 @@ const CollectionList: React.FC = () => {
 
   return (
     <div>
-      <div className={recipeStyles.titleRow}>
+      <div className="mb-4 flex items-center gap-4 [&>h2]:m-0 [&>h2]:whitespace-nowrap max-[600px]:mb-3 max-[600px]:flex-col max-[600px]:items-stretch max-[600px]:gap-2">
         <h2>Sammlungen</h2>
-        <div className={styles.actions}>
-          <button type="button" className={styles.newButton} onClick={() => setShowNew((v) => !v)}>
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            className="min-h-[40px] cursor-pointer whitespace-nowrap rounded border-none bg-accent px-4 py-2 font-medium text-white hover:bg-accent-dark"
+            onClick={() => setShowNew((v) => !v)}
+          >
             Neue Sammlung
           </button>
         </div>
       </div>
 
       {showNew && (
-        <form onSubmit={handleCreate} className={styles.newForm}>
+        <form onSubmit={handleCreate} className="mb-4 flex flex-wrap items-center gap-2">
           <input
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Name der Sammlung"
-            className={styles.newInput}
+            className="min-w-[180px] flex-1 rounded border border-line bg-surface px-3 py-2 text-base text-fg focus:border-accent focus:outline-none"
             autoFocus
           />
-          <button type="submit" className={styles.createButton}>
+          <button
+            type="submit"
+            className="cursor-pointer whitespace-nowrap rounded border-none bg-accent px-4 py-2 font-medium text-white hover:bg-accent-dark"
+          >
             Erstellen
           </button>
-          <button type="button" className={styles.cancelButton} onClick={() => setShowNew(false)}>
+          <button
+            type="button"
+            className="cursor-pointer whitespace-nowrap rounded border border-line bg-transparent px-4 py-2 text-fg-muted hover:border-danger hover:text-danger"
+            onClick={() => setShowNew(false)}
+          >
             Abbrechen
           </button>
         </form>
@@ -53,7 +62,7 @@ const CollectionList: React.FC = () => {
       {error && <p>Fehler: {error.message}</p>}
       {!loading && !error && collections.length === 0 && <p>Keine Sammlungen</p>}
 
-      <div className={recipeStyles.recipeCardsGrid}>
+      <div className="mt-5 grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-5">
         {collections.map((collection) => (
           <CollectionCard key={collection.id} collection={collection} recipes={recipes ?? []} />
         ))}

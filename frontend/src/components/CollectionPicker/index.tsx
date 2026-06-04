@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useCollectionsContext } from '../../context/CollectionsContext';
-import styles from './styles.module.css';
 
 interface Props {
   recipeId: string;
@@ -80,7 +79,7 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
   const dropdown = (
     <div
       ref={dropdownRef}
-      className={styles.dropdown}
+      className="max-h-[280px] min-w-[200px] overflow-y-auto rounded-md border border-line bg-surface py-1 shadow-[0_4px_16px_var(--color-shadow-soft)]"
       style={{
         position: 'fixed',
         top: dropdownPos.top,
@@ -95,34 +94,46 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
               : 280,
       }}
     >
-      {pickerError && <p className={styles.pickerError}>{pickerError}</p>}
-      {collections.length === 0 && !showNew && <p className={styles.empty}>Keine Sammlungen</p>}
+      {pickerError && <p className="m-0 px-[14px] py-[6px] text-[0.85rem] text-danger">{pickerError}</p>}
+      {collections.length === 0 && !showNew && <p className="m-0 px-[14px] py-2 text-[0.9rem] text-fg-muted">Keine Sammlungen</p>}
       {collections.map((c) => {
         const checked = c.recipeIds.includes(recipeId);
         return (
-          <label key={c.id} className={styles.item}>
-            <input type="checkbox" checked={checked} onChange={() => toggle(c.id, checked)} />
+          <label key={c.id} className="flex cursor-pointer items-center gap-2 px-[14px] text-[0.95rem] text-fg hover:bg-bg-alt">
+            <input
+              type="checkbox"
+              checked={checked}
+              onChange={() => toggle(c.id, checked)}
+              className="h-[15px] w-[15px] shrink-0 cursor-pointer accent-[var(--color-accent)]"
+            />
             <span>{c.name}</span>
           </label>
         );
       })}
-      <hr className={styles.separator} />
+      <hr className="mx-3 my-2 border-none border-t border-line" />
       {showNew ? (
-        <form onSubmit={handleCreate} className={styles.newForm}>
+        <form onSubmit={handleCreate} className="m-0 mb-1 mt-3 flex gap-1 px-[10px]">
           <input
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Name..."
-            className={styles.newInput}
+            className="m-0 flex-1 rounded border border-line bg-surface px-2 py-1 text-[0.9rem] text-fg focus:border-accent focus:outline-none"
             autoFocus
           />
-          <button type="submit" className={styles.createBtn}>
+          <button
+            type="submit"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-none bg-accent p-0 font-bold text-white hover:bg-accent-dark"
+          >
             <i className="fa-solid fa-plus" />
           </button>
         </form>
       ) : (
-        <button type="button" className={styles.newCollectionBtn} onClick={() => setShowNew(true)}>
+        <button
+          type="button"
+          className="flex w-full cursor-pointer items-center gap-1.5 border-none bg-transparent px-[14px] py-2 text-left text-[0.9rem] text-accent-dark hover:bg-bg-alt"
+          onClick={() => setShowNew(true)}
+        >
           <i className="fa-solid fa-plus" /> Neue Sammlung
         </button>
       )}
@@ -130,11 +141,15 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
   );
 
   return (
-    <div className={`${styles.wrapper}${variant === 'button' ? ` ${styles.wrapperFull}` : ''}`} ref={containerRef}>
+    <div className={`relative inline-block${variant === 'button' ? ' block w-full md:w-auto' : ''}`} ref={containerRef}>
       <button
         ref={triggerRef}
         type="button"
-        className={variant === 'button' ? styles.triggerButton : styles.trigger}
+        className={
+          variant === 'button'
+            ? 'box-border flex min-h-[40px] w-full cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded border-none bg-accent px-4 text-base font-medium text-white hover:bg-accent-dark md:w-auto'
+            : 'flex h-full w-full cursor-pointer items-center justify-center border-none bg-transparent p-0 text-[1.1rem] text-fg-muted hover:bg-transparent hover:text-accent'
+        }
         onClick={handleToggle}
         title="Zu Sammlung hinzufügen"
       >

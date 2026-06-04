@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from './styles.module.css';
 
 export interface FilterSectionProps {
   selectedTypes: string[];
@@ -31,16 +30,21 @@ const DIETARY_OPTIONS = [
 const ModeToggle: React.FC<{
   mode: 'or' | 'and';
   onChange: (mode: 'or' | 'and') => void;
-}> = ({ mode, onChange }) => (
-  <span className={styles.modeToggle}>
-    <button type="button" className={`${styles.modeBtn} ${mode === 'or' ? styles.modeBtnActive : ''}`} onClick={() => onChange('or')}>
-      ODER
-    </button>
-    <button type="button" className={`${styles.modeBtn} ${mode === 'and' ? styles.modeBtnActive : ''}`} onClick={() => onChange('and')}>
-      UND
-    </button>
-  </span>
-);
+}> = ({ mode, onChange }) => {
+  const modeBtn = 'cursor-pointer border-none px-2 py-[2px] text-[0.72rem] leading-[1.4]';
+  const inactive = 'bg-transparent text-fg-muted hover:bg-bg-alt';
+  const active = 'bg-accent text-white';
+  return (
+    <span className="inline-flex shrink-0 overflow-hidden rounded-[5rem] border border-line">
+      <button type="button" className={`${modeBtn} ${mode === 'or' ? active : inactive}`} onClick={() => onChange('or')}>
+        ODER
+      </button>
+      <button type="button" className={`${modeBtn} ${mode === 'and' ? active : inactive}`} onClick={() => onChange('and')}>
+        UND
+      </button>
+    </span>
+  );
+};
 
 const FilterSection: React.FC<FilterSectionProps> = ({
   selectedTypes,
@@ -78,32 +82,49 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     setExpanded((e) => !e);
   };
 
+  const ingButtonBase = 'inline-block cursor-pointer rounded-[5rem] border px-3 py-[6px] text-[0.9rem]';
+  const ingButtonInactive = 'border-line bg-bg-alt text-fg-muted hover:bg-accent-dark';
+  const ingButtonSelected = 'border-accent-dark bg-accent text-white';
+
   return (
-    <div className={styles.filterWrapper} ref={wrapperRef}>
+    <div className="relative flex items-stretch" ref={wrapperRef}>
       <button
         ref={buttonRef}
         type="button"
-        className={`${styles.filterToggleChip} ${activeCount > 0 ? styles.filterToggleActive : ''}`}
+        className={`flex cursor-pointer items-center gap-[0.3rem] whitespace-nowrap rounded-[5rem] border px-[11px] py-[5px] text-[0.85rem] ${
+          activeCount > 0 ? 'border-accent-dark bg-accent text-white' : 'border-line bg-bg-alt text-fg-muted hover:bg-accent-dark'
+        }`}
         onClick={handleToggle}
       >
         <i className="fa-solid fa-sliders" />
-        <span className={styles.filterLabel}> Mehr Filter</span>
-        {activeCount > 0 && <span className={styles.filterBadge}>{activeCount}</span>}
+        <span className="max-[600px]:hidden"> Mehr Filter</span>
+        {activeCount > 0 && (
+          <span
+            className={`inline-flex h-[1.1rem] min-w-[1.1rem] items-center justify-center rounded-[5rem] px-[0.2rem] text-[0.75rem] font-bold leading-none ${
+              activeCount > 0 ? 'bg-surface text-accent' : 'bg-accent text-white'
+            }`}
+          >
+            {activeCount}
+          </span>
+        )}
       </button>
 
       {expanded && (
-        <div className={styles.filterPopup} style={{ ['--popup-top' as string]: `${popupTop}px` }}>
-          <div className={styles.filterGroup}>
-            <div className={styles.filterGroupHeader}>
-              <span className={styles.ingLabel}>Rezepttyp</span>
+        <div
+          className="absolute left-0 top-[calc(100%+8px)] z-100 flex min-w-[300px] flex-col gap-4 rounded-lg border border-line bg-surface p-4 shadow-[0_4px_16px_var(--color-shadow-soft)] max-[600px]:fixed max-[600px]:left-1/2 max-[600px]:top-[var(--popup-top)] max-[600px]:w-[88vw] max-[600px]:min-w-0 max-[600px]:-translate-x-1/2"
+          style={{ ['--popup-top' as string]: `${popupTop}px` }}
+        >
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-medium">Rezepttyp</span>
               <ModeToggle mode={typeMode} onChange={onTypeModeChange} />
             </div>
-            <div className={styles.ingList}>
+            <div className="flex flex-wrap gap-2">
               {RECIPE_TYPES.map(({ value, label }) => (
                 <button
                   key={value}
                   type="button"
-                  className={`${styles.ingButton} ${selectedTypes.includes(value) ? styles.selected : ''}`}
+                  className={`${ingButtonBase} ${selectedTypes.includes(value) ? ingButtonSelected : ingButtonInactive}`}
                   onClick={() => onTypeToggle(value)}
                 >
                   {label}
@@ -112,17 +133,17 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             </div>
           </div>
 
-          <div className={styles.filterGroup}>
-            <div className={styles.filterGroupHeader}>
-              <span className={styles.ingLabel}>Ernährung</span>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-medium">Ernährung</span>
               <ModeToggle mode={dietaryMode} onChange={onDietaryModeChange} />
             </div>
-            <div className={styles.ingList}>
+            <div className="flex flex-wrap gap-2">
               {DIETARY_OPTIONS.map(({ value, label }) => (
                 <button
                   key={value}
                   type="button"
-                  className={`${styles.ingButton} ${selectedDietary.includes(value) ? styles.selected : ''}`}
+                  className={`${ingButtonBase} ${selectedDietary.includes(value) ? ingButtonSelected : ingButtonInactive}`}
                   onClick={() => onDietaryToggle(value)}
                 >
                   {label}

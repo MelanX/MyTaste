@@ -5,7 +5,6 @@ import type { Recipe } from '../../types/Recipe';
 import BringButton from '../BringButton';
 import FilterSection from '../FilterSection';
 import Toast from '../Toast';
-import styles from './styles.module.css';
 import { getConfig } from '../../config';
 import { ApiError, updateRecipeStatus } from '../../utils/api_service';
 import { useRecipes } from '../../hooks/useRecipes';
@@ -188,23 +187,31 @@ const RecipeList: React.FC = () => {
   return (
     <>
       <div>
-        <div className={styles.titleRow}>
-          <h2>
+        <div className="mb-4 flex items-center gap-4 [&>h2]:m-0 [&>h2]:whitespace-nowrap max-[600px]:mb-3 max-[600px]:flex-col max-[600px]:items-stretch max-[600px]:gap-2">
+          <h2 className="max-[600px]:order-1">
             Rezepte{' '}
             {isAuthenticated && (
               <Link to="/new-recipe" role="button">
-                <button type="button" className={styles.addRecipeButton}>
+                <button
+                  type="button"
+                  className="h-[1.6rem] w-[1.6rem] rounded-[25%] border-transparent bg-accent p-0 text-center text-[1.2rem] text-white no-underline transition-colors duration-300 hover:bg-accent-dark hover:no-underline"
+                >
                   <i className="fa-solid fa-plus" />
                 </button>
               </Link>
             )}
           </h2>
 
-          <div className={styles.quickFilters}>
+          <div className="ml-auto flex flex-wrap gap-[0.4rem] max-[600px]:order-3 max-[600px]:ml-0 max-[600px]:justify-center">
             {hasActiveFilters && (
-              <button type="button" className={styles.resetButton} onClick={resetFilters} title="Alle Filter zurücksetzen">
+              <button
+                type="button"
+                className="cursor-pointer whitespace-nowrap rounded-[5rem] border border-line bg-none px-[11px] py-[5px] text-[0.85rem] text-fg-muted opacity-70 hover:border-danger hover:bg-none hover:text-danger hover:opacity-100"
+                onClick={resetFilters}
+                title="Alle Filter zurücksetzen"
+              >
                 <i className="fa-solid fa-xmark" />
-                <span className={styles.chipLabel}> Zurücksetzen</span>
+                <span className="max-[600px]:hidden"> Zurücksetzen</span>
               </button>
             )}
             <FilterSection
@@ -219,33 +226,33 @@ const RecipeList: React.FC = () => {
             />
             <button
               type="button"
-              className={`${styles.filterChip} ${favFilter ? styles.filterChipActive : ''}`}
+              className={`cursor-pointer whitespace-nowrap rounded-[5rem] border px-[11px] py-[5px] text-[0.85rem] ${favFilter ? 'border-accent-dark bg-accent text-white' : 'border-line bg-bg-alt text-fg-muted'}`}
               onClick={() => setFavFilter((f) => !f)}
               title="Favoriten"
             >
               <i className="fa-solid fa-heart" />
-              <span className={styles.chipLabel}> Favoriten</span>
+              <span className="max-[600px]:hidden"> Favoriten</span>
             </button>
             <button
               type="button"
-              className={`${styles.filterChip} ${cookFilter === 'cooked' ? styles.filterChipActive : ''}`}
+              className={`cursor-pointer whitespace-nowrap rounded-[5rem] border px-[11px] py-[5px] text-[0.85rem] ${cookFilter === 'cooked' ? 'border-accent-dark bg-accent text-white' : 'border-line bg-bg-alt text-fg-muted'}`}
               onClick={() => setCookFilter((f) => (f === 'cooked' ? null : 'cooked'))}
               title="Gekocht"
             >
               <i className="fa-solid fa-check" />
-              <span className={styles.chipLabel}> Gekocht</span>
+              <span className="max-[600px]:hidden"> Gekocht</span>
             </button>
             <button
               type="button"
-              className={`${styles.filterChip} ${cookFilter === 'uncooked' ? styles.filterChipActive : ''}`}
+              className={`cursor-pointer whitespace-nowrap rounded-[5rem] border px-[11px] py-[5px] text-[0.85rem] ${cookFilter === 'uncooked' ? 'border-accent-dark bg-accent text-white' : 'border-line bg-bg-alt text-fg-muted'}`}
               onClick={() => setCookFilter((f) => (f === 'uncooked' ? null : 'uncooked'))}
               title="Nicht gekocht"
             >
               <i className="fa-solid fa-question" />
-              <span className={styles.chipLabel}> Nicht gekocht</span>
+              <span className="max-[600px]:hidden"> Nicht gekocht</span>
             </button>
             <select
-              className={styles.filterChip}
+              className="cursor-pointer whitespace-nowrap rounded-[5rem] border border-line bg-bg-alt px-[11px] py-[5px] text-[0.85rem] text-fg-muted"
               value={sortMode}
               onChange={(e) => handleSortChange(e.target.value as typeof sortMode)}
               title="Sortierung"
@@ -257,33 +264,41 @@ const RecipeList: React.FC = () => {
             </select>
           </div>
 
-          <div className={styles.searchBar}>
-            <i className={`fa-solid fa-magnifying-glass ${styles.searchIcon}`} />
+          <div className="relative flex w-[380px] max-w-[380px] items-center max-[600px]:order-2 max-[600px]:w-auto max-[600px]:max-w-none">
+            <i className="fa-solid fa-magnifying-glass pointer-events-none absolute left-[0.9rem] text-base text-fg-muted" />
             <input
               type="text"
               placeholder="Rezepte suchen..."
               value={titleFilter}
               onChange={(e) => setTitleFilter(e.target.value)}
-              className={styles.searchInput}
+              className="box-border w-full rounded-[0.4rem] border border-line bg-surface py-2 pl-[2.4rem] pr-10 text-base text-fg focus:border-accent focus:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-accent)_20%,transparent)] focus:outline-none"
             />
             {titleFilter && (
-              <button type="button" className={styles.searchClear} onClick={() => setTitleFilter('')} aria-label="Suche löschen">
+              <button
+                type="button"
+                className="absolute right-2 cursor-pointer border-none bg-none px-2 py-[0.3rem] text-[0.9rem] leading-none text-fg-muted hover:bg-none hover:text-fg"
+                onClick={() => setTitleFilter('')}
+                aria-label="Suche löschen"
+              >
                 <i className="fa-solid fa-xmark" />
               </button>
             )}
           </div>
         </div>
 
-        <div className={styles.recipeCardsGrid}>
+        <div className="mt-5 grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-5">
           {filtered.length === 0 ? (
             <p>Keine Rezepte gefunden</p>
           ) : (
             filtered.map((recipe) => (
-              <div key={recipe.id} className={styles.recipeCard}>
-                <div className={styles.recipeCardImageContainer}>
+              <div
+                key={recipe.id}
+                className="group flex h-full flex-col overflow-hidden rounded-lg bg-surface shadow-[0_4px_8px_var(--color-shadow-soft)] transition-[transform,box-shadow] duration-300 ease-in-out hover:-translate-y-[5px] hover:shadow-[0_8px_16px_var(--color-shadow-strong)]"
+              >
+                <div className="relative h-[200px] w-full overflow-hidden">
                   {/* cook-state in top-left */}
                   {!recipe.status?.cookState && (
-                    <div className={styles.cookIcon}>
+                    <div className="absolute left-2 top-2 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-white/80 p-[0.3rem] text-[1.2rem] [&_i]:text-danger-bright">
                       <i
                         className="fa-solid fa-question"
                         title="Noch nicht gekocht"
@@ -298,7 +313,7 @@ const RecipeList: React.FC = () => {
                     </div>
                   )}
                   {/* favorite in top-right */}
-                  <div className={styles.favIcon}>
+                  <div className="absolute right-2 top-2 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-white/80 p-[0.3rem] text-[1.2rem] [&_i[title='Favorit']]:text-danger-bright">
                     {recipe.status?.favorite ? (
                       <i
                         className="fa-solid fa-heart"
@@ -327,13 +342,13 @@ const RecipeList: React.FC = () => {
                   </div>
                   {/* collection picker below the cook icon */}
                   {isAuthenticated && (
-                    <div className={styles.collectionIcon}>
+                    <div className="absolute right-2 top-[5.5rem] z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-white/80 p-[0.3rem] text-[1.2rem]">
                       <CollectionPicker recipeId={recipe.id} />
                     </div>
                   )}
                   {/* next-up bookmark below the favorite icon */}
                   {isAuthenticated && (
-                    <div className={styles.nextUpIcon}>
+                    <div className="absolute right-2 top-12 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-white/80 p-[0.3rem] text-[1.2rem] [&_i[title='Aus_Next_Up_entfernen']]:text-action">
                       {nextUpIds.includes(recipe.id) ? (
                         <i
                           className="fa-solid fa-bookmark"
@@ -371,19 +386,19 @@ const RecipeList: React.FC = () => {
                           : '/placeholder.webp'
                       }
                       alt={recipe.title}
-                      className={styles.recipeCardImage}
+                      className="h-full w-full object-cover transition-transform duration-500 ease-in-out hover:scale-105"
                     />
                   </Link>
                 </div>
-                <div className={styles.recipeCardContent}>
-                  <h3 className={styles.recipeCardTitle}>{recipe.title}</h3>
-                  <div className={styles.recipeCardBottom}>
+                <div className="flex grow flex-col gap-2.5 p-4">
+                  <h3 className="mb-1.5 mt-0 text-[1.2rem] font-semibold">{recipe.title}</h3>
+                  <div className="mt-auto flex flex-col gap-2.5">
                     {(recipe.recipeType || recipe.dietaryRestrictions?.length) && (
-                      <div className={styles.recipeTags}>
+                      <div className="flex flex-wrap-reverse gap-[0.3rem]">
                         {recipe.recipeType && (
                           <button
                             type="button"
-                            className={styles.recipeTag}
+                            className="cursor-pointer rounded-[5rem] border border-line bg-bg-alt px-[9px] py-[3px] text-[0.75rem] text-fg-muted hover:border-fg-muted"
                             onClick={() => activateType(recipe.recipeType!)}
                             title="Filter nach Rezepttyp"
                           >
@@ -399,7 +414,7 @@ const RecipeList: React.FC = () => {
                           <button
                             key={d}
                             type="button"
-                            className={`${styles.recipeTag} ${styles.recipeTagDietary}`}
+                            className="cursor-pointer rounded-[5rem] border border-success-line bg-success-bg px-[9px] py-[3px] text-[0.75rem] text-success-fg hover:border-fg-muted"
                             onClick={() => activateDietary(d)}
                             title="Filter nach Ernährung"
                           >
@@ -413,7 +428,10 @@ const RecipeList: React.FC = () => {
                         ))}
                       </div>
                     )}
-                    <Link to={`/recipe/${recipe.id}`} className={styles.recipeCardButton}>
+                    <Link
+                      to={`/recipe/${recipe.id}`}
+                      className="rounded bg-accent px-4 py-2 text-center text-base font-medium text-white no-underline transition-colors duration-300 hover:bg-accent-dark hover:no-underline"
+                    >
                       Rezept ansehen
                     </Link>
                     <BringButton recipeId={recipe.id} />
@@ -426,9 +444,18 @@ const RecipeList: React.FC = () => {
       </div>
       <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
       {isAuthenticated && (
-        <Link to="/next-up" className={styles.nextUpFab} aria-label="Next Up öffnen" title="Next Up">
+        <Link
+          to="/next-up"
+          className="fixed bottom-5 right-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-action text-[1.4rem] text-white no-underline shadow-[0_6px_16px_rgba(0,0,0,0.25)] transition-[transform,box-shadow,background-color] duration-200 ease-in-out hover:-translate-y-0.5 hover:bg-action-dark hover:text-white hover:no-underline hover:shadow-[0_10px_20px_rgba(0,0,0,0.3)] active:translate-y-0 print:hidden"
+          aria-label="Next Up öffnen"
+          title="Next Up"
+        >
           <i className="fa-solid fa-bookmark" />
-          {nextUpIds.length > 0 && <span className={styles.nextUpFabBadge}>{nextUpIds.length}</span>}
+          {nextUpIds.length > 0 && (
+            <span className="absolute -right-1 -top-1 box-border h-[1.4rem] min-w-[1.4rem] rounded-[5rem] bg-danger-bright px-[0.35rem] text-center text-[0.75rem] font-bold leading-[1.4rem] text-white shadow-[0_2px_4px_rgba(0,0,0,0.2)]">
+              {nextUpIds.length}
+            </span>
+          )}
         </Link>
       )}
     </>
