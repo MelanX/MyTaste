@@ -1,5 +1,5 @@
 import type { Recipe } from '../types/Recipe';
-import { apiFetch, ApiError } from './api_service';
+import { apiFetch, ApiError } from './apiService';
 
 const KEY = 'recipes-cache-v1';
 

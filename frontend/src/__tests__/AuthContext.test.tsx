@@ -3,9 +3,9 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import { apiFetch } from '../utils/api_service';
+import { apiFetch } from '../utils/apiService';
 
-vi.mock('../utils/api_service', () => ({
+vi.mock('../utils/apiService', () => ({
   apiFetch: vi.fn(),
 }));
 

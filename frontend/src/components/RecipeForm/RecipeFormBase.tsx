@@ -2,7 +2,7 @@ import React, { type FormEvent, useEffect, useRef, useState } from 'react';
 import type { Ingredient, IngredientSection } from '../../types/Recipe';
 import ImageUpload from '../ImageUpload';
 import { useNavigate } from 'react-router-dom';
-import { apiFetch } from '../../utils/api_service';
+import { apiFetch } from '../../utils/apiService';
 import ErrorSection from '../ErrorSection';
 import InstructionsEditor from '../InstructionsEditor';
 

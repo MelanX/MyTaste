@@ -2,7 +2,7 @@ import React from 'react';
 import type { Recipe } from '../../types/Recipe';
 import { formatAmount } from '../../utils/formatters';
 import { getConfig } from '../../config';
-import { updateRecipeStatus } from '../../utils/api_service';
+import { updateRecipeStatus } from '../../utils/apiService';
 import { useAuth } from '../../context/AuthContext';
 import { upsertRecipe } from '../../utils/recipesCache';
 

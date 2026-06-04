@@ -1,9 +1,9 @@
 import { type Mock } from 'vitest';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { useCollections } from '../hooks/useCollections';
-import * as api from '../utils/api_service';
+import * as api from '../utils/apiService';
 
-vi.mock('../utils/api_service', () => ({
+vi.mock('../utils/apiService', () => ({
   fetchCollections: vi.fn(),
   createCollection: vi.fn(),
   renameCollection: vi.fn(),

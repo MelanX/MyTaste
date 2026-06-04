@@ -8,7 +8,7 @@ import {
   fetchCollections,
   removeFromCollection,
   renameCollection,
-} from '../utils/api_service';
+} from '../utils/apiService';
 
 export function useCollections() {
   const [collections, setCollections] = useState<Collection[]>([]);

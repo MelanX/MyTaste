@@ -6,7 +6,7 @@ import BringButton from '../BringButton';
 import FilterSection from '../FilterSection';
 import Toast from '../Toast';
 import { getConfig } from '../../config';
-import { ApiError, updateRecipeStatus } from '../../utils/api_service';
+import { ApiError, updateRecipeStatus } from '../../utils/apiService';
 import { useRecipes } from '../../hooks/useRecipes';
 import { useRecipeFilters } from '../../context/RecipeFiltersContext';
 import { useNextUpContext } from '../../context/NextUpContext';

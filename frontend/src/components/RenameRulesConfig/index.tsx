@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { apiFetch } from '../../utils/api_service';
+import { apiFetch } from '../../utils/apiService';
 import FromPillInput from '../FromPillInput';
 
 interface RenameRule {

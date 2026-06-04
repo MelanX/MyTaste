@@ -6,7 +6,7 @@ import RecipeInstructions from './Instructions';
 import Toast from '../Toast';
 import { QRCodeSVG } from 'qrcode.react';
 import { useAuth } from '../../context/AuthContext';
-import { ApiError } from '../../utils/api_service';
+import { ApiError } from '../../utils/apiService';
 import { useRecipe } from '../../hooks/useRecipe';
 import { upsertRecipe } from '../../utils/recipesCache';
 import CollectionPicker from '../CollectionPicker';

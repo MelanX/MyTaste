@@ -3,7 +3,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import RecipeList from '../components/RecipeList';
-import { ApiError } from '../utils/api_service';
+import { ApiError } from '../utils/apiService';
 import { Recipe } from '../types/Recipe';
 import { useRecipes } from '../hooks/useRecipes';
 import { useAuth } from '../context/AuthContext';
@@ -23,8 +23,8 @@ vi.mock('../context/NextUpContext', async () => ({
   }),
 }));
 vi.mock('../config', async () => ({ getConfig: () => ({ API_URL: '', requireLogin: false }) }));
-vi.mock('../utils/api_service', async () => ({
-  ...(await vi.importActual('../utils/api_service')),
+vi.mock('../utils/apiService', async () => ({
+  ...(await vi.importActual('../utils/apiService')),
   updateRecipeStatus: vi.fn(),
 }));
 vi.mock('../components/BringButton', () => ({ default: () => null }));

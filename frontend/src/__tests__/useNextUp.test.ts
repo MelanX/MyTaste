@@ -2,9 +2,9 @@ import { type Mock } from 'vitest';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useNextUp } from '../hooks/useNextUp';
-import * as api from '../utils/api_service';
+import * as api from '../utils/apiService';
 
-vi.mock('../utils/api_service', () => ({
+vi.mock('../utils/apiService', () => ({
   fetchNextUp: vi.fn(),
   addToNextUp: vi.fn(),
   removeFromNextUp: vi.fn(),

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RecipeFormBase, { type RecipeFormValues } from '../RecipeForm/RecipeFormBase';
-import { apiFetch } from '../../utils/api_service';
+import { apiFetch } from '../../utils/apiService';
 import ErrorSection from '../ErrorSection';
 
 const ImportRecipe: React.FC = () => {

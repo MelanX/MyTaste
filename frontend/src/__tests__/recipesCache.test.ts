@@ -1,5 +1,5 @@
 import { fetchAndCache } from '../utils/recipesCache';
-import { ApiError } from '../utils/api_service';
+import { ApiError } from '../utils/apiService';
 
 vi.mock('../config', () => ({
   getConfig: () => ({ API_URL: '', requireLogin: false }),

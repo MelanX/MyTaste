@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import RecipeFormBase, { type RecipeFormValues } from '../RecipeForm/RecipeFormBase';
 import type { Recipe } from '../../types/Recipe';
-import { apiFetch } from '../../utils/api_service';
+import { apiFetch } from '../../utils/apiService';
 import Toast from '../Toast';
 
 const EditRecipe: React.FC = () => {

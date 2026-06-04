@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import RecipeFormBase from '../components/RecipeForm/RecipeFormBase';
 
 vi.mock('react-router-dom', () => ({ useNavigate: () => vi.fn() }));
-vi.mock('../utils/api_service', () => ({ apiFetch: vi.fn() }));
+vi.mock('../utils/apiService', () => ({ apiFetch: vi.fn() }));
 vi.mock('../components/ImageUpload', () => ({ default: () => null }));
 
 const defaultProps = {

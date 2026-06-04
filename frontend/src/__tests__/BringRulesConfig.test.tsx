@@ -2,9 +2,9 @@ import { type Mock } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import BringRulesConfig from '../components/BringRulesConfig';
-import { apiFetch } from '../utils/api_service';
+import { apiFetch } from '../utils/apiService';
 
-vi.mock('../utils/api_service', () => ({
+vi.mock('../utils/apiService', () => ({
   apiFetch: vi.fn(),
 }));
 

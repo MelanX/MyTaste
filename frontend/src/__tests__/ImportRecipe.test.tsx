@@ -2,10 +2,10 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ImportRecipe from '../components/ImportRecipe';
-import { apiFetch } from '../utils/api_service';
+import { apiFetch } from '../utils/apiService';
 
 vi.mock('react-router-dom', () => ({ useNavigate: () => vi.fn() }));
-vi.mock('../utils/api_service', () => ({ apiFetch: vi.fn() }));
+vi.mock('../utils/apiService', () => ({ apiFetch: vi.fn() }));
 // RecipeFormBase pulls in ImageUpload (dropzone) — keep it light for the imported view.
 vi.mock('../components/RecipeForm/RecipeFormBase', () => ({
   default: ({ submitLabel }: { submitLabel: string }) => <div>{submitLabel}</div>,

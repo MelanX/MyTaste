@@ -1,5 +1,5 @@
 import React, { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
-import { apiFetch } from '../utils/api_service';
+import { apiFetch } from '../utils/apiService';
 
 interface AuthContextType {
   login: (username: string, password: string) => Promise<void>;

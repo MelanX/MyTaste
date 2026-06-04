@@ -6,14 +6,14 @@ import userEvent from '@testing-library/user-event';
 import RecipeDetail from '../components/RecipeDetail';
 import { useRecipe } from '../hooks/useRecipe';
 import { useAuth } from '../context/AuthContext';
-import { updateRecipeStatus } from '../utils/api_service';
+import { updateRecipeStatus } from '../utils/apiService';
 import type { Recipe } from '../types/Recipe';
 
 vi.mock('../hooks/useRecipe');
 vi.mock('../context/AuthContext');
 vi.mock('../config', () => ({ getConfig: () => ({ API_URL: '', requireLogin: false }) }));
-vi.mock('../utils/api_service', async () => ({
-  ...(await vi.importActual('../utils/api_service')),
+vi.mock('../utils/apiService', async () => ({
+  ...(await vi.importActual('../utils/apiService')),
   updateRecipeStatus: vi.fn(),
 }));
 vi.mock('../utils/recipesCache', () => ({ upsertRecipe: vi.fn() }));

@@ -1,4 +1,4 @@
-import { apiFetch } from '../utils/api_service';
+import { apiFetch } from '../utils/apiService';
 
 vi.mock('../config', () => ({
   getConfig: () => ({ API_URL: '', requireLogin: false }),

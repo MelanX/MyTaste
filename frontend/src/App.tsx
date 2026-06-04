@@ -11,7 +11,7 @@ import Sidebar from './components/Sidebar';
 import './App.css';
 import type { RecipeFormValues } from './components/RecipeForm/RecipeFormBase';
 import EditRecipe from './components/EditRecipe';
-import { apiFetch } from './utils/api_service';
+import { apiFetch } from './utils/apiService';
 import RequireLogin from './components/RequireLogin';
 import ProtectedRoute from './components/ProtectedRoute';
 import Config from './components/Config';
