@@ -2,7 +2,7 @@ name: (Tags) – Test, Build & Push
 
 on:
   push:
-    tags: [ '*' ]
+    tags: ['*']
 
 jobs:
   tests:
@@ -34,7 +34,7 @@ jobs:
             -t ghcr.io/melanx/mytaste-backend:${IMAGE_TAG} \
             -t ghcr.io/melanx/mytaste-backend:latest \
             ./backend
-          
+
           docker push ghcr.io/melanx/mytaste-backend:${IMAGE_TAG}
           docker push ghcr.io/melanx/mytaste-backend:latest
 

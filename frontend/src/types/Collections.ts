@@ -1,11 +1,11 @@
 export interface Collections {
-    nextUp: string[];
+  nextUp: string[];
 }
 
 export interface Collection {
-    id: string;
-    name: string;
-    recipeIds: string[];
-    createdAt?: string;
-    updatedAt?: string;
+  id: string;
+  name: string;
+  recipeIds: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }

@@ -1,158 +1,153 @@
 .actions {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
 }
 
 @media (max-width: 600px) {
-    .actions {
-        flex-direction: column;
-        align-items: stretch;
-        margin-left: 0;
-    }
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+    margin-left: 0;
+  }
 
-    .actions > * {
-        width: 100%;
-    }
+  .actions > * {
+    width: 100%;
+  }
 
-    .actions a {
-        width: 100%;
-    }
+  .actions a {
+    width: 100%;
+  }
 }
 
 .clearButton {
-    padding: 8px 16px;
-    min-height: 40px;
-    background-color: var(--color-primary);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    color: var(--color-white);
-    font-family: var(--default-fonts), serif;
-    font-weight: 500;
-    white-space: nowrap;
-
+  padding: 8px 16px;
+  min-height: 40px;
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-white);
+  font-family: var(--default-fonts), serif;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .clearButton:hover:not(:disabled) {
-    background-color: var(--color-primary-dark);
+  background-color: var(--color-primary-dark);
 }
 
 .clearButton:disabled {
-    opacity: 0.4;
-    cursor: default;
+  opacity: 0.4;
+  cursor: default;
 }
 
 .removeButton {
-    padding: 8px 16px;
-    background-color: var(--color-deny-button);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    color: var(--color-white);
-    font-family: var(--default-fonts), serif;
-    font-weight: 500;
-    width: 100%;
-    text-align: center;
-
+  padding: 8px 16px;
+  background-color: var(--color-deny-button);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-white);
+  font-family: var(--default-fonts), serif;
+  font-weight: 500;
+  width: 100%;
+  text-align: center;
 }
 
 .removeButton:hover {
-    background-color: var(--color-deny-button-dark);
+  background-color: var(--color-deny-button-dark);
 }
 
 .saveButton {
-    padding: 8px 16px;
-    min-height: 40px;
-    background-color: #4a90d9;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    color: var(--color-white);
-    font-family: var(--default-fonts), serif;
-    font-weight: 500;
-    white-space: nowrap;
-
+  padding: 8px 16px;
+  min-height: 40px;
+  background-color: #4a90d9;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-white);
+  font-family: var(--default-fonts), serif;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .saveButton:hover:not(:disabled) {
-    background-color: #3d7cc9;
+  background-color: #3d7cc9;
 }
 
 .saveButton:disabled {
-    opacity: 0.4;
-    cursor: default;
+  opacity: 0.4;
+  cursor: default;
 }
 
 .saveAsForm {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 .saveAsInput {
-    flex: 1;
-    min-width: 180px;
-    height: 40px;
-    margin: 0;
-    padding: 0 12px;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    font-size: 1rem;
-    background: var(--color-white);
-    color: var(--color-text);
-    box-sizing: border-box;
+  flex: 1;
+  min-width: 180px;
+  height: 40px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 1rem;
+  background: var(--color-white);
+  color: var(--color-text);
+  box-sizing: border-box;
 }
 
 .saveAsInput:focus {
-    outline: none;
-    border-color: var(--color-primary);
+  outline: none;
+  border-color: var(--color-primary);
 }
 
 .saveAsCreate {
-    height: 40px;
-    padding: 0 16px;
-    background-color: var(--color-primary);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    color: var(--color-white);
-    font-family: var(--default-fonts), serif;
-    font-size: 1rem;
-    font-weight: 500;
-    white-space: nowrap;
-    box-sizing: border-box;
-
+  height: 40px;
+  padding: 0 16px;
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-white);
+  font-family: var(--default-fonts), serif;
+  font-size: 1rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .saveAsCreate:hover:not(:disabled) {
-    background-color: var(--color-primary-dark);
+  background-color: var(--color-primary-dark);
 }
 
 .saveAsCreate:disabled {
-    opacity: 0.6;
-    cursor: default;
+  opacity: 0.6;
+  cursor: default;
 }
 
 .saveAsCancel {
-    height: 40px;
-    padding: 0 16px;
-    background: transparent;
-    border: 1px solid var(--color-deny-button);
-    border-radius: 4px;
-    cursor: pointer;
-    color: var(--color-deny-button);
-    font-family: var(--default-fonts), serif;
-    font-size: 1rem;
-    white-space: nowrap;
-    box-sizing: border-box;
-
+  height: 40px;
+  padding: 0 16px;
+  background: transparent;
+  border: 1px solid var(--color-deny-button);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-deny-button);
+  font-family: var(--default-fonts), serif;
+  font-size: 1rem;
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .saveAsCancel:hover:not(:disabled) {
-    background: var(--color-deny-button);
-    color: var(--color-white);
+  background: var(--color-deny-button);
+  color: var(--color-white);
 }

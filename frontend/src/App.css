@@ -1,118 +1,118 @@
 .app-container {
-    position: relative;
-    min-height: 100vh;
-    width: 100%;
-    box-sizing: border-box;
-    padding: min(1.25%, 2rem);
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  padding: min(1.25%, 2rem);
 }
 
 .content {
-    position: relative;
-    padding: 0 min(2.5%, 15.5rem);
+  position: relative;
+  padding: 0 min(2.5%, 15.5rem);
 }
 
 @media (min-width: 1024px) {
-    /*.app-container { todo*/
-    /*    padding: 2rem;*/
-    /*}*/
+  /*.app-container { todo*/
+  /*    padding: 2rem;*/
+  /*}*/
 }
 
 h1 {
-    color: var(--color-text);
-    margin-bottom: 2rem;
-    font-family: 'Indie Flower', 'Delius', var(--default-fonts), serif;
+  color: var(--color-text);
+  margin-bottom: 2rem;
+  font-family: 'Indie Flower', 'Delius', var(--default-fonts), serif;
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 20px;
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 20px;
 }
 
 input,
 textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    font-family: "Verdana", "Noto Sans", sans-serif;
-    font-size: 1rem;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-family: 'Verdana', 'Noto Sans', sans-serif;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
 
 button {
-    background-color: var(--color-primary);
-    color: var(--color-white);
-    border: none;
-    padding: 10px 15px;
-    border-radius: 0.4rem;
-    cursor: pointer;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 0.4rem;
+  cursor: pointer;
 }
 
 @media (hover: hover) {
-    button:hover {
-        background-color: var(--color-primary-dark);
-    }
+  button:hover {
+    background-color: var(--color-primary-dark);
+  }
 }
 
 button:disabled {
-    background-color: var(--color-button-disabled);
-    cursor: not-allowed;
+  background-color: var(--color-button-disabled);
+  cursor: not-allowed;
 }
 
 nav button {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    font-size: 1rem;
-    background-color: var(--color-primary);
-    color: var(--color-white);
-    border: none;
-    border-radius: 4px;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 1rem;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: 4px;
 }
 
 ul {
-    list-style-type: none;
-    padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 li {
-    background-color: var(--color-white);
-    border: 1px solid var(--color-border);
-    border-radius: 5px;
-    padding: 15px;
-    margin: 10px 0;
-    box-shadow: 0 1px 3px var(--color-shadow);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  padding: 15px;
+  margin: 10px 0;
+  box-shadow: 0 1px 3px var(--color-shadow);
 }
 
 h3 {
-    margin: 0;
-    color: var(--color-text);
+  margin: 0;
+  color: var(--color-text);
 }
 
 p {
-    color: var(--color-text-tertiary);
+  color: var(--color-text-tertiary);
 }
 
 a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .logo-link {
-    display: block;
-    width: fit-content;
-    margin: 0 auto 1rem;
+  display: block;
+  width: fit-content;
+  margin: 0 auto 1rem;
 }
 
 .logo-image {
-    height: 4rem;
-    display: block;
+  height: 4rem;
+  display: block;
 }
 
 @media print {
-    .logo-image {
-        height: 2rem;
-        margin: 0 auto;
-    }
+  .logo-image {
+    height: 2rem;
+    margin: 0 auto;
+  }
 }

@@ -6,29 +6,31 @@ import { AuthProvider } from './context/AuthContext';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
-import { loadConfig } from "./config";
+import { loadConfig } from './config';
 
 serviceWorkerRegistration.register();
 
 navigator.serviceWorker?.addEventListener('message', (e) => {
-    if (e.data?.type === 'recipes-updated') {
-        window.dispatchEvent(new Event('recipes-updated')); // wake hooks
-    }
+  if (e.data?.type === 'recipes-updated') {
+    window.dispatchEvent(new Event('recipes-updated')); // wake hooks
+  }
 });
 
 const router = createBrowserRouter([{ path: '*', element: <App /> }]);
 
-loadConfig().then(() => {
+loadConfig()
+  .then(() => {
     const root = ReactDOM.createRoot(document.getElementById('root')!);
     root.render(
-        <React.StrictMode>
-            <AuthProvider>
-                <RouterProvider router={router} />
-            </AuthProvider>
-        </React.StrictMode>
+      <React.StrictMode>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </React.StrictMode>,
     );
 
     reportWebVitals();
-}).catch(error => {
+  })
+  .catch((error) => {
     console.error('Failed to load config:', error);
-});
+  });

@@ -3,23 +3,23 @@ import styles from './styles.module.css';
 import renderInlineMarkdown from '../../utils/renderInlineMarkdown';
 
 interface RecipeInstructionsProps {
-    instructions: string[];
+  instructions: string[];
 }
 
-const RecipeInstructions: React.FC<RecipeInstructionsProps> = ({instructions}) => {
-    return (
-        <div className={styles.instructionsCard}>
-            <h3 className={styles.instructionsTitle}>Zubereitung</h3>
-            <div className={styles.instructionsList}>
-                {instructions.map((paragraph, index) => (
-                    <div key={index} className={styles.instructionStep}>
-                        <div className={styles.stepNumber}>{index + 1}</div>
-                        <div className={styles.stepText}>{renderInlineMarkdown(paragraph)}</div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
+const RecipeInstructions: React.FC<RecipeInstructionsProps> = ({ instructions }) => {
+  return (
+    <div className={styles.instructionsCard}>
+      <h3 className={styles.instructionsTitle}>Zubereitung</h3>
+      <div className={styles.instructionsList}>
+        {instructions.map((paragraph, index) => (
+          <div key={index} className={styles.instructionStep}>
+            <div className={styles.stepNumber}>{index + 1}</div>
+            <div className={styles.stepText}>{renderInlineMarkdown(paragraph)}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default RecipeInstructions;

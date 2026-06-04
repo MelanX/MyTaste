@@ -1,29 +1,29 @@
 export interface Status {
-    cookState?: boolean;
-    favorite?: boolean;
+  cookState?: boolean;
+  favorite?: boolean;
 }
 
 export interface Recipe {
-    id: string;
-    title: string;
-    instructions: string[];
-    url?: string;
-    ingredient_sections: IngredientSection[];
-    spices?: string[];
-    image?: string;
-    status?: Status;
-    recipeType?: 'cooking' | 'baking' | 'snack' | 'dessert';
-    dietaryRestrictions?: ('vegan' | 'vegetarian' | 'glutenfree' | 'dairyfree')[];
+  id: string;
+  title: string;
+  instructions: string[];
+  url?: string;
+  ingredient_sections: IngredientSection[];
+  spices?: string[];
+  image?: string;
+  status?: Status;
+  recipeType?: 'cooking' | 'baking' | 'snack' | 'dessert';
+  dietaryRestrictions?: ('vegan' | 'vegetarian' | 'glutenfree' | 'dairyfree')[];
 }
 
 export interface IngredientSection {
-    title?: string;
-    ingredients: Ingredient[];
+  title?: string;
+  ingredients: Ingredient[];
 }
 
 export interface Ingredient {
-    name: string;
-    amount?: number;
-    unit?: string;
-    note?: string;
+  name: string;
+  amount?: number;
+  unit?: string;
+  note?: string;
 }

@@ -8,10 +8,10 @@ updates:
       prefix: 'Dependency'
     ignore:
       - dependency-name: '*'
-        update-types: [ 'version-update:semver-patch' ]
+        update-types: ['version-update:semver-patch']
     groups:
       frontend-deps:
-        patterns: [ '*' ]
+        patterns: ['*']
 
   - package-ecosystem: 'npm'
     directory: '/backend'
@@ -21,7 +21,7 @@ updates:
       prefix: 'Dependency'
     ignore:
       - dependency-name: '*'
-        update-types: [ 'version-update:semver-patch' ]
+        update-types: ['version-update:semver-patch']
     groups:
       backend-deps:
-        patterns: [ '*' ]
+        patterns: ['*']

@@ -1,389 +1,395 @@
 .titleRow {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .titleRow h2 {
-    margin: 0;
-    white-space: nowrap;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .quickFilters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-left: auto;
 }
 
 .filterChip {
-    padding: 5px 11px;
-    background-color: var(--color-background-alt);
-    border: 1px solid var(--color-border);
-    border-radius: 5rem;
-    font-size: 0.85rem;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    white-space: nowrap;
+  padding: 5px 11px;
+  background-color: var(--color-background-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .resetButton {
-    padding: 5px 11px;
-    background: none;
-    border: 1px solid var(--color-border);
-    border-radius: 5rem;
-    font-size: 0.85rem;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    white-space: nowrap;
-    opacity: 0.7;
+  padding: 5px 11px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  opacity: 0.7;
 }
 
 .resetButton:hover {
-    background: none;
-    opacity: 1;
-    border-color: var(--color-deny-button);
-    color: var(--color-deny-button);
+  background: none;
+  opacity: 1;
+  border-color: var(--color-deny-button);
+  color: var(--color-deny-button);
 }
 
 .filterChipActive {
-    background-color: var(--color-primary);
-    color: var(--color-white);
-    border-color: var(--color-primary-dark);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary-dark);
 }
 
 .searchBar {
-    position: relative;
-    display: flex;
-    align-items: center;
-    max-width: 380px;
-    width: 380px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 380px;
+  width: 380px;
 }
 
 @media (max-width: 600px) {
-    .titleRow {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.5rem;
-        margin-bottom: 0.75rem;
-    }
+  .titleRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
 
-    .titleRow h2 {
-        order: 1;
-    }
+  .titleRow h2 {
+    order: 1;
+  }
 
-    .searchBar {
-        order: 2;
-        max-width: none;
-        width: auto;
-    }
+  .searchBar {
+    order: 2;
+    max-width: none;
+    width: auto;
+  }
 
-    .quickFilters {
-        order: 3;
-        margin-left: 0;
-        justify-content: center;
-    }
+  .quickFilters {
+    order: 3;
+    margin-left: 0;
+    justify-content: center;
+  }
 
-    /* FilterSection wrapper order:4 is set in FilterSection/styles.module.css */
+  /* FilterSection wrapper order:4 is set in FilterSection/styles.module.css */
 
-    .chipLabel {
-        display: none;
-    }
+  .chipLabel {
+    display: none;
+  }
 }
 
 .searchIcon {
-    position: absolute;
-    left: 0.9rem;
-    color: var(--color-text-secondary);
-    pointer-events: none;
-    font-size: 1rem;
+  position: absolute;
+  left: 0.9rem;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  font-size: 1rem;
 }
 
 .searchInput {
-    width: 100%;
-    padding: 0.5rem 2.5rem 0.5rem 2.4rem;
-    font-size: 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: 0.4rem;
-    background-color: var(--color-white);
-    color: var(--color-text);
-    box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem 2.5rem 0.5rem 2.4rem;
+  font-size: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.4rem;
+  background-color: var(--color-white);
+  color: var(--color-text);
+  box-sizing: border-box;
 }
 
 .searchInput:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 
 .searchClear {
-    position: absolute;
-    right: 0.5rem;
-    background: none;
-    border: none;
-    padding: 0.3rem 0.5rem;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    font-size: 0.9rem;
-    line-height: 1;
+  position: absolute;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  padding: 0.3rem 0.5rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
 }
 
 .searchClear:hover {
-    background: none;
-    color: var(--color-text);
+  background: none;
+  color: var(--color-text);
 }
 
 .recipeCardBottom {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
 }
 
 .recipeTags {
-    display: flex;
-    flex-wrap: wrap-reverse;
-    gap: 0.3rem;
+  display: flex;
+  flex-wrap: wrap-reverse;
+  gap: 0.3rem;
 }
 
 .recipeTag {
-    padding: 3px 9px;
-    background-color: var(--color-background-alt);
-    border: 1px solid var(--color-border);
-    border-radius: 5rem;
-    font-size: 0.75rem;
-    color: var(--color-text-secondary);
-    cursor: pointer;
+  padding: 3px 9px;
+  background-color: var(--color-background-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 5rem;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
 }
 
 .recipeTag:hover {
-    border-color: var(--color-text-secondary);
+  border-color: var(--color-text-secondary);
 }
 
 .recipeTagDietary {
-    background-color: #e8f4ee;
-    border-color: #b2d4c0;
-    color: #3a7a52;
+  background-color: #e8f4ee;
+  border-color: #b2d4c0;
+  color: #3a7a52;
 }
 
 .recipeCardsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
 }
 
 .recipeCard {
-    display: flex;
-    flex-direction: column;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background-color: var(--color-white);
-    box-shadow: 0 4px 8px var(--color-shadow);
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  background-color: var(--color-white);
+  box-shadow: 0 4px 8px var(--color-shadow);
+  height: 100%;
 }
 
 .recipeCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px var(--color-shadow-hover);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px var(--color-shadow-hover);
 }
 
 .recipeCardImageContainer {
-    position: relative;
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
 }
 
 .recipeCardImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
 }
 
 .recipeCardImage:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
-.cookIcon, .favIcon {
-    position: absolute;
-    top: 0.5rem;
+.cookIcon,
+.favIcon {
+  position: absolute;
+  top: 0.5rem;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    padding: 0.3rem;
-    font-size: 1.2rem;
-    width: 1.4rem;
-    height: 1.4rem;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
+  padding: 0.3rem;
+  font-size: 1.2rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
 
-    z-index: 2;
-    cursor: pointer;
+  z-index: 2;
+  cursor: pointer;
 }
 
 .cookIcon {
-    left: 0.5rem;
+  left: 0.5rem;
 }
 
 .cookIcon i {
-    color: #ff5151;
+  color: #ff5151;
 }
 
 .favIcon {
-    right: 0.5rem;
+  right: 0.5rem;
 }
 
-.favIcon i[title="Favorit"] {
-    color: #ff5151;
+.favIcon i[title='Favorit'] {
+  color: #ff5151;
 }
 
 .collectionIcon {
-    position: absolute;
-    top: 5.5rem;
-    right: 0.5rem;
+  position: absolute;
+  top: 5.5rem;
+  right: 0.5rem;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    padding: 0.3rem;
-    font-size: 1.2rem;
-    width: 1.4rem;
-    height: 1.4rem;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
+  padding: 0.3rem;
+  font-size: 1.2rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
 
-    z-index: 2;
-    cursor: pointer;
+  z-index: 2;
+  cursor: pointer;
 }
 
 .nextUpIcon {
-    position: absolute;
-    top: 3rem;
-    right: 0.5rem;
+  position: absolute;
+  top: 3rem;
+  right: 0.5rem;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    padding: 0.3rem;
-    font-size: 1.2rem;
-    width: 1.4rem;
-    height: 1.4rem;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
+  padding: 0.3rem;
+  font-size: 1.2rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
 
-    z-index: 2;
-    cursor: pointer;
+  z-index: 2;
+  cursor: pointer;
 }
 
-.nextUpIcon i[title="Aus Next Up entfernen"] {
-    color: #4a90d9;
+.nextUpIcon i[title='Aus Next Up entfernen'] {
+  color: #4a90d9;
 }
 
 .recipeCardContent {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    gap: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 10px;
 }
 
 .recipeCardTitle {
-    margin-top: 0;
-    margin-bottom: 6px;
-    font-size: 1.2rem;
-    font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 6px;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .addRecipeButton,
 .recipeCardButton {
-    background-color: var(--color-primary);
-    color: var(--color-white);
-    text-align: center;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  text-align: center;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
 }
 
 .addRecipeButton:hover,
 .recipeCardButton:hover {
-    background-color: var(--color-primary-dark);
-    text-decoration: none;
+  background-color: var(--color-primary-dark);
+  text-decoration: none;
 }
 
 .recipeCardButton {
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .addRecipeButton {
-    font-size: 1.2rem;
-    width: 1.6rem;
-    height: 1.6rem;
-    border-radius: 25%;
-    border-color: transparent;
-    padding: 0;
+  font-size: 1.2rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 25%;
+  border-color: transparent;
+  padding: 0;
 }
 
 .nextUpFab {
-    position: fixed;
-    right: 1.25rem;
-    bottom: 1.25rem;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 50%;
-    background-color: #4a90d9;
-    color: var(--color-white);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-    text-decoration: none;
-    z-index: 50;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background-color: #4a90d9;
+  color: var(--color-white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  z-index: 50;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .nextUpFab:hover {
-    background-color: #3a7ec4;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-    text-decoration: none;
-    color: var(--color-white);
+  background-color: #3a7ec4;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+  color: var(--color-white);
 }
 
 .nextUpFab:active {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 .nextUpFabBadge {
-    position: absolute;
-    top: -0.25rem;
-    right: -0.25rem;
-    min-width: 1.4rem;
-    height: 1.4rem;
-    padding: 0 0.35rem;
-    border-radius: 5rem;
-    background-color: #ff5151;
-    color: var(--color-white);
-    font-size: 0.75rem;
-    font-weight: 700;
-    line-height: 1.4rem;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    box-sizing: border-box;
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 0.35rem;
+  border-radius: 5rem;
+  background-color: #ff5151;
+  color: var(--color-white);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.4rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
 }
 
 @media print {
-    .nextUpFab {
-        display: none;
-    }
+  .nextUpFab {
+    display: none;
+  }
 }

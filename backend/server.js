@@ -13,44 +13,46 @@ const { readCollections } = require('./utils/fileService');
 const recipesRouter = require('./routes/recipes');
 const importRouter = require('./routes/import');
 const uploadRouter = require('./routes/upload');
-const { join } = require("node:path");
+const { join } = require('node:path');
 
 const app = express();
 const PORT = 5000;
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
-    .split(',')
-    .map(origin => origin.trim())
-    .filter(Boolean);
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
-app.use(cors({
+app.use(
+  cors({
     origin: function (origin, callback) {
-        if (process.env.NODE_ENV !== 'production') return callback(null, origin);
-        if (!origin) return callback(null, true);
-        if (origin && allowedOrigins.includes(origin)) {
-            return callback(null, origin);
-        }
+      if (process.env.NODE_ENV !== 'production') return callback(null, origin);
+      if (!origin) return callback(null, true);
+      if (origin && allowedOrigins.includes(origin)) {
+        return callback(null, origin);
+      }
 
-        console.warn(`Blocked CORS for origin: ${ origin }`);
-        return callback(new Error('Not allowed by CORS'));
+      console.warn(`Blocked CORS for origin: ${origin}`);
+      return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: [ 'Content-Type', 'Authorization' ]
-}));
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }),
+);
 app.use(cookieParser());
 app.set('trust proxy', 1);
 
 app.use(bodyParser.json({ limit: '2mb' }));
 
 app.use((_, res, next) => {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    if (process.env.NODE_ENV === 'production') {
-        res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-    }
-    next();
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  if (process.env.NODE_ENV === 'production') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+  next();
 });
 
 // Health check (no auth required)
@@ -62,7 +64,7 @@ app.use('/api', configRouter);
 app.use('/api', bringRouter);
 
 if (process.env.REQUIRE_LOGIN === 'true') {
-    app.use('/api', authenticateToken);
+  app.use('/api', authenticateToken);
 }
 
 app.use('/api', collectionsRouter);
@@ -73,20 +75,20 @@ app.use('/uploads', express.static(join(__dirname, 'uploads')));
 
 // Default error handler
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Server error');
+  console.error(err.stack);
+  res.status(500).send('Server error');
 });
 
 const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://localhost:${ PORT }`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
 
 function shutdown(signal) {
-    console.log(`Received ${ signal }, shutting down gracefully`);
-    server.close(() => {
-        console.log('Server closed');
-        process.exit(0);
-    });
+  console.log(`Received ${signal}, shutting down gracefully`);
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
 }
 
 process.on('SIGINT', () => shutdown('SIGINT'));

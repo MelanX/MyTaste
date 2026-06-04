@@ -3,7 +3,7 @@
 MyTaste is a lightweight, self-hosted recipe manager consisting of:
 
 | Layer          | Tech                    | Highlights                                                     |
-|----------------|-------------------------|----------------------------------------------------------------|
+| -------------- | ----------------------- | -------------------------------------------------------------- |
 | **Backend**    | Node.js 22 ✚ Express 5  | REST API, JWT auth, SQLite/JSON storage, unit-tested with Jest |
 | **Frontend**   | React 19 ✚ TypeScript   | PWA (offline-capable), responsive UI, service-worker caching   |
 | **Containers** | Docker / Docker Compose | Official images on GitHub Container Registry                   |
@@ -49,7 +49,7 @@ Lazy way: `cd frontend && npm run start` – this script spins up backend **and*
 ## 🔐 Required environment variables
 
 | Variable                    | Scope    | Example                       | Description                                |
-|-----------------------------|----------|-------------------------------|--------------------------------------------|
+| --------------------------- | -------- | ----------------------------- | ------------------------------------------ |
 | `ADMIN_USER` / `ADMIN_PASS` | backend  | `admin` / `adm1n`             | Single admin login                         |
 | `JWT_SECRET`                | backend  | _very long random string_     | Signs access-tokens (mandatory)            |
 | `JWT_REFRESH_SECRET`        | backend  | _very long random string_     | (Optional) separate key for refresh-tokens |
@@ -87,7 +87,7 @@ Use the locally built tags in your compose file.
 ## 🌐 Reverse proxy (Nginx Proxy Manager)
 
 If you expose MyTaste through **Nginx Proxy Manager** and host both the frontend and backend behind the same domain, NPM
-must be told to forward `/api/` requests to the backend container — otherwise nginx serves the frontend for all paths 
+must be told to forward `/api/` requests to the backend container — otherwise nginx serves the frontend for all paths
 and API calls fail.
 
 > [!NOTE]

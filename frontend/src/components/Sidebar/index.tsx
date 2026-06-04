@@ -4,111 +4,120 @@ import { useAuth } from '../../context/AuthContext';
 import styles from './styles.module.css';
 
 const Sidebar: React.FC = () => {
-    const {isAuthenticated, logout} = useAuth();
-    const [isOpen, setIsOpen] = useState(false);
-    const sidebarRef = useRef<HTMLDivElement>(null);
-    const toggleButtonRef = useRef<HTMLButtonElement>(null);
+  const { isAuthenticated, logout } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
-    const toggleSidebar = () => {
-        setIsOpen(!isOpen);
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Don't close if clicking the sidebar itself or the toggle button
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node) &&
+        toggleButtonRef.current &&
+        !toggleButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
     };
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            // Don't close if clicking the sidebar itself or the toggle button
-            if (
-                sidebarRef.current &&
-                !sidebarRef.current.contains(event.target as Node) &&
-                toggleButtonRef.current &&
-                !toggleButtonRef.current.contains(event.target as Node)
-            ) {
-                setIsOpen(false);
-            }
-        };
+    // Add event listener when sidebar is open
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
 
-        // Add event listener when sidebar is open
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
+    // Cleanup event listener
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
-        // Cleanup event listener
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isOpen]);
+  return (
+    <>
+      <button ref={toggleButtonRef} className={`${styles.toggleButton} no-print`} onClick={toggleSidebar}>
+        <i className={`fa-solid fa-${isOpen ? 'xmark' : 'bars'}`} />
+      </button>
 
-    return (
-        <>
-            <button
-                ref={toggleButtonRef}
-                className={`${styles.toggleButton} no-print`}
-                onClick={toggleSidebar}
-            >
-                <i className={`fa-solid fa-${isOpen ? 'xmark' : 'bars'}`} />
-            </button>
-
-            <div
-                ref={sidebarRef}
-                className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}
-            >
-                <div className={styles.sidebarContent}>
-                    <nav>
-                        <ul>
-                            <li>
-                                <Link to="/" onClick={() => { if (window.location.pathname === '/') window.location.reload(); setIsOpen(false); }}>Home</Link>
-                            </li>
-                            {isAuthenticated && (
-                                <>
-                                    <li>
-                                        <Link to="/next-up" onClick={ () => setIsOpen(false) }>Next Up</Link>
-                                    </li>
-                                    <li>
-                                        <Link to="/collections" onClick={ () => setIsOpen(false) }>Sammlungen</Link>
-                                    </li>
-                                    <li>
-                                        <Link to="/new-recipe" onClick={() => setIsOpen(false)}>Rezept hinzufügen</Link>
-                                    </li>
-                                    <li>
-                                        <Link to="/import-recipe" onClick={() => setIsOpen(false)}>Importiere
-                                            Rezept</Link>
-                                    </li>
-                                    <li>
-                                        <Link to="/config"
-                                              onClick={() => setIsOpen(false)}>Einstellungen</Link>
-                                    </li>
-                                </>
-                            )}
-                            <li>
-                                {isAuthenticated ? (
-                                    <button onClick={async () => {
-                                        await logout();
-                                        setIsOpen(false);
-                                    }}>Logout</button>
-                                ) : (
-                                    <Link to="/login" onClick={() => setIsOpen(false)}>
-                                        <button>Login</button>
-                                    </Link>
-                                )}
-                            </li>
-                        </ul>
-                    </nav>
-                    <div className={styles.version}>
-                        {process.env.REACT_APP_COMMIT_URL ? (
-                            <a
-                                href={process.env.REACT_APP_COMMIT_URL}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                {process.env.REACT_APP_VERSION ?? 'dev'}
-                            </a>
-                        ) : (
-                            process.env.REACT_APP_VERSION ?? 'dev'
-                        )}
-                    </div>
-                </div>
-            </div>
-        </>
-    );
+      <div ref={sidebarRef} className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
+        <div className={styles.sidebarContent}>
+          <nav>
+            <ul>
+              <li>
+                <Link
+                  to="/"
+                  onClick={() => {
+                    if (window.location.pathname === '/') window.location.reload();
+                    setIsOpen(false);
+                  }}
+                >
+                  Home
+                </Link>
+              </li>
+              {isAuthenticated && (
+                <>
+                  <li>
+                    <Link to="/next-up" onClick={() => setIsOpen(false)}>
+                      Next Up
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/collections" onClick={() => setIsOpen(false)}>
+                      Sammlungen
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/new-recipe" onClick={() => setIsOpen(false)}>
+                      Rezept hinzufügen
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/import-recipe" onClick={() => setIsOpen(false)}>
+                      Importiere Rezept
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/config" onClick={() => setIsOpen(false)}>
+                      Einstellungen
+                    </Link>
+                  </li>
+                </>
+              )}
+              <li>
+                {isAuthenticated ? (
+                  <button
+                    onClick={async () => {
+                      await logout();
+                      setIsOpen(false);
+                    }}
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link to="/login" onClick={() => setIsOpen(false)}>
+                    <button>Login</button>
+                  </Link>
+                )}
+              </li>
+            </ul>
+          </nav>
+          <div className={styles.version}>
+            {process.env.REACT_APP_COMMIT_URL ? (
+              <a href={process.env.REACT_APP_COMMIT_URL} target="_blank" rel="noopener noreferrer">
+                {process.env.REACT_APP_VERSION ?? 'dev'}
+              </a>
+            ) : (
+              (process.env.REACT_APP_VERSION ?? 'dev')
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default Sidebar;
