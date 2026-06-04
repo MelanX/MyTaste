@@ -147,7 +147,7 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
         type="button"
         className={
           variant === 'button'
-            ? 'box-border flex min-h-[40px] w-full cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded border-none bg-accent px-4 text-base font-medium text-white hover:bg-accent-dark md:w-auto'
+            ? 'box-border flex h-10 w-full cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded border-none bg-accent px-4 py-2 text-base font-medium text-white hover:bg-accent-dark md:w-auto'
             : 'flex h-full w-full cursor-pointer items-center justify-center border-none bg-transparent p-0 text-[1.1rem] text-fg-muted hover:bg-transparent hover:text-accent'
         }
         onClick={handleToggle}

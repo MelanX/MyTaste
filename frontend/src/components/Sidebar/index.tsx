@@ -4,6 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import ThemeToggle from '../ThemeToggle';
 
 const linkClass = 'block py-2 text-[1.1rem] text-fg no-underline hover:text-accent-dark';
+// Reset the global `li` card styling (App.css) for the nav items.
+const navItemClass = 'm-0 border-none bg-transparent p-0 shadow-none';
 
 const Sidebar: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
@@ -55,10 +57,14 @@ const Sidebar: React.FC = () => {
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
+        <div className="absolute top-4 right-4 z-10">
+          <ThemeToggle />
+        </div>
+
         <div className="flex h-full flex-col overflow-y-auto px-5 pt-20 pb-5">
           <nav>
             <ul className="m-0 list-none p-0">
-              <li>
+              <li className={navItemClass}>
                 <Link
                   to="/"
                   className={linkClass}
@@ -72,27 +78,27 @@ const Sidebar: React.FC = () => {
               </li>
               {isAuthenticated && (
                 <>
-                  <li>
+                  <li className={navItemClass}>
                     <Link to="/next-up" className={linkClass} onClick={() => setIsOpen(false)}>
                       Next Up
                     </Link>
                   </li>
-                  <li>
+                  <li className={navItemClass}>
                     <Link to="/collections" className={linkClass} onClick={() => setIsOpen(false)}>
                       Sammlungen
                     </Link>
                   </li>
-                  <li>
+                  <li className={navItemClass}>
                     <Link to="/new-recipe" className={linkClass} onClick={() => setIsOpen(false)}>
                       Rezept hinzufügen
                     </Link>
                   </li>
-                  <li>
+                  <li className={navItemClass}>
                     <Link to="/import-recipe" className={linkClass} onClick={() => setIsOpen(false)}>
                       Importiere Rezept
                     </Link>
                   </li>
-                  <li>
+                  <li className={navItemClass}>
                     <Link to="/config" className={linkClass} onClick={() => setIsOpen(false)}>
                       Einstellungen
                     </Link>
@@ -118,8 +124,6 @@ const Sidebar: React.FC = () => {
                 <button className="w-full rounded-md bg-accent px-5 py-2.5 text-on-accent hover:bg-accent-dark">Login</button>
               </Link>
             )}
-
-            <ThemeToggle />
 
             <div className="max-w-full truncate text-center text-[0.75rem] text-fg-subtle">
               {import.meta.env.VITE_COMMIT_URL ? (
