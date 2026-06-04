@@ -19,7 +19,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check:no-hex": "node scripts/check-no-hex.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
