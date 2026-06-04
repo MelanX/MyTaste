@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from './styles.module.css';
 
 export interface ErrorSectionProps {
   /** Main headline (e.g. “Fehler beim Speichern”) */
@@ -21,13 +20,15 @@ const ErrorSection: React.FC<ErrorSectionProps> = ({ title, details = [] }) => {
   if (!title && details.length === 0) return null;
 
   return (
-    <div className={styles.errorSection} role="alert">
-      <p className={styles.errorTitle}>{title}</p>
+    <div className="mt-4 rounded-md border-2 border-danger-bright bg-danger-bg px-4 py-3 text-[0.9rem] text-danger-strong" role="alert">
+      <p className="m-0 font-semibold">{title}</p>
 
       {details.length > 0 && (
-        <ul className={styles.errorList}>
+        <ul className="mt-4 mb-0 list-disc pl-5">
           {details.map((line, i) => (
-            <li key={i}>{line}</li>
+            <li key={i} className="my-2">
+              {line}
+            </li>
           ))}
         </ul>
       )}

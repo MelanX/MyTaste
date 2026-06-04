@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import styles from './styles.module.css';
 
 interface ToastProps {
   message: string | null;
@@ -17,10 +16,20 @@ const TITLES = {
   success: 'Fertig',
   info: 'Info',
 };
-const CLASS_MAP: Record<string, string> = {
-  error: styles.toast,
-  success: `${styles.toast} ${styles.toastSuccess}`,
-  info: `${styles.toast} ${styles.toastInfo}`,
+
+const BASE_TOAST =
+  'toast-slide-in fixed bottom-5 right-5 z-[9999] flex max-w-[min(90vw,26rem)] items-start gap-4 rounded-lg border-l-4 p-[1rem_1.1rem] shadow-[0_4px_20px_rgba(0,0,0,0.15)]';
+
+const VARIANT_MAP: Record<string, string> = {
+  error: 'bg-danger-bg border-l-danger',
+  success: 'bg-success-bg border-l-success',
+  info: 'bg-info-bg border-l-info',
+};
+
+const ICON_COLOR: Record<string, string> = {
+  error: 'text-danger',
+  success: 'text-success',
+  info: 'text-info',
 };
 
 const Toast: React.FC<ToastProps> = ({ message, onDismiss, type = 'error' }) => {
@@ -32,16 +41,27 @@ const Toast: React.FC<ToastProps> = ({ message, onDismiss, type = 'error' }) => 
 
   if (!message) return null;
   return (
-    <div className={CLASS_MAP[type]} role="alert">
-      <i className={`fa-solid ${ICONS[type]} ${styles.icon}`} aria-hidden="true" />
-      <div className={styles.body}>
-        <div className={styles.title}>{TITLES[type]}</div>
-        <div className={styles.message}>{message}</div>
+    <>
+      <style>
+        {
+          '@keyframes toastSlideIn{from{opacity:0;transform:translateX(0.75rem)}to{opacity:1;transform:translateX(0)}}.toast-slide-in{animation:toastSlideIn 0.2s ease-out}'
+        }
+      </style>
+      <div className={`${BASE_TOAST} ${VARIANT_MAP[type]}`} role="alert">
+        <i className={`fa-solid ${ICONS[type]} ${ICON_COLOR[type]} mt-[0.1rem] flex-shrink-0 text-[1.15rem]`} aria-hidden="true" />
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 text-[0.95rem] font-semibold text-fg">{TITLES[type]}</div>
+          <div className="break-words text-[0.85rem] text-fg-muted">{message}</div>
+        </div>
+        <button
+          className="mt-[0.15rem] flex-shrink-0 cursor-pointer border-none bg-transparent p-0 text-[0.8rem] leading-none text-fg-subtle hover:text-fg"
+          onClick={onDismiss}
+          aria-label="Schließen"
+        >
+          <i className="fa-solid fa-xmark" />
+        </button>
       </div>
-      <button className={styles.close} onClick={onDismiss} aria-label="Schließen">
-        <i className="fa-solid fa-xmark" />
-      </button>
-    </div>
+    </>
   );
 };
 

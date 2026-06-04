@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from './styles.module.css';
 import { Link } from 'react-router-dom';
 import { getConfig } from '../../config';
 
@@ -25,9 +24,9 @@ const BringButton: React.FC<BringButtonProps> = ({ recipeId, ids, label = 'Zur E
   const bringLink = generateBringImportLink(dataUrl);
 
   return (
-    <Link to={bringLink} className={styles.link}>
-      <button className={styles.bringButton}>
-        <img src={bringLogo} alt="Bring Logo" className={styles.bringLogo} />
+    <Link to={bringLink} className="block no-underline hover:no-underline">
+      <button className="flex w-full cursor-pointer items-center justify-center rounded-[4px] border-none bg-bring px-3 py-2 font-[inherit] text-white transition-colors duration-200 hover:bg-bring-dark">
+        <img src={bringLogo} alt="Bring Logo" className="mr-2 h-6" />
         {label}
       </button>
     </Link>

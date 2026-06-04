@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from './styles.module.css';
 import renderInlineMarkdown from '../../utils/renderInlineMarkdown';
 
 interface RecipeInstructionsProps {
@@ -8,13 +7,15 @@ interface RecipeInstructionsProps {
 
 const RecipeInstructions: React.FC<RecipeInstructionsProps> = ({ instructions }) => {
   return (
-    <div className={styles.instructionsCard}>
-      <h3 className={styles.instructionsTitle}>Zubereitung</h3>
-      <div className={styles.instructionsList}>
+    <div className="mb-5 rounded-lg bg-surface p-3 shadow-[0_4px_8px_var(--color-shadow-soft)] md:p-4">
+      <h3 className="mt-0 mb-4 text-[1.3rem] font-semibold text-fg">Zubereitung</h3>
+      <div className="flex flex-col gap-4">
         {instructions.map((paragraph, index) => (
-          <div key={index} className={styles.instructionStep}>
-            <div className={styles.stepNumber}>{index + 1}</div>
-            <div className={styles.stepText}>{renderInlineMarkdown(paragraph)}</div>
+          <div key={index} className="grid grid-cols-[30px_1fr] items-center gap-1 md:grid-cols-[40px_1fr] md:gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-[0.9rem] font-semibold text-white md:h-[34px] md:w-[34px] md:text-base">
+              {index + 1}
+            </div>
+            <div className="break-words py-1 text-on-accent">{renderInlineMarkdown(paragraph)}</div>
           </div>
         ))}
       </div>

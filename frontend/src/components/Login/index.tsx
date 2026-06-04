@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import styles from './styles.module.css';
 import ErrorSection from '../ErrorSection';
 
 const Login: React.FC = () => {
@@ -27,13 +26,29 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className={styles.loginContainer}>
-      <h2>Login</h2>
+    <div className="mx-auto my-8 max-w-[400px] rounded-lg bg-surface p-8 shadow-[0_2px_6px_var(--color-shadow-soft)]">
+      <h2 className="mb-4 text-fg">Login</h2>
       <ErrorSection title={error} />
       <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Benutzername" value={username} onChange={(e) => setUsername(e.target.value)} required />
-        <input type="password" placeholder="Passwort" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button type="submit">Login</button>
+        <input
+          type="text"
+          placeholder="Benutzername"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+          className="mb-4 w-full rounded-[4px] border border-line p-2"
+        />
+        <input
+          type="password"
+          placeholder="Passwort"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          className="mb-4 w-full rounded-[4px] border border-line p-2"
+        />
+        <button type="submit" className="my-[10px] w-full rounded-[4px] border-none p-4 text-base">
+          Login
+        </button>
       </form>
     </div>
   );

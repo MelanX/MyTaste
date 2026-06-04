@@ -8,9 +8,17 @@ interface PaperGrainProps {
   maxGrainSize?: number;
 }
 
+// Resolve a semantic token to its concrete color so it can be used as a
+// canvas fillStyle (canvas does not understand CSS `var(...)`).
+const resolveToken = (name: string, fallbackVar: string): string => {
+  if (typeof window === 'undefined') return fallbackVar;
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return value || fallbackVar;
+};
+
 const PaperGrain: React.FC<PaperGrainProps> = ({
-  backgroundColor = '#f8f4e9', // Cream paper color
-  grainColor = '#000000', // Black grain dots
+  backgroundColor, // Cream paper color (defaults to the --color-bg token)
+  grainColor = 'rgb(0 0 0)', // Black grain dots
   grainDensity = 15000, // Number of grain dots
   grainOpacity = 0.08, // Opacity of the grain
   maxGrainSize = 1.5, // Maximum size of grain dots in pixels
@@ -24,6 +32,8 @@ const PaperGrain: React.FC<PaperGrainProps> = ({
     const context = canvas.getContext('2d');
     if (!context) return;
 
+    const resolvedBackground = backgroundColor ?? resolveToken('--color-bg', 'rgb(248 244 233)');
+
     // Make canvas fullscreen
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
@@ -34,7 +44,7 @@ const PaperGrain: React.FC<PaperGrainProps> = ({
     // Draw the grain pattern
     const drawGrain = () => {
       // Clear canvas and set background
-      context.fillStyle = backgroundColor;
+      context.fillStyle = resolvedBackground;
       context.fillRect(0, 0, canvas.width, canvas.height);
 
       // Set grain color with opacity
