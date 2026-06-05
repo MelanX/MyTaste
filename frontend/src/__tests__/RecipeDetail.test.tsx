@@ -72,7 +72,8 @@ describe('RecipeDetail', () => {
 
   it('renders the recipe title', () => {
     render(<RecipeDetail />);
-    expect(screen.getByRole('heading', { name: 'Pfannkuchen', level: 1 })).toBeInTheDocument();
+    // Two h1s exist: the screen title and a print-only title in the left column.
+    expect(screen.getAllByRole('heading', { name: 'Pfannkuchen', level: 1 }).length).toBeGreaterThan(0);
   });
 
   it('renders the instructions with step numbers', () => {

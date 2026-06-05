@@ -45,8 +45,8 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({ recipe, hideImage = false
   const iconBase =
     'no-print absolute top-2 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-surface/80 p-[0.3rem] text-[1.2rem]';
   return (
-    <div className="w-[min(100%,30rem)]">
-      <div className="overflow-hidden rounded-lg bg-surface shadow-[0_4px_8px_var(--color-shadow-soft)]">
+    <div className="w-full">
+      <div className="overflow-hidden rounded-lg bg-surface shadow-[0_4px_8px_var(--color-shadow-soft)] print:border print:border-line">
         {!hideImage && (
           <div className="relative aspect-[3/2] h-auto w-full overflow-hidden">
             {isAuthenticated && (
@@ -76,7 +76,7 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({ recipe, hideImage = false
                   : '/placeholder.webp'
               }
               alt={recipe.title}
-              className="absolute top-0 left-0 h-full w-full object-cover md:static print:h-auto print:max-w-full print:object-contain"
+              className="absolute top-0 left-0 h-full w-full object-cover md:static"
             />
           </div>
         )}
@@ -121,7 +121,10 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({ recipe, hideImage = false
                     const nameSpecification = rest.length > 0 ? rest.join(',') : '';
 
                     return (
-                      <div key={index} className="grid grid-cols-[70px_1fr] items-baseline gap-2 md:grid-cols-[80px_1fr] md:gap-[10px]">
+                      <div
+                        key={index}
+                        className="grid grid-cols-[70px_1fr] items-baseline gap-2 print:break-inside-avoid md:grid-cols-[80px_1fr] md:gap-[10px]"
+                      >
                         <div className="font-medium text-fg-muted">
                           {formatAmount(ingredient.amount)}
                           {ingredient.unit ? ` ${ingredient.unit}` : ''}

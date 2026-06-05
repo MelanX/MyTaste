@@ -37,9 +37,10 @@ const RecipeDetail: React.FC = () => {
 
   return (
     <>
-      <style>{'@media print{@page{size:A4 portrait;margin:5mm}body{margin:0;padding:0;line-height:1.2}}'}</style>
-      <div className="py-[10px] md:py-0 print:break-after-page">
-        <div className="mb-4 flex items-center justify-between">
+      <div className="py-[10px] md:py-0">
+        {/* Screen-only title row (full width). In print the title moves into the
+            left column and the QR into the right column (see below). */}
+        <div className="mb-4 flex items-center justify-between print:hidden">
           <h1 className="mt-0 mb-2 text-[1.8rem] text-fg">
             {recipe.title}
             {isAuthenticated && (
@@ -51,13 +52,27 @@ const RecipeDetail: React.FC = () => {
               </Link>
             )}
           </h1>
-          <div className="hidden print:flex print:items-center [&>*:first-child]:print:ml-2">
-            Im Browser aufrufen:
-            <QRCodeSVG value={currentUrl} size={50} fgColor={'var(--color-accent-dark)'} />
-          </div>
         </div>
-        <div className="flex flex-col-reverse gap-5 md:flex-row md:gap-[30px] print:flex print:flex-row print:gap-[30px]">
-          <div className="flex-1 md:flex-[2] print:flex-[2]">
+        {/*
+          Print: two framed, top-aligned columns — title + instructions on the
+          left, QR + image + ingredients on the right (starting at the title
+          level so the ingredients use the space next to the title). On screen
+          it's the usual two-column flex (order keeps instructions left and the
+          image/ingredients right; image on top on mobile).
+        */}
+        <div className="flex flex-col gap-5 md:flex-row md:gap-[30px] print:flex print:flex-row print:items-start print:gap-[20px]">
+          {/* Right column: QR (print only) + image + ingredients */}
+          <div className="w-[min(100%,30rem)] md:order-2 print:order-2 print:flex-1">
+            <div className="mb-2 hidden items-center justify-end gap-2 text-fg print:flex">
+              Im Browser aufrufen:
+              <QRCodeSVG value={currentUrl} size={50} fgColor={'var(--color-accent-dark)'} />
+            </div>
+            <RecipeSidebar recipe={recipe} updateRecipe={(r) => upsertRecipe(r)} />
+          </div>
+
+          {/* Left column: title (print only) + instructions */}
+          <div className="flex-1 md:order-1 md:flex-[2] print:order-1 print:flex-[2]">
+            <h1 className="mt-0 mb-3 hidden text-[1.6rem] text-fg print:block">{recipe.title}</h1>
             <RecipeInstructions instructions={recipe.instructions} />
             <div className="no-print flex flex-col gap-[10px] md:flex-row md:items-stretch" ref={buttonsRowRef}>
               {recipe.url && (
@@ -76,7 +91,6 @@ const RecipeDetail: React.FC = () => {
               {isAuthenticated && <CollectionPicker recipeId={recipe.id} variant="button" />}
             </div>
           </div>
-          <RecipeSidebar recipe={recipe} updateRecipe={(r) => upsertRecipe(r)} />
         </div>
       </div>
       <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
