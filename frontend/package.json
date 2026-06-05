@@ -19,6 +19,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "check:no-hex": "node scripts/check-no-hex.mjs"
   },
@@ -33,6 +34,7 @@
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^6.0.0",
+    "@vitest/coverage-v8": "^4.1.8",
     "eslint": "^10.0.3",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",

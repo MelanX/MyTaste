@@ -44,8 +44,8 @@ jobs:
         run: npm ci
         working-directory: backend
 
-      - name: Run tests
-        run: npm test
+      - name: Run tests with coverage
+        run: npm run test:coverage
         working-directory: backend
 
       - name: Build
@@ -77,8 +77,8 @@ jobs:
         run: npm run check:no-hex
         working-directory: frontend
 
-      - name: Run tests
-        run: npm test
+      - name: Run tests with coverage
+        run: npm run test:coverage
         working-directory: frontend
 
       - name: Build
