@@ -18,7 +18,7 @@ const TITLES = {
 };
 
 const BASE_TOAST =
-  'toast-slide-in fixed bottom-5 right-5 z-[9999] flex max-w-[min(90vw,26rem)] items-start gap-4 rounded-lg border-l-4 p-[1rem_1.1rem] shadow-[0_4px_20px_rgba(0,0,0,0.15)]';
+  'toast-slide-in fixed bottom-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.5rem))] right-[max(1.25rem,env(safe-area-inset-right))] z-[9999] flex max-w-[min(90vw,26rem)] items-start gap-4 rounded-lg border-l-4 p-[1rem_1.1rem] shadow-[0_4px_20px_rgba(0,0,0,0.15)]';
 
 const VARIANT_MAP: Record<string, string> = {
   error: 'bg-danger-bg border-l-danger',

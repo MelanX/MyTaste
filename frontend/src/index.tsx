@@ -6,11 +6,48 @@ import { AuthProvider } from './context/AuthContext';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { loadConfig } from './config';
+import { registerSW } from 'virtual:pwa-register';
 
 navigator.serviceWorker?.addEventListener('message', (e) => {
   if (e.data?.type === 'recipes-updated') {
     window.dispatchEvent(new Event('recipes-updated')); // wake hooks
   }
+});
+
+// Register the service worker. Keep it quiet: rather than prompting, defer the
+// SW swap until the user navigates (back/forward) or backgrounds the app, so an
+// update never disrupts an in-progress session or loses unsaved form input —
+// mirroring the legacy serviceWorkerRegistration deferred-activation flow.
+const updateSW = registerSW({
+  onNeedRefresh() {
+    const applyUpdate = () => {
+      updateSW(); // posts SKIP_WAITING; controllerchange reloads via the plugin
+      unsubscribe();
+    };
+    // On pagehide (tab close / PWA backgrounded), activate the new SW. If the
+    // page is later restored from bfcache, reload to resolve the old-JS /
+    // new-SW mismatch (important on iOS Safari PWA).
+    const onPageHide = () => {
+      updateSW();
+      window.addEventListener(
+        'pageshow',
+        (e) => {
+          if (e.persisted) window.location.reload();
+        },
+        { once: true },
+      );
+      unsubscribe();
+    };
+    const unsubscribe = () => {
+      window.removeEventListener('popstate', applyUpdate);
+      window.removeEventListener('pagehide', onPageHide);
+    };
+    // popstate fires on back/forward navigation. Link clicks (React Router
+    // pushState) are intentionally not intercepted to avoid turning SPA
+    // navigations into hard reloads.
+    window.addEventListener('popstate', applyUpdate, { once: true });
+    window.addEventListener('pagehide', onPageHide, { once: true });
+  },
 });
 
 const router = createBrowserRouter([{ path: '*', element: <App /> }]);

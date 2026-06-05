@@ -46,7 +46,7 @@ const Sidebar: React.FC = () => {
     <>
       <button
         ref={toggleButtonRef}
-        className="no-print fixed top-5 left-5 z-[1001] box-border flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-none bg-accent p-0 text-2xl text-white shadow-[0_2px_5px_var(--color-shadow-strong)]"
+        className="no-print fixed top-[max(1.25rem,env(safe-area-inset-top))] left-[max(1.25rem,env(safe-area-inset-left))] z-[1001] box-border flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-none bg-accent p-0 text-2xl text-white shadow-[0_2px_5px_var(--color-shadow-strong)]"
         onClick={toggleSidebar}
       >
         <i className={`fa-solid fa-${isOpen ? 'xmark' : 'bars'}`} />
@@ -54,15 +54,15 @@ const Sidebar: React.FC = () => {
 
       <div
         ref={sidebarRef}
-        className={`fixed top-0 left-0 z-[1000] h-screen w-[250px] bg-surface shadow-[2px_0_5px_var(--color-shadow-soft)] transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 z-[1000] h-dvh w-[250px] bg-surface shadow-[2px_0_5px_var(--color-shadow-soft)] transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="absolute top-4 right-4 z-10">
+        <div className="absolute top-[max(1rem,env(safe-area-inset-top))] right-4 z-10">
           <ThemeToggle />
         </div>
 
-        <div className="h-full overflow-y-auto px-5 pt-20 pb-5">
+        <div className="h-full overflow-y-auto px-5 pt-[max(5rem,calc(env(safe-area-inset-top)+3.5rem))] pb-5 pl-[max(1.25rem,env(safe-area-inset-left))]">
           <nav>
             <ul className="m-0 list-none p-0">
               <li className={navItemClass}>
@@ -113,7 +113,7 @@ const Sidebar: React.FC = () => {
         {/* Auth button + version pinned to the bottom of the fixed sidebar (as on main). */}
         {isAuthenticated ? (
           <button
-            className={`absolute bottom-5 left-1/2 w-4/5 -translate-x-1/2 ${authButtonClass}`}
+            className={`absolute bottom-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.5rem))] left-1/2 w-4/5 -translate-x-1/2 ${authButtonClass}`}
             onClick={async () => {
               await logout();
               setIsOpen(false);
@@ -122,12 +122,16 @@ const Sidebar: React.FC = () => {
             Logout
           </button>
         ) : (
-          <Link to="/login" className="absolute bottom-5 left-1/2 w-4/5 -translate-x-1/2" onClick={() => setIsOpen(false)}>
+          <Link
+            to="/login"
+            className="absolute bottom-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.5rem))] left-1/2 w-4/5 -translate-x-1/2"
+            onClick={() => setIsOpen(false)}
+          >
             <button className={`w-full ${authButtonClass}`}>Login</button>
           </Link>
         )}
 
-        <div className="absolute right-0 bottom-1 left-0 truncate px-4 text-center text-[0.75rem] text-fg-subtle">
+        <div className="absolute right-0 bottom-[max(0.25rem,env(safe-area-inset-bottom))] left-0 truncate px-4 text-center text-[0.75rem] text-fg-subtle">
           {import.meta.env.VITE_COMMIT_URL ? (
             <a
               href={import.meta.env.VITE_COMMIT_URL}

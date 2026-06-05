@@ -5,7 +5,8 @@ export const pillBase =
 export const pillActive = 'border-accent-dark bg-accent text-white';
 export const addButtonClass =
   'flex h-8 w-8 flex-[0_0_auto] cursor-pointer items-center justify-center self-center rounded-full border-none p-0 max-[600px]:self-end';
-export const ingredientInputClass = 'rounded-[0.25rem] border border-line-soft px-[0.4rem] py-[0.3rem] text-[0.9rem]';
+// text-base (16px) avoids iOS focus-zoom on these inputs.
+export const ingredientInputClass = 'rounded-[0.25rem] border border-line-soft px-[0.4rem] py-[0.3rem] text-base';
 export const sectionAddRowClass = 'grid grid-cols-[1fr_auto] items-center gap-[0.4rem]';
 export const sectionAddInputsClass = 'grid min-w-0 grid-cols-[repeat(auto-fit,minmax(7.5rem,1fr))] items-center gap-2';
 export const sectionAddActionsClass = 'flex items-center justify-end gap-[0.4rem] whitespace-nowrap';

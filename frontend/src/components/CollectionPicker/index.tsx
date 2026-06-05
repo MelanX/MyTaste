@@ -118,7 +118,7 @@ const CollectionPicker: React.FC<Props> = ({ recipeId, variant = 'icon' }) => {
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Name..."
-            className="m-0 flex-1 rounded border border-line bg-surface px-2 py-1 text-[0.9rem] text-fg focus:border-accent focus:outline-none"
+            className="m-0 flex-1 rounded border border-line bg-surface px-2 py-1 text-base text-fg focus:border-accent focus:outline-none"
             autoFocus
           />
           <button
