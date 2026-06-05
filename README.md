@@ -2,11 +2,11 @@
 
 MyTaste is a lightweight, self-hosted recipe manager consisting of:
 
-| Layer          | Tech                    | Highlights                                                     |
-| -------------- | ----------------------- | -------------------------------------------------------------- |
-| **Backend**    | Node.js 22 ✚ Express 5  | REST API, JWT auth, SQLite/JSON storage, unit-tested with Jest |
-| **Frontend**   | React 19 ✚ TypeScript   | PWA (offline-capable), responsive UI, service-worker caching   |
-| **Containers** | Docker / Docker Compose | Official images on GitHub Container Registry                   |
+| Layer          | Tech                            | Highlights                                                     |
+| -------------- | ------------------------------- | -------------------------------------------------------------- |
+| **Backend**    | Node.js 24 ✚ Express 5 (TS/ESM) | REST API, JWT auth, JSON-file storage, unit-tested with Vitest |
+| **Frontend**   | React 19 ✚ Vite ✚ Tailwind v4   | PWA (offline-capable), responsive UI, light/dark theme         |
+| **Containers** | Docker / Docker Compose         | Official images on GitHub Container Registry                   |
 
 ---
 
@@ -27,44 +27,46 @@ Edit the environment variables (see below) before the first run.
 
 ### 2. Local development without Docker
 
+Requires **Node.js 24+**. The repo uses npm workspaces-style root scripts.
+
 ```bash
 git clone https://github.com/MelanX/MyTaste.git
 cd MyTaste
 
-# ── backend ───────────────────────────
-cd backend
-npm install
-node server.js              # http://localhost:5000
-
-# ── frontend (new shell) ──────────────
-cd ../frontend
-npm install
-npm start                   # http://localhost:3000
+npm run install:all   # install backend + frontend deps
+npm run dev           # backend (http://localhost:5000) and frontend (http://localhost:5173)
 ```
 
-Lazy way: `cd frontend && npm run start` – this script spins up backend **and** frontend concurrently.
+Run them separately if you prefer:
+
+```bash
+npm run dev:backend   # Express via tsx  → http://localhost:5000
+npm run dev:frontend  # Vite dev server  → http://localhost:5173 (proxies /api → :5000)
+```
 
 ---
 
 ## 🔐 Required environment variables
 
-| Variable                    | Scope    | Example                       | Description                                |
-| --------------------------- | -------- | ----------------------------- | ------------------------------------------ |
-| `ADMIN_USER` / `ADMIN_PASS` | backend  | `admin` / `adm1n`             | Single admin login                         |
-| `JWT_SECRET`                | backend  | _very long random string_     | Signs access-tokens (mandatory)            |
-| `JWT_REFRESH_SECRET`        | backend  | _very long random string_     | (Optional) separate key for refresh-tokens |
-| `REQUIRE_LOGIN`             | backend  | `true` / `false`              | Hides nearly all routes                    |
-| `ALLOWED_ORIGINS`           | backend  | `https://mytaste.example.com` | Comma-separated CORS whitelist             |
-| `REACT_APP_API_URL`         | frontend | `https://api.example.com`     | Public backend URL shown to the SPA        |
+| Variable                    | Scope    | Example                       | Description                                                                       |
+| --------------------------- | -------- | ----------------------------- | --------------------------------------------------------------------------------- |
+| `ADMIN_USER` / `ADMIN_PASS` | backend  | `admin` / `adm1n`             | Single admin login                                                                |
+| `JWT_SECRET`                | backend  | _very long random string_     | Signs access-tokens (mandatory)                                                   |
+| `JWT_REFRESH_SECRET`        | backend  | _very long random string_     | (Optional) separate key for refresh-tokens                                        |
+| `REQUIRE_LOGIN`             | backend  | `true` / `false`              | Hides nearly all routes                                                           |
+| `ALLOWED_ORIGINS`           | backend  | `https://mytaste.example.com` | Comma-separated CORS whitelist                                                    |
+| `VITE_API_URL`              | frontend | `https://api.example.com`     | Public backend URL (dev: `import.meta.env`; prod: substituted into `config.json`) |
 
 ---
 
 ## 🧪 Running tests
 
 ```bash
-cd backend   && npm test     # Jest unit tests
-cd ../frontend && npm test   # React Testing Library
+npm run test:all             # backend (Vitest) + frontend (Vitest + Testing Library)
 ```
+
+Per package: `npm test --prefix backend` / `npm test --prefix frontend`.
+Lint & formatting: `npm run lint --prefix frontend` · `npm run format:check`.
 
 ---
 

@@ -4,5 +4,5 @@ services:
     ports:
       - '3000:80'
     environment:
-      - REACT_APP_API_URL=https://example.com # public backend URL
+      - VITE_API_URL=https://example.com # public backend URL
     restart: always
