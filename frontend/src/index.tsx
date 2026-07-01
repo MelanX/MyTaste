@@ -7,10 +7,15 @@ import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { loadConfig } from './config';
 import { registerSW } from 'virtual:pwa-register';
+import { fetchAndCache } from './utils/recipesCache';
 
 navigator.serviceWorker?.addEventListener('message', (e) => {
   if (e.data?.type === 'recipes-updated') {
-    window.dispatchEvent(new Event('recipes-updated')); // wake hooks
+    // The SW only broadcasts this after its own cache was revalidated against
+    // the network, so re-fetching now is guaranteed to pick up the fresh data
+    // (as opposed to just re-reading localStorage, which may still hold the
+    // stale snapshot written by an in-flight StaleWhileRevalidate response).
+    fetchAndCache().catch(() => {});
   }
 });
 
