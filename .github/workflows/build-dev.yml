@@ -28,15 +28,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & push backend image
-        run: |
-          docker build -t ghcr.io/melanx/mytaste-backend:${IMAGE_TAG} ./backend
-          docker push ghcr.io/melanx/mytaste-backend:${IMAGE_TAG}
-
-      - name: Build & push frontend image
+      - name: Build & push image
         run: |
           docker build \
             --build-arg VITE_VERSION="dev" \
             --build-arg VITE_COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}" \
-            -t ghcr.io/melanx/mytaste-frontend:${IMAGE_TAG} ./frontend
-          docker push ghcr.io/melanx/mytaste-frontend:${IMAGE_TAG}
+            -t ghcr.io/melanx/mytaste:${IMAGE_TAG} .
+          docker push ghcr.io/melanx/mytaste:${IMAGE_TAG}

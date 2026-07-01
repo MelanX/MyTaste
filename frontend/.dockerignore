@@ -1,9 +1,0 @@
-node_modules
-build
-dist
-.env
-*.log
-.idea
-.DS_Store
-private
-*.iml

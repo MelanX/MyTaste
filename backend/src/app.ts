@@ -2,6 +2,8 @@ import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import compression from 'compression';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import 'dotenv/config';
@@ -42,6 +44,7 @@ app.use(
   }),
 );
 app.use(cookieParser());
+app.use(compression());
 app.set('trust proxy', 1);
 
 app.use(express.json({ limit: '2mb' }));
@@ -73,6 +76,16 @@ app.use('/api', recipesRouter);
 app.use('/api', importRouter);
 app.use('/api', uploadRouter);
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
+// Serve the built frontend (present in the combined production image; absent in local dev,
+// where the Vite dev server on :5173 serves the frontend instead).
+const FRONTEND_DIR = path.join(__dirname, '..', 'public');
+if (fs.existsSync(FRONTEND_DIR)) {
+  app.use(express.static(FRONTEND_DIR));
+  app.get(/^(?!\/api\/|\/uploads\/).*/, (_req: Request, res: Response) => {
+    res.sendFile(path.join(FRONTEND_DIR, 'index.html'));
+  });
+}
 
 // Default error handler
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
