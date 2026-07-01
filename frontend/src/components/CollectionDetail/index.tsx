@@ -138,7 +138,7 @@ const CollectionDetail: React.FC = () => {
         {collectionRecipes.map((recipe) => (
           <div
             key={recipe.id}
-            className="group flex h-full flex-col overflow-hidden rounded-lg bg-surface shadow-[0_4px_8px_var(--color-shadow-soft)] transition-[transform,box-shadow] duration-300 ease-in-out hover:-translate-y-[5px] hover:shadow-[0_8px_16px_var(--color-shadow-strong)]"
+            className="group flex h-full flex-col overflow-hidden rounded-lg bg-surface shadow-[0_4px_8px_var(--color-shadow-soft)] transition-[translate,box-shadow] duration-300 ease-in-out hover:-translate-y-[5px] hover:shadow-[0_8px_16px_var(--color-shadow-strong)]"
           >
             <div className="relative h-[200px] w-full overflow-hidden">
               <Link to={`/recipe/${recipe.id}`}>
