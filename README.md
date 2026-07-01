@@ -2,10 +2,10 @@
 
 MyTaste is a lightweight, self-hosted recipe manager consisting of:
 
-| Layer          | Tech                                    | Highlights                                                          |
-| -------------- | ---------------------------------------- | -------------------------------------------------------------------- |
+| Layer          | Tech                                                            | Highlights                                                                                      |
+| -------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | **App**        | Node.js 24 ✚ Express 5 (TS/ESM) ✚ React 19 ✚ Vite ✚ Tailwind v4 | Single container: REST API + PWA frontend, JWT auth, JSON-file storage, unit-tested with Vitest |
-| **Containers** | Docker / Docker Compose                  | Official image on GitHub Container Registry                          |
+| **Containers** | Docker / Docker Compose                                         | Official image on GitHub Container Registry                                                     |
 
 ---
 
@@ -50,13 +50,13 @@ npm run dev:frontend  # Vite dev server  → http://localhost:5173 (proxies /api
 The frontend and backend are served from the same container on the same origin, so no public API URL needs to
 be configured — API calls are made to relative `/api` paths.
 
-| Variable                    | Example                       | Description                          |
-| --------------------------- | ------------------------------ | ------------------------------------- |
-| `ADMIN_USER` / `ADMIN_PASS` | `admin` / `adm1n`              | Single admin login                    |
-| `JWT_SECRET`                | _very long random string_      | Signs access-tokens (mandatory)       |
-| `JWT_REFRESH_SECRET`        | _very long random string_      | (Optional) separate key for refresh-tokens |
-| `REQUIRE_LOGIN`             | `true` / `false`               | Hides nearly all routes               |
-| `ALLOWED_ORIGINS`           | `https://mytaste.example.com`  | Comma-separated CORS whitelist (only relevant if you call the API from a different origin) |
+| Variable                    | Example                       | Description                                                                                |
+| --------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------ |
+| `ADMIN_USER` / `ADMIN_PASS` | `admin` / `adm1n`             | Single admin login                                                                         |
+| `JWT_SECRET`                | _very long random string_     | Signs access-tokens (mandatory)                                                            |
+| `JWT_REFRESH_SECRET`        | _very long random string_     | (Optional) separate key for refresh-tokens                                                 |
+| `REQUIRE_LOGIN`             | `true` / `false`              | Hides nearly all routes                                                                    |
+| `ALLOWED_ORIGINS`           | `https://mytaste.example.com` | Comma-separated CORS whitelist (only relevant if you call the API from a different origin) |
 
 ---
 
