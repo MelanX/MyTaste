@@ -107,7 +107,7 @@ const InstructionsEditor: React.FC<Props> = ({ value, onChange }) => {
     <div className="flex flex-col gap-2">
       {value.map((step, index) => (
         <div key={index} className="grid grid-cols-[2rem_1fr_auto] items-center gap-3">
-          <div className="mb-0 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-[0.9rem] font-semibold text-white">
+          <div className="mb-0! flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-[0.9rem] font-semibold text-white">
             {index + 1}
           </div>
           <textarea
