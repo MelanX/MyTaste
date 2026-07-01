@@ -2,11 +2,11 @@ name: (Dev) – Test, Build & Push
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   tests:
-    uses: ./.github/workflows/tests.yml
+    uses: ./.github/workflows/test.yml
 
   docker:
     needs: tests
@@ -28,15 +28,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & push backend image
-        run: |
-          docker build -t ghcr.io/melanx/mytaste-backend:${IMAGE_TAG} ./backend
-          docker push ghcr.io/melanx/mytaste-backend:${IMAGE_TAG}
-
-      - name: Build & push frontend image
+      - name: Build & push image
         run: |
           docker build \
-            --build-arg REACT_APP_VERSION="dev" \
-            --build-arg REACT_APP_COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}" \
-            -t ghcr.io/melanx/mytaste-frontend:${IMAGE_TAG} ./frontend
-          docker push ghcr.io/melanx/mytaste-frontend:${IMAGE_TAG}
+            --build-arg VITE_VERSION="dev" \
+            --build-arg VITE_COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}" \
+            -t ghcr.io/melanx/mytaste:${IMAGE_TAG} .
+          docker push ghcr.io/melanx/mytaste:${IMAGE_TAG}

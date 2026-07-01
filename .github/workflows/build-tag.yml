@@ -2,11 +2,11 @@ name: (Tags) – Test, Build & Push
 
 on:
   push:
-    tags: [ '*' ]
+    tags: ['*']
 
 jobs:
   tests:
-    uses: ./.github/workflows/tests.yml
+    uses: ./.github/workflows/test.yml
 
   docker:
     needs: tests
@@ -28,24 +28,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & push backend image
+      - name: Build & push image
         run: |
           docker build \
-            -t ghcr.io/melanx/mytaste-backend:${IMAGE_TAG} \
-            -t ghcr.io/melanx/mytaste-backend:latest \
-            ./backend
-          
-          docker push ghcr.io/melanx/mytaste-backend:${IMAGE_TAG}
-          docker push ghcr.io/melanx/mytaste-backend:latest
+            --build-arg VITE_VERSION="${IMAGE_TAG}" \
+            --build-arg VITE_COMMIT_URL="https://github.com/${{ github.repository }}/releases/tag/${IMAGE_TAG}" \
+            -t ghcr.io/melanx/mytaste:${IMAGE_TAG} \
+            -t ghcr.io/melanx/mytaste:latest \
+            .
 
-      - name: Build & push frontend image
-        run: |
-          docker build \
-            --build-arg REACT_APP_VERSION="${IMAGE_TAG}" \
-            --build-arg REACT_APP_COMMIT_URL="https://github.com/${{ github.repository }}/releases/tag/${IMAGE_TAG}" \
-            -t ghcr.io/melanx/mytaste-frontend:${IMAGE_TAG} \
-            -t ghcr.io/melanx/mytaste-frontend:latest \
-            ./frontend
-
-          docker push ghcr.io/melanx/mytaste-frontend:${IMAGE_TAG}
-          docker push ghcr.io/melanx/mytaste-frontend:latest
+          docker push ghcr.io/melanx/mytaste:${IMAGE_TAG}
+          docker push ghcr.io/melanx/mytaste:latest

@@ -1,8 +1,8 @@
 services:
-  backend:
-    image: ghcr.io/melanx/mytaste-backend:latest
+  mytaste:
+    image: ghcr.io/melanx/mytaste:latest
     ports:
-      - "5000:5000"
+      - '3000:5000'
     environment:
       - REQUIRE_LOGIN=true
       - ADMIN_USER=admin
@@ -11,16 +11,6 @@ services:
       - JWT_REFRESH_SECRET=Ke4rRUDKpPg0lu376mKU54mLUuAA37UUGPn2wMK1XucUDAP9OgBoSPRihCYKbFjt
       - ALLOWED_ORIGINS=http://localhost
     volumes:
-      - /docker/mytaste/backend/data:/app/data # Where recipes and config are stored
-      - /docker/mytaste/backend/uploads:/app/uploads # Where uploaded images will end up
-    restart: always
-
-  frontend:
-    image: ghcr.io/melanx/mytaste-frontend:latest
-    ports:
-      - "3000:80"
-    environment:
-      - REACT_APP_API_URL=http://backend:5000
-    depends_on:
-      - backend
+      - /docker/mytaste/data:/app/data # Where recipes and config are stored
+      - /docker/mytaste/uploads:/app/uploads # Where uploaded images will end up
     restart: always

@@ -25,39 +25,39 @@
  * @returns The formatted string representation of the amount
  */
 export const formatAmount = (amount: number | string | undefined): string => {
-    if (amount === undefined) return '';
+  if (amount === undefined) return '';
 
-    // Convert to number and ensure a decimal point is used
-    amount = parseFloat(String(amount).replace(',', '.'));
+  // Convert to number and ensure a decimal point is used
+  amount = parseFloat(String(amount).replace(',', '.'));
 
-    // Special case for zero
-    if (amount === 0) return '';
+  // Special case for zero
+  if (amount === 0) return '';
 
-    // Extract the whole number and fractional part
-    const wholeNumber = Math.floor(amount);
-    const fraction = Number((amount - wholeNumber).toFixed(2));
+  // Extract the whole number and fractional part
+  const wholeNumber = Math.floor(amount);
+  const fraction = Number((amount - wholeNumber).toFixed(2));
 
-    // Map of common fractions to Unicode fraction characters
-    const fractionMap: Record<number, string> = {
-        0.2: '⅕',
-        0.25: '¼',
-        0.4: '⅖',
-        0.5: '½',
-        0.6: '⅗',
-        0.75: '¾',
-        0.8: '⅘'
-    };
+  // Map of common fractions to Unicode fraction characters
+  const fractionMap: Record<number, string> = {
+    0.2: '⅕',
+    0.25: '¼',
+    0.4: '⅖',
+    0.5: '½',
+    0.6: '⅗',
+    0.75: '¾',
+    0.8: '⅘',
+  };
 
-    // Handle simple fractions (no whole number part)
-    if (wholeNumber === 0 && fraction in fractionMap) {
-        return fractionMap[fraction];
-    }
+  // Handle simple fractions (no whole number part)
+  if (wholeNumber === 0 && fraction in fractionMap) {
+    return fractionMap[fraction];
+  }
 
-    // Handle mixed numbers (whole and fraction)
-    if (wholeNumber > 0 && fraction in fractionMap) {
-        return `${wholeNumber} ${fractionMap[fraction]}`;
-    }
+  // Handle mixed numbers (whole and fraction)
+  if (wholeNumber > 0 && fraction in fractionMap) {
+    return `${wholeNumber} ${fractionMap[fraction]}`;
+  }
 
-    // Standard case: convert to string with comma as decimal separator
-    return String(amount).replace('.', ',');
+  // Standard case: convert to string with comma as decimal separator
+  return String(amount).replace('.', ',');
 };

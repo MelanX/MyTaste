@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta property="og:title" content="Schokokuchen (OG title)" />
+    <meta property="og:image" content="https://example.com/og-image.jpg" />
+    <title>Schokokuchen Rezept</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          { "@type": "WebSite", "name": "Example Cooking" },
+          {
+            "@type": "Recipe",
+            "name": "Saftiger Schokokuchen",
+            "image": ["https://example.com/cake-1.jpg", "https://example.com/cake-2.jpg"],
+            "recipeIngredient": ["200 g Mehl", "1 1/2 TL Backpulver", "100 g Zucker", "Salz", "2 Eier"],
+            "recipeInstructions": [
+              { "@type": "HowToStep", "text": "Ofen auf 180 Grad vorheizen." },
+              { "@type": "HowToStep", "text": "Alle Zutaten verrühren." },
+              {
+                "@type": "HowToSection",
+                "itemListElement": [
+                  { "@type": "HowToStep", "text": "In die Form geben." },
+                  { "@type": "HowToStep", "text": "30 Minuten backen." }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Saftiger Schokokuchen</h1>
+  </body>
+</html>

@@ -1,61 +1,229 @@
-.app-loading {
-    background: #f8f4e9;
+/*
+ * Tailwind v4 — theme + utilities only. Preflight is intentionally NOT
+ * imported: the app provides its own base element styling in App.css and the
+ * components were authored against that box model, so enabling Preflight would
+ * shift layout with no benefit.
+ */
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/*
+ * ── Design tokens (single source of truth, raw hex) ───────────────────────
+ * Light is the default (MyTaste's cream/orange identity). Dark overrides the
+ * same tokens below via [data-theme='dark']. Components use semantic utilities
+ * generated from these names, e.g. bg-accent, text-fg, border-line, text-danger.
+ *
+ * Stray-hex consolidation map (old component hex -> token):
+ *   #e6b17e accent · #e6c996 accent-bright · #d99c5e accent-dark
+ *   #372101 on-accent · #fff7f2 accent-soft
+ *   #f8f4e9 bg · #f3f3f3 bg-alt · #ffffff surface
+ *   #333 fg · #555 fg-muted · #666/#777/#888/#6c757d fg-subtle
+ *   #ced4da line · #ddd line-soft
+ *   #28a745 success · #72c55b/#35d100 success-bright · #3a7a52 success-fg
+ *   #e8f4ee/#f2fff5 success-bg · #b2d4c0 success-line
+ *   #dc3545 danger · #ff5151/#d81b47 danger-bright · #b00020 danger-strong
+ *   #fff2f2/#fff5f7 danger-bg
+ *   #f59e0b warning · #92400e warning-fg
+ *   #0d6efd info · #f2f8ff info-bg
+ *   #4a90d9 action · #3a7ec4/#3d7cc9 action-dark
+ *   #37474f bring · #2c393f bring-dark
+ */
+@theme {
+  --color-accent: #e6b17e;
+  --color-accent-bright: #e6c996;
+  --color-accent-dark: #d99c5e;
+  --color-accent-soft: #fff7f2;
+  --color-on-accent: #372101;
+
+  --color-bg: #f8f4e9;
+  --color-bg-alt: #f3f3f3;
+  --color-surface: #ffffff;
+
+  --color-fg: #333333;
+  --color-fg-muted: #555555;
+  --color-fg-subtle: #6c757d;
+
+  --color-line: #ced4da;
+  --color-line-soft: #dddddd;
+
+  --color-success: #28a745;
+  --color-success-bright: #72c55b;
+  --color-success-fg: #3a7a52;
+  --color-success-bg: #e8f4ee;
+  --color-success-line: #b2d4c0;
+
+  --color-danger: #dc3545;
+  --color-danger-bright: #ff5151;
+  --color-danger-strong: #b00020;
+  --color-danger-bg: #fff2f2;
+
+  --color-warning: #f59e0b;
+  --color-warning-fg: #92400e;
+
+  --color-info: #0d6efd;
+  --color-info-bg: #f2f8ff;
+
+  --color-action: #4a90d9;
+  --color-action-dark: #3a7ec4;
+
+  --color-bring: #37474f;
+  --color-bring-dark: #2c393f;
+
+  --color-disabled: #6c757d;
+
+  --color-shadow-soft: #0000001a;
+  --color-shadow-strong: #00000026;
+}
+
+/* ── Dark theme — overrides the same tokens (raw hex) ──────────────────────── */
+[data-theme='dark'] {
+  --color-accent: #e6b17e;
+  --color-accent-bright: #f0c89a;
+  --color-accent-dark: #c98a4e;
+  --color-accent-soft: #3a2c1d;
+  --color-on-accent: #2a1800;
+
+  --color-bg: #1b1916;
+  --color-bg-alt: #232019;
+  --color-surface: #262320;
+
+  --color-fg: #d3ccbe;
+  --color-fg-muted: #b0a899;
+  --color-fg-subtle: #8c8475;
+
+  --color-line: #3d3933;
+  --color-line-soft: #332f29;
+
+  --color-success: #4ade80;
+  --color-success-bright: #86efac;
+  --color-success-fg: #86efac;
+  --color-success-bg: #16271c;
+  --color-success-line: #2f4636;
+
+  --color-danger: #f87171;
+  --color-danger-bright: #ff8a8a;
+  --color-danger-strong: #fca5a5;
+  --color-danger-bg: #2e1b1b;
+
+  --color-warning: #fbbf24;
+  --color-warning-fg: #fcd34d;
+
+  --color-info: #60a5fa;
+  --color-info-bg: #18202e;
+
+  --color-action: #5b9fe0;
+  --color-action-dark: #4a90d9;
+
+  --color-bring: #455a64;
+  --color-bring-dark: #37474f;
+
+  --color-disabled: #5a554c;
+
+  --color-shadow-soft: #00000066;
+  --color-shadow-strong: #00000099;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+}
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+/*
+ * Base element styling lives in the `base` layer so Tailwind utilities (in the
+ * `utilities` layer, declared later) always win. Unlayered rules would beat any
+ * @layer, so e.g. a global `button` background would override `bg-danger`.
+ */
+@layer base {
+  .app-loading {
+    background: var(--color-bg);
     min-height: 100vh;
     width: 100%;
-}
+  }
 
-button {
+  button {
     font-family: inherit;
     font-size: 1rem;
-    transition: background-color 0.3s ease, color 0.3s ease, filter 0.3s ease, border-color 0.3s ease;
-}
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      filter 0.3s ease,
+      border-color 0.3s ease;
+  }
 
-body {
+  body {
     margin: 0;
-    font-family: 'Delius', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family:
+      'Delius',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      'Roboto',
+      'Oxygen',
+      'Ubuntu',
+      'Cantarell',
+      'Fira Sans',
+      'Droid Sans',
+      'Helvetica Neue',
+      sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    color: var(--color-text);
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  }
 }
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
+/* Non-color global token: the brand font stack (used by App.css headings). */
 :root {
-    --default-fonts: 'Delius', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    /* Brand colors */
-    --color-primary: #e6b17e; /* Primary brand color (orange) */
-    --color-primary-bright: #e6c996; /* Primary brand color (orange) */
-    --color-primary-dark: #d99c5e; /* Darker version for hover states */
-    --color-primary-text: #372101; /* Text that goes with primary brand colors */
-
-    /* Neutral colors */
-    --color-white: #ffffff;
-    --color-background: #f8f4e9; /* Light cream background from PaperGrain */
-    --color-background-alt: #f3f3f3; /* Alternate light background */
-
-    /* Text colors - simplified to just a few */
-    --color-text: #333333; /* Main text color */
-    --color-text-secondary: #555555; /* Secondary, slightly lighter text */
-    --color-text-tertiary: #6c757d; /* Muted text for less important content */
-
-    /* UI colors */
-    --color-border: #ced4da;
-    --color-shadow: rgba(0, 0, 0, 0.1);
-    --color-shadow-hover: rgba(0, 0, 0, 0.15);
-
-    /* Button colors */
-    --color-deny-button: #dc3545;
-    --color-deny-button-dark: #bd2130;
-    --color-button-disabled: #6c757d;
+  --default-fonts:
+    'Delius', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
 }
 
 @media print {
-    .no-print {
-        display: none !important;
-    }
+  .no-print {
+    display: none !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    line-height: 1.3;
+    background: #ffffff;
+  }
+
+  /* Always print on the light, ink-friendly palette — never the dark theme. */
+  :root,
+  [data-theme='dark'] {
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-bg-alt: #f3f3f3;
+    --color-fg: #1a1a1a;
+    --color-fg-muted: #444444;
+    --color-fg-subtle: #666666;
+    --color-line: #cccccc;
+    --color-success-bg: #e8f4ee;
+    --color-success-fg: #3a7a52;
+    --color-success-line: #b2d4c0;
+  }
+
+  /* Shadows render as muddy grey boxes on paper. */
+  * {
+    box-shadow: none !important;
+  }
 }
