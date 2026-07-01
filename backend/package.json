@@ -12,8 +12,8 @@
   "author": "MelanX",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.17.0",
-    "body-parser": "^2.2.2",
+    "axios": "^1.18.1",
+    "body-parser": "^2.3.0",
     "cheerio": "^1.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -23,7 +23,7 @@
     "joi": "^18.2.1",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.2.0",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.3",
     "sqlite3": "^6.0.1"
   },
   "devDependencies": {
