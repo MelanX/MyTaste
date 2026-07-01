@@ -6,7 +6,7 @@ import ThemeToggle from '../ThemeToggle';
 const linkClass = 'block py-2 text-[1.1rem] text-fg no-underline hover:text-accent-dark';
 // Reset the global `li` card styling (App.css) for the nav items.
 const navItemClass = 'm-0 border-none bg-transparent p-0 shadow-none';
-const authButtonClass = 'rounded-md bg-accent px-5 py-2.5 text-on-accent hover:bg-accent-dark';
+const authButtonClass = 'rounded-md bg-accent px-5 py-2.5 text-white hover:bg-accent-dark';
 
 const Sidebar: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();

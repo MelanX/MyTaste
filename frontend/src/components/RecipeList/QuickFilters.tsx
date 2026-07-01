@@ -85,7 +85,7 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ filters, hasActiveFilters, 
         <span className="max-[600px]:hidden"> Nicht gekocht</span>
       </button>
       <select
-        className="cursor-pointer whitespace-nowrap rounded-[5rem] border border-line bg-bg-alt px-[11px] py-[5px] text-base text-fg-muted"
+        className="cursor-pointer whitespace-nowrap rounded-[5rem] border border-line bg-bg-alt px-[11px] py-[5px] text-[0.85rem] text-fg-muted"
         value={sortMode}
         onChange={(e) => onSortChange(e.target.value as SortMode)}
         title="Sortierung"

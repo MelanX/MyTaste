@@ -152,14 +152,13 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({ recipe, hideImage = false
           {recipe.spices && recipe.spices.length > 0 && (
             <div className="mt-5 print:mt-2">
               <h3 className="mt-0 mb-4 text-[1.3rem] font-semibold text-fg print:mb-1 print:text-[1rem]">Gewürze</h3>
-              <div className="flex flex-wrap gap-2 print:gap-x-2 print:gap-y-0">
-                {recipe.spices.map((spice, index) => (
+              <div className="flex flex-wrap gap-2 print:gap-1">
+                {recipe.spices.map((spice) => (
                   <div
                     key={spice}
-                    className="inline-block rounded-[20px] bg-bg-alt px-3 py-[6px] text-[0.9rem] text-fg-muted print:rounded-none print:bg-transparent print:px-0 print:py-0"
+                    className="inline-block rounded-[20px] bg-bg-alt px-3 py-[6px] text-[0.9rem] text-fg-muted print:px-2 print:py-0.5 print:text-[0.8rem]"
                   >
                     {spice}
-                    {index < recipe.spices!.length - 1 && <span className="hidden print:inline">,</span>}
                   </div>
                 ))}
               </div>
