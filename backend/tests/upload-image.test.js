@@ -73,7 +73,7 @@ describe('POST /api/upload-image', () => {
     it('200 and returns a .webp URL on success', async () => {
         const tiny = Buffer.from(
             // a 1×1 transparent PNG
-            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=',
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAAbitOmMAAAAASUVORK5CYII=',
             'base64'
         );
         const res = await agent
