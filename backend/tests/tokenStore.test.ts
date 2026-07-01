@@ -66,3 +66,33 @@ describe('startup purgeExpired', () => {
     expect(await store.isRevoked('anything')).toBe(false);
   });
 });
+
+describe('concurrent access', () => {
+  it('writes via a temp file + rename instead of truncating the store file in place', async () => {
+    // Regression test for a real crash: writeStore() used to write directly
+    // to revoked_tokens.json with a truncating writeFile. isRevoked() reads
+    // that same file without going through the revoke()/purgeExpired() write
+    // queue, so a read landing mid-write would catch an empty/partial file
+    // and throw "Unexpected end of JSON input", killing the whole process
+    // (reproduced live: two near-simultaneous /api/refresh calls crashed the
+    // dev server this way). The fix must never call writeFile directly on
+    // the real store path — only on a temp path that then gets renamed
+    // (atomic on the same filesystem) into place.
+    const writeFileSpy = vi.spyOn(fs.promises, 'writeFile');
+    const renameSpy = vi.spyOn(fs.promises, 'rename');
+
+    const store = await loadStore();
+    await store.revoke('some-jti', Date.now() + 60_000);
+
+    for (const call of writeFileSpy.mock.calls) {
+      expect(call[0]).not.toBe(revokedPath());
+    }
+    expect(renameSpy).toHaveBeenCalledWith(expect.stringContaining(revokedPath()), revokedPath());
+
+    expect(await store.isRevoked('some-jti')).toBe(true);
+    expect(fs.existsSync(revokedPath())).toBe(true);
+
+    writeFileSpy.mockRestore();
+    renameSpy.mockRestore();
+  });
+});

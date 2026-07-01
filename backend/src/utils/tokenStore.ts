@@ -27,7 +27,12 @@ async function readStore(): Promise<RevokedStore> {
 
 async function writeStore(data: RevokedStore): Promise<void> {
   await fs.promises.mkdir(DATA_DIR, { recursive: true });
-  await fs.promises.writeFile(REVOKED_FILE, JSON.stringify(data, null, 2));
+  // Write to a temp file and rename (atomic on the same filesystem) so a
+  // concurrent unguarded read (isRevoked) can never observe a truncated or
+  // partially-written file.
+  const tmpFile = `${REVOKED_FILE}.${process.pid}.${Date.now()}.tmp`;
+  await fs.promises.writeFile(tmpFile, JSON.stringify(data, null, 2));
+  await fs.promises.rename(tmpFile, REVOKED_FILE);
 }
 
 /**
