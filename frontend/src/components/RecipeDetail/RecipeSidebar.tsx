@@ -4,6 +4,7 @@ import { formatAmount } from '../../utils/formatters';
 import { getConfig } from '../../config';
 import { updateRecipeStatus } from '../../utils/apiService';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { upsertRecipe } from '../../utils/recipesCache';
 
 interface RecipeSidebarProps {
@@ -14,6 +15,7 @@ interface RecipeSidebarProps {
 
 const RecipeSidebar: React.FC<RecipeSidebarProps> = ({ recipe, hideImage = false, updateRecipe = () => {} }) => {
   const { isAuthenticated } = useAuth();
+  const toast = useToast();
 
   const handleToggleCook = async () => {
     if (!recipe) return;
@@ -23,8 +25,11 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({ recipe, hideImage = false
       const next = { ...recipe, status: { ...recipe.status, cookState: updated.cookState } };
       updateRecipe(next);
       upsertRecipe(next);
+      if (newState) toast.success('Als gekocht markiert');
+      else toast.info('Als nicht gekocht markiert');
     } catch (err) {
       console.error(err);
+      toast.error('Status konnte nicht aktualisiert werden');
     }
   };
 
@@ -36,8 +41,11 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({ recipe, hideImage = false
       const next = { ...recipe, status: { ...recipe.status, favorite: updated.favorite } };
       updateRecipe(next);
       upsertRecipe(next);
+      if (newFav) toast.success('Zu Favoriten hinzugefügt');
+      else toast.info('Aus Favoriten entfernt');
     } catch (err) {
       console.error(err);
+      toast.error('Status konnte nicht aktualisiert werden');
     }
   };
 

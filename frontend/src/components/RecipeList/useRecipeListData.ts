@@ -4,6 +4,7 @@ import type { Recipe } from '../../types/Recipe';
 import { isAuthError, updateRecipeStatus } from '../../utils/apiService';
 import { useRecipes } from '../../hooks/useRecipes';
 import { useRecipeFilters } from '../../context/RecipeFiltersContext';
+import { useToast } from '../../context/ToastContext';
 import { levenshtein } from './levenshtein';
 import { knownTypes, knownDietary, type RecipeType } from './constants';
 
@@ -28,6 +29,7 @@ export interface RecipeListData {
  */
 export const useRecipeListData = (): RecipeListData => {
   const { logout } = useAuth();
+  const toast = useToast();
 
   const { recipes, loading, error } = useRecipes();
   const [toastMessage, setToastMessage] = React.useState<string | null>(null);
@@ -79,8 +81,10 @@ export const useRecipeListData = (): RecipeListData => {
       setLocalRecipes((recipes) =>
         recipes.map((r) => (r.id === recipeId ? { ...r, status: { ...r.status, favorite: updated.favorite } } : r)),
       );
+      if (favorite) toast.success('Zu Favoriten hinzugefügt');
+      else toast.info('Aus Favoriten entfernt');
     } catch (err) {
-      setToastMessage(err instanceof Error ? err.message : 'Fehler beim Aktualisieren');
+      toast.error(err instanceof Error ? err.message : 'Fehler beim Aktualisieren');
     }
   };
 
@@ -90,8 +94,9 @@ export const useRecipeListData = (): RecipeListData => {
       setLocalRecipes((recipes) =>
         recipes.map((r) => (r.id === recipeId ? { ...r, status: { ...r.status, cookState: updated.cookState } } : r)),
       );
+      toast.success('Als gekocht markiert');
     } catch (err) {
-      setToastMessage(err instanceof Error ? err.message : 'Fehler beim Aktualisieren');
+      toast.error(err instanceof Error ? err.message : 'Fehler beim Aktualisieren');
     }
   };
 

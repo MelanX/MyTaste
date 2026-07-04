@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RecipeFormBase, { type RecipeFormValues } from '../RecipeForm/RecipeFormBase';
 import { apiFetch } from '../../utils/apiService';
+import { useToast } from '../../context/ToastContext';
 import ErrorSection from '../ErrorSection';
 
 const ImportRecipe: React.FC = () => {
+  const toast = useToast();
   const [url, setUrl] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -37,6 +39,7 @@ const ImportRecipe: React.FC = () => {
 
       const data: RecipeFormValues = json;
       setImported(data);
+      toast.success('Rezept importiert');
     } catch (err) {
       setErrors(err instanceof Error ? [err.message] : ['Fehler beim Import']);
     } finally {
@@ -58,7 +61,10 @@ const ImportRecipe: React.FC = () => {
 
           if (response.ok) {
             const json = await response.json();
+            toast.success('Rezept gespeichert');
             navigate(`/recipe/${json.id}`);
+          } else {
+            toast.error('Rezept konnte nicht gespeichert werden');
           }
 
           return response;

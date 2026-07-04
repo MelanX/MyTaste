@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { apiFetch } from '../../utils/apiService';
+import { useToast } from '../../context/ToastContext';
 import FromPillInput from '../FromPillInput';
 
 interface RenameRule {
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const RenameRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
+  const toast = useToast();
   const [rules, setRules] = useState<RenameRule[]>([]);
   const [savedRules, setSavedRules] = useState<RenameRule[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -62,9 +64,11 @@ const RenameRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
     if (response.ok) {
       setRules(rename_rules);
       setSavedRules(rename_rules);
+      toast.success('Einstellungen gespeichert');
     } else {
       const json = await response.json();
       setErrors([json.message, ...json.details]);
+      toast.error('Einstellungen konnten nicht gespeichert werden');
     }
   };
 

@@ -4,11 +4,13 @@ import RecipeFormBase, { type RecipeFormValues } from '../RecipeForm/RecipeFormB
 import type { Recipe } from '../../types/Recipe';
 import { apiFetch } from '../../utils/apiService';
 import { upsertRecipe } from '../../utils/recipesCache';
+import { useToast } from '../../context/ToastContext';
 import Toast from '../Toast';
 
 const EditRecipe: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const toast = useToast();
   const [initial, setInitial] = useState<RecipeFormValues | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -54,7 +56,10 @@ const EditRecipe: React.FC = () => {
       } catch {
         // Non-JSON body — cache will refresh via the normal revalidation path.
       }
+      toast.success('Rezept gespeichert');
       navigate(`/recipe/${id}`);
+    } else {
+      toast.error('Rezept konnte nicht gespeichert werden');
     }
 
     return response;
@@ -66,7 +71,10 @@ const EditRecipe: React.FC = () => {
     });
 
     if (response.ok) {
+      toast.success('Rezept gelöscht');
       navigate('/');
+    } else {
+      toast.error('Rezept konnte nicht gelöscht werden');
     }
 
     return response;

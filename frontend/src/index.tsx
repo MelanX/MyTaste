@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { loadConfig } from './config';
@@ -62,9 +63,11 @@ loadConfig()
     const root = ReactDOM.createRoot(document.getElementById('root')!);
     root.render(
       <React.StrictMode>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </ToastProvider>
       </React.StrictMode>,
     );
 

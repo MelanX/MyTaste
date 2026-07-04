@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { apiFetch } from '../../utils/apiService';
+import { useToast } from '../../context/ToastContext';
 import ErrorSection from '../ErrorSection';
 
 interface SpiceAliasRule {
@@ -25,6 +26,7 @@ interface Props {
 }
 
 const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
+  const toast = useToast();
   const [rules, setRules] = useState<SpiceRules>({
     spices: [],
     spice_map: [],
@@ -83,9 +85,11 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
     if (!response.ok) {
       const json = await response.json();
       setErrors([json.message, ...json.details]);
+      toast.error('Einstellungen konnten nicht gespeichert werden');
       return;
     }
     setSavedRules(rules);
+    toast.success('Einstellungen gespeichert');
   };
 
   const handleAddSpice = () => {

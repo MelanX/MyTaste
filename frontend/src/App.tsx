@@ -17,6 +17,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Config from './components/Config';
 import { fetchAndCache } from './utils/recipesCache';
 import { RecipeFiltersProvider } from './context/RecipeFiltersContext';
+import { useToast } from './context/ToastContext';
 import { NextUpProvider } from './context/NextUpContext';
 import { CollectionsProvider } from './context/CollectionsContext';
 import CollectionList from './components/CollectionList';
@@ -31,6 +32,7 @@ function ScrollToTop() {
 }
 
 const App: React.FC = () => {
+  const toast = useToast();
   const handleRecipeSubmit = async (recipeFormValues: RecipeFormValues): Promise<Response> => {
     const response = await apiFetch('/api/recipes', {
       method: 'POST',
@@ -40,6 +42,9 @@ const App: React.FC = () => {
 
     if (response.ok) {
       await fetchAndCache();
+      toast.success('Rezept erstellt');
+    } else {
+      toast.error('Rezept konnte nicht erstellt werden');
     }
 
     return response;
