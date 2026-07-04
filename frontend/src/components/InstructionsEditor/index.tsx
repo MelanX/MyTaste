@@ -155,6 +155,20 @@ const InstructionsEditor: React.FC<Props> = ({ value, onChange }) => {
               dragIndexRef.current = null;
               setDropTarget(null);
             }}
+            // The badge is draggable, and Chrome doesn't reliably honor an ancestor's
+            // preventDefault as a drop target over a draggable child — so make the badge
+            // itself an explicit drop target so releasing over the number reorders too.
+            onDragOver={(e) => {
+              if (dragIndexRef.current === null) return;
+              e.preventDefault();
+              e.stopPropagation();
+              setDropTarget(index);
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleDrop(index);
+            }}
             title="Zum Verschieben ziehen"
           >
             {index + 1}
