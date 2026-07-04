@@ -7,6 +7,7 @@ import RecipeDetail from './components/RecipeDetail';
 import Login from './components/Login';
 import ImportRecipe from './components/ImportRecipe';
 import PaperGrain from './components/PaperGrain';
+import PullToRefresh from './components/PullToRefresh';
 import Sidebar from './components/Sidebar';
 import './App.css';
 import type { RecipeFormValues } from './components/RecipeForm/RecipeFormBase';
@@ -57,6 +58,7 @@ const App: React.FC = () => {
           <div className="app-container">
             <Sidebar />
             <div className="content">
+              <PullToRefresh />
               <PaperGrain grainColor={'#ff0000'} />
               <Link
                 to="/"
