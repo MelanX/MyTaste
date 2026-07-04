@@ -14,6 +14,7 @@ import bringRouter from './routes/bring.js';
 import collectionsRouter from './routes/collections.js';
 import configRouter from './routes/config.js';
 import recipesRouter from './routes/recipes.js';
+import pdfRouter from './routes/pdf.js';
 import importRouter from './routes/import.js';
 import uploadRouter from './routes/upload.js';
 
@@ -73,6 +74,7 @@ if (process.env.REQUIRE_LOGIN === 'true') {
 
 app.use('/api', collectionsRouter);
 app.use('/api', recipesRouter);
+app.use('/api', pdfRouter);
 app.use('/api', importRouter);
 app.use('/api', uploadRouter);
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));

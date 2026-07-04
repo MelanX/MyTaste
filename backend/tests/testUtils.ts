@@ -6,6 +6,7 @@ import authRouter from '../src/routes/auth.js';
 import bringRouter from '../src/routes/bring.js';
 import collectionsRouter from '../src/routes/collections.js';
 import recipesRouter from '../src/routes/recipes.js';
+import pdfRouter from '../src/routes/pdf.js';
 import importRouter from '../src/routes/import.js';
 import uploadRouter from '../src/routes/upload.js';
 import configRouter from '../src/routes/config.js';
@@ -14,7 +15,7 @@ export function makeApp(): Express {
   const app = express();
   app.use(express.json());
   app.use(cookieParser());
-  app.use('/api', authRouter, bringRouter, collectionsRouter, recipesRouter, importRouter, uploadRouter, configRouter);
+  app.use('/api', authRouter, bringRouter, collectionsRouter, recipesRouter, pdfRouter, importRouter, uploadRouter, configRouter);
   // mimic global error handler
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => res.status(500).json({ message: err.message }));
   return app;

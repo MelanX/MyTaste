@@ -35,6 +35,7 @@ COPY backend/package.json backend/package-lock.json ./
 RUN npm ci --omit=dev \
     && mkdir -p data uploads
 COPY --from=backend-build /app/backend/dist ./dist
+COPY backend/assets ./assets
 COPY --from=frontend-build /app/frontend/dist ./public
 RUN chown -R appuser:appgroup /app
 VOLUME ["/app/data", "/app/uploads"]

@@ -10,6 +10,7 @@ import { isAuthError } from '../../utils/apiService';
 import { useRecipe } from '../../hooks/useRecipe';
 import { upsertRecipe } from '../../utils/recipesCache';
 import CollectionPicker from '../CollectionPicker';
+import PrintShareButtons from '../PrintShareButtons';
 
 const RecipeDetail: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
@@ -38,8 +39,8 @@ const RecipeDetail: React.FC = () => {
       <div className="py-[10px] md:py-0">
         {/* Screen-only title row (full width). In print the title moves into the
             left column and the QR into the right column (see below). */}
-        <div className="mb-4 flex items-center justify-between print:hidden">
-          <h1 className="mt-0 mb-2 text-[1.8rem] text-fg">
+        <div className="mb-2 flex items-center print:hidden">
+          <h1 className="mt-0 mb-0 text-[1.8rem] text-fg">
             {recipe.title}
             {isAuthenticated && (
               <Link
@@ -51,6 +52,8 @@ const RecipeDetail: React.FC = () => {
             )}
           </h1>
         </div>
+        {/* Mobile: bare print/save icons on their own row under the title. Desktop: coloured buttons in the action row below. */}
+        <PrintShareButtons recipeId={recipe.id} title={recipe.title} variant="plain" className="mb-4 md:hidden" />
         {/*
           Print: two framed, top-aligned columns — title + instructions on the
           left, QR + image + ingredients on the right (starting at the title
@@ -74,26 +77,27 @@ const RecipeDetail: React.FC = () => {
           <div className="flex-1 md:order-1 md:flex-[2] print:order-1 print:flex-[2]">
             <h1 className="mt-0 mb-3 hidden text-[1.6rem] text-fg print:block">{recipe.title}</h1>
             <RecipeInstructions instructions={recipe.instructions} />
-            {/* Desktop: a fit-content column grid with 1fr columns, so all three
-                buttons take the width of the widest label (not the whole row). */}
-            <div
-              className="no-print flex flex-col gap-[10px] md:grid md:w-fit md:grid-flow-col md:items-center md:gap-[10px] md:[grid-auto-columns:1fr]"
-              ref={buttonsRowRef}
-            >
-              {recipe.url && (
-                <a
-                  href={recipe.url}
-                  className="box-border flex h-10 w-full items-center justify-center whitespace-nowrap rounded-[4px] bg-accent px-4 text-center font-medium text-white no-underline transition-colors duration-300 hover:bg-accent-dark hover:no-underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Zum Originalrezept
-                </a>
-              )}
-              <div className="w-full [&_button]:whitespace-nowrap [&>a]:box-border [&>a]:block [&>a]:w-full">
-                <BringButton recipeId={recipe.id} />
+            <div className="no-print flex flex-col gap-[10px] md:flex-row md:flex-wrap md:items-center" ref={buttonsRowRef}>
+              {/* The three action buttons: a fit-content column grid with 1fr columns,
+                  so all three take the width of the widest label (not the whole row). */}
+              <div className="flex flex-col gap-[10px] md:grid md:w-fit md:grid-flow-col md:gap-[10px] md:[grid-auto-columns:1fr]">
+                {recipe.url && (
+                  <a
+                    href={recipe.url}
+                    className="box-border flex h-10 w-full items-center justify-center whitespace-nowrap rounded-[4px] bg-accent px-4 text-center font-medium text-white no-underline transition-colors duration-300 hover:bg-accent-dark hover:no-underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Zum Originalrezept
+                  </a>
+                )}
+                <div className="w-full [&_button]:whitespace-nowrap [&>a]:box-border [&>a]:block [&>a]:w-full">
+                  <BringButton recipeId={recipe.id} />
+                </div>
+                {isAuthenticated && <CollectionPicker recipeId={recipe.id} variant="button" className="w-full" />}
               </div>
-              {isAuthenticated && <CollectionPicker recipeId={recipe.id} variant="button" className="w-full" />}
+              {/* Desktop only: coloured print/save icon buttons, sized to content (not width-matched). */}
+              <PrintShareButtons recipeId={recipe.id} title={recipe.title} variant="button" className="hidden md:flex" />
             </div>
           </div>
         </div>
