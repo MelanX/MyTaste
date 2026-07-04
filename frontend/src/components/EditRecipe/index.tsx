@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import RecipeFormBase, { type RecipeFormValues } from '../RecipeForm/RecipeFormBase';
 import type { Recipe } from '../../types/Recipe';
 import { apiFetch } from '../../utils/apiService';
+import { upsertRecipe } from '../../utils/recipesCache';
 import Toast from '../Toast';
 
 const EditRecipe: React.FC = () => {
@@ -44,6 +45,15 @@ const EditRecipe: React.FC = () => {
     });
 
     if (response.ok) {
+      // Refresh the local cache with the server's updated recipe so the detail view
+      // and recipe list don't show a stale snapshot after navigating (same pattern as
+      // adding a recipe in App.tsx and the status toggle in RecipeSidebar).
+      try {
+        const updated: Recipe = await response.clone().json();
+        upsertRecipe(updated);
+      } catch {
+        // Non-JSON body — cache will refresh via the normal revalidation path.
+      }
       navigate(`/recipe/${id}`);
     }
 
