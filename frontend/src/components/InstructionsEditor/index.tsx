@@ -1,17 +1,45 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 interface Props {
   value: string[];
   onChange: (steps: string[]) => void;
 }
 
+// Same drop-indicator line as the ingredient rows (RecipeForm/styles.ts).
+const dropBeforeClass =
+  "before:absolute before:-top-[0.125rem] before:right-0 before:left-0 before:h-[0.125rem] before:rounded-[62.5rem] before:bg-accent before:content-['']";
+
 const InstructionsEditor: React.FC<Props> = ({ value, onChange }) => {
   const inputRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
+  const dragIndexRef = useRef<number | null>(null);
+  const [dropTarget, setDropTarget] = useState<number | null>(null); // row index to insert before; value.length = drop at end
 
   const update = (index: number, text: string) => {
     const next = [...value];
     next[index] = text;
     onChange(next);
+  };
+
+  const moveStep = (from: number, to: number | null) => {
+    const next = [...value];
+    const [moved] = next.splice(from, 1);
+    let insertIndex = to === null ? next.length : to;
+    // moving DOWN within the list: the array shrank by one, so shift up by one
+    if (to !== null && to > from) insertIndex -= 1;
+    next.splice(insertIndex, 0, moved);
+    onChange(next);
+  };
+
+  const handleDragStart = (index: number) => {
+    dragIndexRef.current = index;
+  };
+
+  const handleDrop = (to: number | null) => {
+    const from = dragIndexRef.current;
+    dragIndexRef.current = null;
+    setDropTarget(null);
+    if (from === null || from === to) return;
+    moveStep(from, to);
   };
 
   const addStep = (afterIndex?: number) => {
@@ -106,8 +134,29 @@ const InstructionsEditor: React.FC<Props> = ({ value, onChange }) => {
   return (
     <div className="flex flex-col gap-2">
       {value.map((step, index) => (
-        <div key={index} className="grid grid-cols-[2rem_1fr_auto] items-center gap-3">
-          <div className="mb-0! flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-[0.9rem] font-semibold text-white">
+        <div
+          key={index}
+          className={'relative grid grid-cols-[2rem_1fr_auto] items-center gap-3' + (dropTarget === index ? ' ' + dropBeforeClass : '')}
+          onDragOver={(e) => {
+            if (dragIndexRef.current === null) return;
+            e.preventDefault();
+            setDropTarget(index);
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            handleDrop(index);
+          }}
+        >
+          <div
+            className="mb-0! flex h-8 w-8 shrink-0 cursor-move items-center justify-center rounded-full bg-accent text-[0.9rem] font-semibold text-white select-none"
+            draggable
+            onDragStart={() => handleDragStart(index)}
+            onDragEnd={() => {
+              dragIndexRef.current = null;
+              setDropTarget(null);
+            }}
+            title="Zum Verschieben ziehen"
+          >
             {index + 1}
           </div>
           <textarea
@@ -136,6 +185,25 @@ const InstructionsEditor: React.FC<Props> = ({ value, onChange }) => {
           </button>
         </div>
       ))}
+      {dropTarget === value.length && (
+        <div className="relative">
+          <div className={dropBeforeClass + ' h-0'} />
+        </div>
+      )}
+      {value.length > 1 && (
+        <div
+          className="h-2"
+          onDragOver={(e) => {
+            if (dragIndexRef.current === null) return;
+            e.preventDefault();
+            setDropTarget(value.length);
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            handleDrop(null);
+          }}
+        />
+      )}
       <div className="mt-1 flex flex-wrap items-center gap-4">
         <button
           type="button"
