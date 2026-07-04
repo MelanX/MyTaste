@@ -78,7 +78,7 @@ const RecipeDetail: React.FC = () => {
               {recipe.url && (
                 <a
                   href={recipe.url}
-                  className="box-border block w-full rounded-[4px] bg-accent px-4 py-2 text-center font-medium text-white no-underline transition-colors duration-300 hover:bg-accent-dark hover:no-underline md:w-auto"
+                  className="box-border flex h-10 w-full items-center justify-center rounded-[4px] bg-accent px-4 text-center font-medium text-white no-underline transition-colors duration-300 hover:bg-accent-dark hover:no-underline md:w-auto"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

@@ -28,7 +28,7 @@ const BringButton: React.FC<BringButtonProps> = ({ recipeId, ids, label = 'Zur E
 
   return (
     <Link to={bringLink} className="block no-underline hover:no-underline">
-      <button className="flex w-full cursor-pointer items-center justify-center rounded-[4px] border-none bg-bring px-3 py-2 font-[inherit] text-white transition-colors duration-200 hover:bg-bring-dark">
+      <button className="flex h-10 w-full cursor-pointer items-center justify-center rounded-[4px] border-none bg-bring px-4 font-[inherit] text-white transition-colors duration-200 hover:bg-bring-dark">
         <img src={bringLogo} alt="Bring Logo" className="mr-2 h-6" />
         {label}
       </button>
