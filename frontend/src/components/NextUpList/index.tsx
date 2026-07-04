@@ -122,7 +122,7 @@ const NextUpList: React.FC = () => {
           >
             <div className="relative h-[200px] w-full overflow-hidden">
               <div className="absolute right-2 top-2 z-[2] flex h-[1.4rem] w-[1.4rem] cursor-pointer items-center justify-center rounded-full bg-surface/80 p-[0.3rem] text-[1.2rem]">
-                <i className="fa-solid fa-bookmark" title="Aus Next Up entfernen" onClick={() => remove(recipe.id)} />
+                <i className="fa-solid fa-bookmark text-action" title="Aus Next Up entfernen" onClick={() => remove(recipe.id)} />
               </div>
               <Link to={`/recipe/${recipe.id}`}>
                 <img

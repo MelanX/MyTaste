@@ -73,6 +73,13 @@ describe('NextUpList', () => {
     expect(screen.getByText('Brot')).toBeInTheDocument();
   });
 
+  it('renders the Next Up bookmark icon in the active (blue) color', () => {
+    setupMocks({ ids: ['r1'] });
+    render(<NextUpList />);
+    const bookmark = screen.getByTitle('Aus Next Up entfernen');
+    expect(bookmark).toHaveClass('text-action');
+  });
+
   it('each card has a remove button that calls remove', async () => {
     const user = userEvent.setup();
     setupMocks({ ids: ['r1'] });
