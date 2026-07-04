@@ -112,6 +112,19 @@ describe('RecipeDetail', () => {
     expect(link).toHaveAttribute('href', 'https://example.com/orig');
   });
 
+  it('renders the print QR (labelled Originalrezept) when the recipe has a source url', () => {
+    render(<RecipeDetail />);
+    expect(screen.getByTestId('qr')).toBeInTheDocument();
+    expect(screen.getByText(/originalrezept:/i)).toBeInTheDocument();
+    expect(screen.queryByText(/im browser aufrufen/i)).toBeNull();
+  });
+
+  it('renders no print QR when the recipe has no source url', () => {
+    mockUseRecipe.mockReturnValue({ recipe: { ...sampleRecipe, url: undefined }, loading: false, error: null });
+    render(<RecipeDetail />);
+    expect(screen.queryByTestId('qr')).toBeNull();
+  });
+
   it('does not show edit button or cook/fav controls when not authenticated', () => {
     render(<RecipeDetail />);
     expect(screen.queryByTitle(/gekocht/i)).toBeNull();

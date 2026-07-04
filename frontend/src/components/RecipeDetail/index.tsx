@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import BringButton from '../BringButton';
 import RecipeSidebar from './RecipeSidebar';
 import RecipeInstructions from './Instructions';
@@ -28,8 +28,6 @@ const RecipeDetail: React.FC = () => {
   }, [error]);
 
   const buttonsRowRef = useRef<HTMLDivElement>(null);
-  const location = useLocation();
-  const currentUrl = window.location.origin + location.pathname;
 
   if (loading && !recipe) return <div>Lade Rezept...</div>;
   if (error && !recipe) return <div>Fehler: {error.message}</div>;
@@ -63,10 +61,12 @@ const RecipeDetail: React.FC = () => {
         <div className="flex flex-col gap-5 md:flex-row md:gap-[30px] print:flex print:flex-row print:items-start print:gap-[20px]">
           {/* Right column: QR (print only) + image + ingredients */}
           <div className="w-[min(100%,30rem)] md:order-2 print:order-2 print:flex-1">
-            <div className="mb-2 hidden items-center justify-end gap-2 text-fg print:flex">
-              Im Browser aufrufen:
-              <QRCodeSVG value={currentUrl} size={50} fgColor={'var(--color-accent-dark)'} />
-            </div>
+            {recipe.url && (
+              <div className="mb-2 hidden items-center justify-end gap-2 text-fg print:flex">
+                Originalrezept:
+                <QRCodeSVG value={recipe.url} size={50} fgColor={'var(--color-accent-dark)'} />
+              </div>
+            )}
             <RecipeSidebar recipe={recipe} updateRecipe={(r) => upsertRecipe(r)} />
           </div>
 
