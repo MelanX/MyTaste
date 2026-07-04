@@ -74,21 +74,26 @@ const RecipeDetail: React.FC = () => {
           <div className="flex-1 md:order-1 md:flex-[2] print:order-1 print:flex-[2]">
             <h1 className="mt-0 mb-3 hidden text-[1.6rem] text-fg print:block">{recipe.title}</h1>
             <RecipeInstructions instructions={recipe.instructions} />
-            <div className="no-print flex flex-col gap-[10px] md:flex-row md:items-stretch" ref={buttonsRowRef}>
+            {/* Desktop: a fit-content column grid with 1fr columns, so all three
+                buttons take the width of the widest label (not the whole row). */}
+            <div
+              className="no-print flex flex-col gap-[10px] md:grid md:w-fit md:grid-flow-col md:items-center md:gap-[10px] md:[grid-auto-columns:1fr]"
+              ref={buttonsRowRef}
+            >
               {recipe.url && (
                 <a
                   href={recipe.url}
-                  className="box-border flex h-10 w-full items-center justify-center rounded-[4px] bg-accent px-4 text-center font-medium text-white no-underline transition-colors duration-300 hover:bg-accent-dark hover:no-underline md:w-auto"
+                  className="box-border flex h-10 w-full items-center justify-center whitespace-nowrap rounded-[4px] bg-accent px-4 text-center font-medium text-white no-underline transition-colors duration-300 hover:bg-accent-dark hover:no-underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   Zum Originalrezept
                 </a>
               )}
-              <div className="w-full md:w-auto [&>a]:box-border [&>a]:block [&>a]:w-full">
+              <div className="w-full [&_button]:whitespace-nowrap [&>a]:box-border [&>a]:block [&>a]:w-full">
                 <BringButton recipeId={recipe.id} />
               </div>
-              {isAuthenticated && <CollectionPicker recipeId={recipe.id} variant="button" />}
+              {isAuthenticated && <CollectionPicker recipeId={recipe.id} variant="button" className="w-full" />}
             </div>
           </div>
         </div>
