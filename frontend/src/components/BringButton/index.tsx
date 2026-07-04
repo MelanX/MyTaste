@@ -9,7 +9,10 @@ interface BringButtonProps {
 }
 
 const BringButton: React.FC<BringButtonProps> = ({ recipeId, ids, label = 'Zur Einkaufsliste' }) => {
-  const baseUrl = getConfig().API_URL;
+  // The Bring deeplink is fetched by Bring's servers, not the user's browser, so the
+  // data URL must be absolute. API_URL is empty on the same-origin (mono-docker)
+  // deployment, so fall back to the current origin.
+  const baseUrl = getConfig().API_URL || window.location.origin;
 
   let dataUrl: string;
   if (ids !== undefined) {
