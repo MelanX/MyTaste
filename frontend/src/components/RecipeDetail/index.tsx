@@ -64,7 +64,7 @@ const RecipeDetail: React.FC = () => {
             {recipe.url && (
               <div className="mb-2 hidden items-center justify-end gap-2 text-fg print:flex">
                 Originalrezept:
-                <QRCodeSVG value={recipe.url} size={50} fgColor={'var(--color-accent-dark)'} />
+                <QRCodeSVG value={recipe.url} size={70} fgColor={'var(--color-accent-dark)'} />
               </div>
             )}
             <RecipeSidebar recipe={recipe} updateRecipe={(r) => upsertRecipe(r)} />
