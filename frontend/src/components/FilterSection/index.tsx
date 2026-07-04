@@ -33,7 +33,7 @@ const ModeToggle: React.FC<{
 }> = ({ mode, onChange }) => {
   const modeBtn = 'cursor-pointer border-none px-2 py-[2px] text-[0.72rem] leading-[1.4]';
   const inactive = 'bg-transparent text-fg-muted hover:bg-bg-alt';
-  const active = 'bg-accent text-white';
+  const active = 'bg-accent-dark text-white';
   return (
     <span className="inline-flex shrink-0 overflow-hidden rounded-[5rem] border border-line">
       <button type="button" className={`${modeBtn} ${mode === 'or' ? active : inactive}`} onClick={() => onChange('or')}>
@@ -83,8 +83,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   };
 
   const ingButtonBase = 'inline-block cursor-pointer rounded-[5rem] border px-3 py-[6px] text-[0.9rem]';
-  const ingButtonInactive = 'border-line bg-bg-alt text-fg-muted hover:bg-accent-dark';
-  const ingButtonSelected = 'border-accent-dark bg-accent text-white';
+  const ingButtonInactive = 'border-line bg-bg-alt text-fg-muted hover:border-accent-dark hover:bg-accent-soft';
+  const ingButtonSelected = 'border-accent-dark bg-accent-dark text-white';
 
   return (
     <div className="relative flex items-stretch" ref={wrapperRef}>
@@ -92,7 +92,9 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         ref={buttonRef}
         type="button"
         className={`flex cursor-pointer items-center gap-[0.3rem] whitespace-nowrap rounded-[5rem] border px-[11px] py-[5px] text-[0.85rem] ${
-          activeCount > 0 ? 'border-accent-dark bg-accent text-white' : 'border-line bg-bg-alt text-fg-muted hover:bg-accent-dark'
+          activeCount > 0
+            ? 'border-accent-dark bg-accent-dark text-white'
+            : 'border-line bg-bg-alt text-fg-muted hover:border-accent-dark hover:bg-accent-soft'
         }`}
         onClick={handleToggle}
       >

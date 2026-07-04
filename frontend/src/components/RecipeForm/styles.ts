@@ -1,8 +1,9 @@
 // Shared class strings (ported from styles.module.css)
 export const labelClass = 'block text-[1.2rem] font-semibold text-fg';
-export const pillBase =
-  'cursor-pointer rounded-[5rem] border border-line bg-bg-alt px-[14px] py-[6px] text-[0.9rem] text-fg-muted hover:bg-accent-dark';
-export const pillActive = 'border-accent-dark bg-accent text-white';
+export const pillBase = 'cursor-pointer rounded-[5rem] border px-[14px] py-[6px] text-[0.9rem]';
+// hover lives on the inactive class only, so it can't out-compete the selected state
+export const pillInactive = 'border-line bg-bg-alt text-fg-muted hover:border-accent-dark hover:bg-accent-soft';
+export const pillActive = 'border-accent-dark bg-accent-dark text-white';
 export const addButtonClass =
   'flex h-8 w-8 flex-[0_0_auto] cursor-pointer items-center justify-center self-center rounded-full border-none p-0 max-[600px]:self-end';
 // text-base (16px) avoids iOS focus-zoom on these inputs.

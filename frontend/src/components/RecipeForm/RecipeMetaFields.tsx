@@ -1,7 +1,7 @@
 import React from 'react';
 import ImageUpload from '../ImageUpload';
 import InstructionsEditor from '../InstructionsEditor';
-import { addButtonClass, labelClass, pillActive, pillBase, sectionAddActionsClass } from './styles';
+import { addButtonClass, labelClass, pillActive, pillBase, pillInactive, sectionAddActionsClass } from './styles';
 import type { RecipeFormController } from './useRecipeForm';
 
 const RECIPE_TYPES: [string, string][] = [
@@ -72,7 +72,7 @@ const RecipeMetaFields: React.FC<RecipeMetaFieldsProps> = ({ form }) => {
             <button
               key={value}
               type="button"
-              className={`${pillBase} ${recipeType === value ? pillActive : ''}`}
+              className={`${pillBase} ${recipeType === value ? pillActive : pillInactive}`}
               onClick={() => setRecipeType((v) => (v === value ? '' : value))}
             >
               {label}
@@ -91,7 +91,7 @@ const RecipeMetaFields: React.FC<RecipeMetaFieldsProps> = ({ form }) => {
             <button
               key={value}
               type="button"
-              className={`${pillBase} ${dietaryRestrictions.includes(value) ? pillActive : ''}`}
+              className={`${pillBase} ${dietaryRestrictions.includes(value) ? pillActive : pillInactive}`}
               onClick={() => toggleDietary(value)}
             >
               {label}

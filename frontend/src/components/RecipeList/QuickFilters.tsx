@@ -59,7 +59,7 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ filters, hasActiveFilters, 
       />
       <button
         type="button"
-        className={`cursor-pointer whitespace-nowrap rounded-[5rem] border px-[11px] py-[5px] text-[0.85rem] ${favFilter ? 'border-accent-dark bg-accent text-white' : 'border-line bg-bg-alt text-fg-muted'}`}
+        className={`cursor-pointer whitespace-nowrap rounded-[5rem] border px-[11px] py-[5px] text-[0.85rem] ${favFilter ? 'border-accent-dark bg-accent-dark text-white' : 'border-line bg-bg-alt text-fg-muted hover:border-accent-dark hover:bg-accent-soft'}`}
         onClick={() => setFavFilter((f) => !f)}
         title="Favoriten"
       >
@@ -68,7 +68,7 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ filters, hasActiveFilters, 
       </button>
       <button
         type="button"
-        className={`cursor-pointer whitespace-nowrap rounded-[5rem] border px-[11px] py-[5px] text-[0.85rem] ${cookFilter === 'cooked' ? 'border-accent-dark bg-accent text-white' : 'border-line bg-bg-alt text-fg-muted'}`}
+        className={`cursor-pointer whitespace-nowrap rounded-[5rem] border px-[11px] py-[5px] text-[0.85rem] ${cookFilter === 'cooked' ? 'border-accent-dark bg-accent-dark text-white' : 'border-line bg-bg-alt text-fg-muted hover:border-accent-dark hover:bg-accent-soft'}`}
         onClick={() => setCookFilter((f) => (f === 'cooked' ? null : 'cooked'))}
         title="Gekocht"
       >
@@ -77,7 +77,7 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ filters, hasActiveFilters, 
       </button>
       <button
         type="button"
-        className={`cursor-pointer whitespace-nowrap rounded-[5rem] border px-[11px] py-[5px] text-[0.85rem] ${cookFilter === 'uncooked' ? 'border-accent-dark bg-accent text-white' : 'border-line bg-bg-alt text-fg-muted'}`}
+        className={`cursor-pointer whitespace-nowrap rounded-[5rem] border px-[11px] py-[5px] text-[0.85rem] ${cookFilter === 'uncooked' ? 'border-accent-dark bg-accent-dark text-white' : 'border-line bg-bg-alt text-fg-muted hover:border-accent-dark hover:bg-accent-soft'}`}
         onClick={() => setCookFilter((f) => (f === 'uncooked' ? null : 'uncooked'))}
         title="Nicht gekocht"
       >
@@ -85,7 +85,7 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ filters, hasActiveFilters, 
         <span className="max-[600px]:hidden"> Nicht gekocht</span>
       </button>
       <select
-        className="cursor-pointer whitespace-nowrap rounded-[5rem] border border-line bg-bg-alt px-[11px] py-[5px] text-[0.85rem] text-fg-muted"
+        className="cursor-pointer whitespace-nowrap rounded-[5rem] border border-line bg-bg-alt px-[11px] py-[5px] text-[0.85rem] text-fg-muted hover:border-accent-dark hover:bg-accent-soft"
         value={sortMode}
         onChange={(e) => onSortChange(e.target.value as SortMode)}
         title="Sortierung"
