@@ -77,8 +77,8 @@ const FromPillInput: React.FC<Props> = ({ value, onChange, placeholder }) => {
           {value.map((pill, i) => (
             <span
               key={i}
-              className={`inline-flex cursor-pointer select-none items-center rounded-xl bg-bg-alt px-2.5 py-0.5 text-sm leading-[1.4] hover:text-white ${
-                modifierHeld ? 'hover:bg-danger' : 'hover:bg-accent-dark'
+              className={`inline-flex cursor-pointer select-none items-center rounded-xl border border-line bg-bg-alt px-2.5 py-0.5 text-sm leading-[1.4] hover:text-white ${
+                modifierHeld ? 'hover:border-danger hover:bg-danger' : 'hover:border-accent-dark hover:bg-accent-dark'
               }`}
               onClick={() => handlePillClick(i)}
             >

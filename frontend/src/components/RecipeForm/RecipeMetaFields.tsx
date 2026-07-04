@@ -132,7 +132,7 @@ export const SpicesEditor: React.FC<SpicesEditorProps> = ({ form }) => {
         {spices.map((s, i) => (
           <div
             key={s}
-            className="inline-flex cursor-pointer items-center rounded-2xl bg-bg-alt px-3 py-[5px] text-[0.9rem] transition-colors hover:bg-danger"
+            className="inline-flex cursor-pointer items-center rounded-2xl border border-line bg-bg-alt px-3 py-[5px] text-[0.9rem] transition-colors hover:border-danger hover:bg-danger"
             onClick={() => handleRemoveSpice(i)}
           >
             {s}

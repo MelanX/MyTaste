@@ -156,7 +156,7 @@ const RecipeSidebar: React.FC<RecipeSidebarProps> = ({ recipe, hideImage = false
                 {recipe.spices.map((spice) => (
                   <div
                     key={spice}
-                    className="inline-block rounded-[20px] bg-bg-alt px-3 py-[6px] text-[0.9rem] text-fg-muted print:px-2 print:py-0.5 print:text-[0.8rem]"
+                    className="inline-block rounded-[20px] border border-line bg-bg-alt px-3 py-[6px] text-[0.9rem] text-fg-muted print:px-2 print:py-0.5 print:text-[0.8rem]"
                   >
                     {spice}
                   </div>

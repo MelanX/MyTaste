@@ -132,7 +132,7 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
         {rules.spices.map((s, i) => (
           <div
             key={i}
-            className="cursor-pointer rounded-2xl bg-bg-alt px-3 py-[5px] text-[0.9rem] hover:bg-danger hover:text-white"
+            className="cursor-pointer rounded-2xl border border-line bg-bg-alt px-3 py-[5px] text-[0.9rem] hover:border-danger hover:bg-danger hover:text-white"
             onClick={() => handleRemoveSpice(i)}
           >
             {s}
@@ -186,8 +186,10 @@ const SpiceRulesConfig: React.FC<Props> = ({ onDirtyChange }) => {
                 return (
                   <span
                     key={sp}
-                    className={`cursor-pointer select-none rounded-[14px] px-2.5 py-1 text-[0.85rem] hover:bg-accent-dark hover:text-white ${
-                      selected ? 'bg-accent text-white' : 'bg-bg-alt'
+                    className={`cursor-pointer select-none rounded-[14px] border px-2.5 py-1 text-[0.85rem] ${
+                      selected
+                        ? 'border-accent-dark bg-accent-dark text-white'
+                        : 'border-line bg-bg-alt text-fg-muted hover:border-accent-dark hover:bg-accent-soft'
                     }`}
                     onClick={() => toggleSpice(sp)}
                   >
