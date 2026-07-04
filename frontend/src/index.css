@@ -215,7 +215,7 @@
     --color-bg-alt: #f3f3f3;
     --color-fg: #1a1a1a;
     --color-fg-muted: #444444;
-    --color-fg-subtle: #666666;
+    --color-fg-subtle: #6c757d;
     --color-line: #cccccc;
     --color-success-bg: #e8f4ee;
     --color-success-fg: #3a7a52;
@@ -225,5 +225,13 @@
   /* Shadows render as muddy grey boxes on paper. */
   * {
     box-shadow: none !important;
+  }
+
+  /* Emphasised text (markdown *italic* / _underline_ + ingredient notes/specs)
+     reads as a clear grey on paper, matching the on-screen view — not black. */
+  em,
+  u,
+  .italic {
+    color: #6c757d !important;
   }
 }
