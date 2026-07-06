@@ -62,6 +62,13 @@ describe('GET /api/recipe/:id/pdf', () => {
     const res = await agent.get('/api/recipe/does-not-exist/pdf');
     expect(res.status).toBe(404);
   });
+
+  it('embeds Indie Flower (the app title font) so the PDF title matches the app', async () => {
+    const res = await collectPdf('/api/recipe/r1/pdf');
+    expect(res.status).toBe(200);
+    // pdfkit subsets embedded fonts as `XXXXXX+IndieFlower`; the base name survives.
+    expect((res.body as Buffer).toString('latin1')).toContain('IndieFlower');
+  });
 });
 
 describe('recipeTags', () => {

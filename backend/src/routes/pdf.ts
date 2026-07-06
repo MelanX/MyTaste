@@ -15,6 +15,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const UPLOAD_DIR = path.resolve(__dirname, '..', '..', 'uploads');
 const ASSETS_DIR = path.resolve(__dirname, '..', '..', 'assets');
 const DELIUS_PATH = path.join(ASSETS_DIR, 'Delius-Regular.ttf');
+const INDIE_FLOWER_PATH = path.join(ASSETS_DIR, 'IndieFlower-Regular.ttf');
 const LOGO_PATH = path.join(ASSETS_DIR, 'logo.png');
 
 const router = express.Router();
@@ -65,11 +66,14 @@ export function recipeTags(recipe: Recipe): RecipeTag[] {
   return tags;
 }
 
-// Delius (the app's handwritten brand font) is used throughout, matching the app.
-// Delius ships a single weight, so markdown emphasis is faked: italic/bold via
-// pdfkit's `oblique` slant, underline via the real underline. Both fonts fall back
-// to Helvetica if the asset is missing. Set per-request before the (sync) render.
+// Delius (the app's handwritten brand font) is used for body/section text, and
+// Indie Flower for the recipe title — mirroring the app (App.css `h1`). Delius
+// ships a single weight, so markdown emphasis is faked: italic/bold via pdfkit's
+// `oblique` slant, underline via the real underline. Each font falls back to
+// Helvetica if its asset is missing. Set per-request before the (sync) render.
 const DELIUS = 'Delius';
+const INDIE_FLOWER = 'IndieFlower';
+let titleFont = 'Helvetica-Bold';
 let brandFont = 'Helvetica-Bold';
 let bodyFont = 'Helvetica';
 
@@ -212,8 +216,8 @@ function renderRecipe(doc: PDFKit.PDFDocument, recipe: Recipe, img: Sized | null
       .text(label, qrX, qrY + qrSize + 3, { width: qrSize, align: 'center' });
   }
 
-  // Title (Delius), left column so it never runs under the QR
-  doc.fillColor(INK).font(brandFont).fontSize(23).text(recipe.title, left, topY, { width: leftWidth });
+  // Title (Indie Flower), left column so it never runs under the QR
+  doc.fillColor(INK).font(titleFont).fontSize(23).text(recipe.title, left, topY, { width: leftWidth });
   const titleBottom = doc.y;
 
   const columnsTop = Math.max(topY, titleBottom + 14);
@@ -360,6 +364,13 @@ router.get('/recipe/:id/pdf', pdfLimiter, async (req: Request, res: Response, ne
     } else {
       brandFont = 'Helvetica-Bold';
       bodyFont = 'Helvetica';
+    }
+    // Title font: Indie Flower, falling back to the brand font (Delius/Helvetica).
+    if (fs.existsSync(INDIE_FLOWER_PATH)) {
+      doc.registerFont(INDIE_FLOWER, INDIE_FLOWER_PATH);
+      titleFont = INDIE_FLOWER;
+    } else {
+      titleFont = brandFont;
     }
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `inline; filename="${sanitizeFilename(recipe.title)}.pdf"`);
