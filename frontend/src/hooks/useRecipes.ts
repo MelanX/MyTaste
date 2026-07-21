@@ -1,8 +1,15 @@
 import { useEffect, useState } from 'react';
 import { fetchAndCache, readCache } from '../utils/recipesCache';
+import { recipeSearchIndex } from '../utils/recipeSearch';
+
+function readCacheAndRefreshIndex() {
+  const cached = readCache();
+  recipeSearchIndex.replaceAll(cached ?? []);
+  return cached;
+}
 
 export function useRecipes() {
-  const [recipes, setRecipes] = useState<ReturnType<typeof readCache>>(readCache);
+  const [recipes, setRecipes] = useState<ReturnType<typeof readCache>>(readCacheAndRefreshIndex);
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(!recipes);
 
@@ -21,7 +28,7 @@ export function useRecipes() {
       .finally(() => !cancelled && setLoading(false));
 
     /* 3️⃣ Listen for updates from other tabs / SW */
-    const onChange = () => setRecipes(readCache());
+    const onChange = () => setRecipes(readCacheAndRefreshIndex());
     window.addEventListener('recipes-updated', onChange);
     window.addEventListener('storage', onChange); // cross-tab
 

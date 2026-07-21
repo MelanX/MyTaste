@@ -18,6 +18,7 @@ const RecipeList: React.FC = () => {
     error,
     recipes,
     filtered,
+    matchReasons,
     hasActiveFilters,
     toastMessage,
     setToastMessage,
@@ -58,8 +59,12 @@ const RecipeList: React.FC = () => {
 
           <QuickFilters filters={filters} hasActiveFilters={hasActiveFilters} onSortChange={handleSortChange} />
 
-          <SearchBar value={filters.titleFilter} onChange={filters.setTitleFilter} />
+          <SearchBar value={filters.searchQuery} onChange={filters.setSearchQuery} />
         </div>
+
+        <p className="m-0 text-sm text-fg-muted" aria-live="polite">
+          {filtered.length} {filtered.length === 1 ? 'Rezept' : 'Rezepte'}
+        </p>
 
         <div className="mt-5 grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-5">
           {filtered.length === 0 ? (
@@ -69,6 +74,7 @@ const RecipeList: React.FC = () => {
               <RecipeCard
                 key={recipe.id}
                 recipe={recipe}
+                matchReasons={matchReasons.get(recipe.id) ?? []}
                 isAuthenticated={isAuthenticated}
                 inNextUp={nextUpIds.includes(recipe.id)}
                 onMarkCooked={markCooked}

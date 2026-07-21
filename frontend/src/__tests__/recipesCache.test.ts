@@ -1,6 +1,7 @@
-import { fetchAndCache, readCache, writeCache, upsertRecipe, fetchOneAndCache } from '../utils/recipesCache';
+import { fetchAndCache, fetchOneAndCache, readCache, removeRecipe, upsertRecipe, writeCache } from '../utils/recipesCache';
 import { ApiError } from '../utils/apiService';
 import type { Recipe } from '../types/Recipe';
+import { recipeSearchIndex } from '../utils/recipeSearch';
 
 vi.mock('../config', () => ({
   getConfig: () => ({ API_URL: '', requireLogin: false }),
@@ -12,6 +13,7 @@ beforeEach(() => {
   global.fetch = mockFetch;
   mockFetch.mockReset();
   localStorage.clear();
+  recipeSearchIndex.replaceAll([]);
 });
 
 function makeResponse(status: number, contentType: string = 'application/json', body: string = ''): Response {
@@ -116,6 +118,23 @@ describe('upsertRecipe', () => {
     writeCache([r('1', 'Old'), r('2', 'B')]);
     upsertRecipe(r('1', 'New'));
     expect(readCache()).toEqual([r('1', 'New'), r('2', 'B')]);
+    expect(recipeSearchIndex.search('old')).toEqual([]);
+    expect(recipeSearchIndex.search('new').map((match) => match.id)).toEqual(['1']);
+  });
+});
+
+describe('removeRecipe', () => {
+  it('removes a recipe from the cache and broadcasts the update', () => {
+    writeCache([r('1', 'A'), r('2', 'B')]);
+    const listener = vi.fn();
+    window.addEventListener('recipes-updated', listener);
+
+    removeRecipe('1');
+
+    expect(readCache()).toEqual([r('2', 'B')]);
+    expect(recipeSearchIndex.search('a')).toEqual([]);
+    expect(listener).toHaveBeenCalledOnce();
+    window.removeEventListener('recipes-updated', listener);
   });
 });
 

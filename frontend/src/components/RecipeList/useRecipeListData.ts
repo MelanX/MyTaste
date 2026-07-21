@@ -5,14 +5,15 @@ import { isAuthError, updateRecipeStatus } from '../../utils/apiService';
 import { useRecipes } from '../../hooks/useRecipes';
 import { useRecipeFilters } from '../../context/RecipeFiltersContext';
 import { useToast } from '../../context/ToastContext';
-import { levenshtein } from './levenshtein';
-import { knownTypes, knownDietary, type RecipeType } from './constants';
+import { knownDietary, knownTypes, type RecipeType } from './constants';
+import { recipeSearchIndex } from '../../utils/recipeSearch';
 
 export interface RecipeListData {
   loading: boolean;
   error: Error | null;
   recipes: Recipe[] | null;
   filtered: Recipe[];
+  matchReasons: Map<string, string[]>;
   hasActiveFilters: boolean;
   toastMessage: string | null;
   setToastMessage: React.Dispatch<React.SetStateAction<string | null>>;
@@ -45,7 +46,7 @@ export const useRecipeListData = (): RecipeListData => {
   }, [error]);
 
   const filters = useRecipeFilters();
-  const { titleFilter, selectedTypes, typeMode, selectedDietary, dietaryMode, favFilter, cookFilter, sortMode, setSortMode } = filters;
+  const { searchQuery, selectedTypes, typeMode, selectedDietary, dietaryMode, favFilter, cookFilter, sortMode, setSortMode } = filters;
 
   const [randomOrder, setRandomOrder] = React.useState<string[]>([]);
   const [localRecipes, setLocalRecipes] = React.useState<Recipe[]>([]);
@@ -58,15 +59,16 @@ export const useRecipeListData = (): RecipeListData => {
   };
 
   const hasActiveFilters =
-    titleFilter !== '' ||
+    searchQuery !== '' ||
     selectedTypes.length > 0 ||
     selectedDietary.length > 0 ||
     favFilter ||
     cookFilter !== null ||
-    sortMode !== 'alpha-asc';
+    sortMode !== 'relevance';
 
   React.useEffect(() => {
     const list = recipes ?? [];
+    recipeSearchIndex.replaceAll(list);
     setLocalRecipes(list);
     // Re-seed if random sort was activated before recipes finished loading
     if (sortMode === 'random' && list.length > 0 && randomOrder.length === 0) {
@@ -100,15 +102,11 @@ export const useRecipeListData = (): RecipeListData => {
     }
   };
 
-  // final filtered + sorted recipes
-  const filtered = React.useMemo(() => {
-    const term = titleFilter.trim().toLowerCase();
+  const { filtered, matchReasons } = React.useMemo(() => {
+    const searchResults = recipeSearchIndex.search(searchQuery);
+    const searchById = new Map(searchResults.map((result, index) => [result.id, { ...result, index }]));
     const result = localRecipes.filter((r) => {
-      // title match
-      const title = r.title.toLowerCase();
-      const titleOk = !term || title.includes(term) || levenshtein(term, title) <= 2;
-
-      if (!titleOk) return false;
+      if (!searchById.has(r.id)) return false;
 
       // quick filters
       if (favFilter && !r.status?.favorite) return false;
@@ -136,23 +134,36 @@ export const useRecipeListData = (): RecipeListData => {
       return true;
     });
 
+    let sorted: Recipe[];
     switch (sortMode) {
       case 'favorites':
-        return [...result].sort((a, b) => (b.status?.favorite ? 1 : 0) - (a.status?.favorite ? 1 : 0));
+        sorted = [...result].sort((a, b) => (b.status?.favorite ? 1 : 0) - (a.status?.favorite ? 1 : 0));
+        break;
       case 'alpha-desc':
-        return [...result].sort((a, b) => b.title.localeCompare(a.title));
+        sorted = [...result].sort((a, b) => b.title.localeCompare(a.title, 'de'));
+        break;
       case 'random':
-        return [...result].sort((a, b) => randomOrder.indexOf(a.id) - randomOrder.indexOf(b.id));
+        sorted = [...result].sort((a, b) => randomOrder.indexOf(a.id) - randomOrder.indexOf(b.id));
+        break;
+      case 'alpha-asc':
+        sorted = [...result].sort((a, b) => a.title.localeCompare(b.title, 'de'));
+        break;
       default:
-        return [...result].sort((a, b) => a.title.localeCompare(b.title));
+        sorted = [...result].sort((a, b) => searchById.get(a.id)!.index - searchById.get(b.id)!.index);
     }
-  }, [localRecipes, titleFilter, selectedTypes, typeMode, selectedDietary, dietaryMode, favFilter, cookFilter, sortMode, randomOrder]);
+
+    return {
+      filtered: sorted,
+      matchReasons: new Map(sorted.map((recipe) => [recipe.id, searchById.get(recipe.id)?.reasons ?? []])),
+    };
+  }, [localRecipes, searchQuery, selectedTypes, typeMode, selectedDietary, dietaryMode, favFilter, cookFilter, sortMode, randomOrder]);
 
   return {
     loading,
     error,
     recipes,
     filtered,
+    matchReasons,
     hasActiveFilters,
     toastMessage,
     setToastMessage,

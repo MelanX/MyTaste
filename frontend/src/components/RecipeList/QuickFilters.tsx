@@ -90,6 +90,7 @@ const QuickFilters: React.FC<QuickFiltersProps> = ({ filters, hasActiveFilters, 
         onChange={(e) => onSortChange(e.target.value as SortMode)}
         title="Sortierung"
       >
+        <option value="relevance">Relevanz</option>
         <option value="favorites">♥ Favoriten zuerst</option>
         <option value="alpha-asc">Alphabetisch (A → Z)</option>
         <option value="alpha-desc">Alphabetisch (Z → A)</option>

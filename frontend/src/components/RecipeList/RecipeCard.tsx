@@ -4,10 +4,11 @@ import type { Recipe } from '../../types/Recipe';
 import BringButton from '../BringButton';
 import CollectionPicker from '../CollectionPicker';
 import { getConfig } from '../../config';
-import { typeLabels, dietaryLabels, type RecipeType, type Dietary } from './constants';
+import { type Dietary, dietaryLabels, type RecipeType, typeLabels } from './constants';
 
 interface RecipeCardProps {
   recipe: Recipe;
+  matchReasons: string[];
   isAuthenticated: boolean;
   inNextUp: boolean;
   onMarkCooked: (recipeId: string) => void;
@@ -25,6 +26,7 @@ const resolveImage = (image?: string): string => {
 
 const RecipeCard: React.FC<RecipeCardProps> = ({
   recipe,
+  matchReasons,
   isAuthenticated,
   inNextUp,
   onMarkCooked,
@@ -127,6 +129,21 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
       </div>
       <div className="flex grow flex-col gap-2.5 p-4">
         <h3 className="mb-1.5 mt-0 text-[1.2rem] font-semibold">{recipe.title}</h3>
+        {matchReasons.length > 0 && (
+          <div className="rounded-md border border-accent bg-accent-soft px-2.5 py-2" aria-label="Treffergrund">
+            <div className="flex items-center gap-1.5 text-[0.7rem] font-semibold uppercase tracking-wide text-accent-dark">
+              <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
+              <span>Gefunden über</span>
+            </div>
+            <div className="mt-1 flex flex-wrap gap-1">
+              {matchReasons.map((reason) => (
+                <span key={reason} className="rounded-full border border-line bg-surface px-2 py-0.5 text-xs font-medium text-fg">
+                  {reason}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="mt-auto flex flex-col gap-2.5">
           {(recipe.recipeType || recipe.dietaryRestrictions?.length) && (
             <div className="flex flex-wrap-reverse gap-[0.3rem]">

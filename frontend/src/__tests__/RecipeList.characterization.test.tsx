@@ -53,8 +53,8 @@ const recipe = (overrides: Partial<Recipe> = {}): Recipe => ({
 });
 
 const defaultFilters = {
-  titleFilter: '',
-  setTitleFilter: vi.fn(),
+  searchQuery: '',
+  setSearchQuery: vi.fn(),
   selectedTypes: [],
   setSelectedTypes: vi.fn(),
   typeMode: 'or' as const,
@@ -67,7 +67,7 @@ const defaultFilters = {
   setFavFilter: vi.fn(),
   cookFilter: null,
   setCookFilter: vi.fn(),
-  sortMode: 'alpha-asc' as const,
+  sortMode: 'relevance' as const,
   setSortMode: vi.fn(),
   resetFilters: vi.fn(),
 };
@@ -215,19 +215,19 @@ describe('RecipeList quick filters and search', () => {
   });
 
   it('updates the search field', async () => {
-    const setTitleFilter = vi.fn();
-    mockUseRecipeFilters.mockReturnValue({ ...defaultFilters, setTitleFilter });
+    const setSearchQuery = vi.fn();
+    mockUseRecipeFilters.mockReturnValue({ ...defaultFilters, setSearchQuery });
     render(<RecipeList />);
-    await userEvent.type(screen.getByPlaceholderText('Rezepte suchen...'), 'a');
-    expect(setTitleFilter).toHaveBeenCalledWith('a');
+    await userEvent.type(screen.getByPlaceholderText('Titel, Zutaten oder Gewürze suchen...'), 'a');
+    expect(setSearchQuery).toHaveBeenCalledWith('a');
   });
 
-  it('shows the clear-search button when there is a title filter and clears it', async () => {
-    const setTitleFilter = vi.fn();
-    mockUseRecipeFilters.mockReturnValue({ ...defaultFilters, titleFilter: 'pas', setTitleFilter });
+  it('shows the clear-search button when there is a search query and clears it', async () => {
+    const setSearchQuery = vi.fn();
+    mockUseRecipeFilters.mockReturnValue({ ...defaultFilters, searchQuery: 'pas', setSearchQuery });
     render(<RecipeList />);
     await userEvent.click(screen.getByRole('button', { name: 'Suche löschen' }));
-    expect(setTitleFilter).toHaveBeenCalledWith('');
+    expect(setSearchQuery).toHaveBeenCalledWith('');
   });
 
   it('shows the reset button only when filters are active and resets them', async () => {
@@ -239,16 +239,78 @@ describe('RecipeList quick filters and search', () => {
     expect(resetFilters).toHaveBeenCalled();
   });
 
-  it('filters recipes by title substring', () => {
-    mockUseRecipeFilters.mockReturnValue({ ...defaultFilters, titleFilter: 'piz' });
+  it('searches recipes by ingredients and displays a match explanation', () => {
+    mockUseRecipeFilters.mockReturnValue({ ...defaultFilters, searchQuery: 'kartoffel' });
+    mockUseRecipes.mockReturnValue({
+      recipes: [
+        recipe({ id: '1', title: 'Pasta' }),
+        recipe({ id: '2', title: 'Suppe', ingredient_sections: [{ ingredients: [{ name: 'Kartoffeln' }] }] }),
+      ],
+      loading: false,
+      error: null,
+    });
+    render(<RecipeList />);
+    expect(screen.getByText('Suppe')).toBeInTheDocument();
+    expect(screen.getByText('Gefunden über')).toBeInTheDocument();
+    expect(screen.getByText('Zutat: Kartoffeln')).toBeInTheDocument();
+    expect(screen.getByLabelText('Treffergrund')).toHaveClass('border-accent');
+    expect(screen.queryByText('Pasta')).toBeNull();
+  });
+
+  it('shows the matching recipe count', () => {
     mockUseRecipes.mockReturnValue({
       recipes: [recipe({ id: '1', title: 'Pasta' }), recipe({ id: '2', title: 'Pizza' })],
       loading: false,
       error: null,
     });
     render(<RecipeList />);
-    expect(screen.getByText('Pizza')).toBeInTheDocument();
-    expect(screen.queryByText('Pasta')).toBeNull();
+    expect(screen.getByText('2 Rezepte')).toBeInTheDocument();
+  });
+
+  it('applies recipe filters alongside full-text search', () => {
+    mockUseRecipeFilters.mockReturnValue({
+      ...defaultFilters,
+      searchQuery: 'paprika',
+      selectedTypes: ['cooking'],
+      selectedDietary: ['vegan'],
+      favFilter: true,
+      cookFilter: 'cooked',
+    });
+    mockUseRecipes.mockReturnValue({
+      recipes: [
+        recipe({
+          id: '1',
+          title: 'Suppe',
+          spices: ['Paprika'],
+          recipeType: 'cooking',
+          dietaryRestrictions: ['vegan'],
+          status: { favorite: true, cookState: true },
+        }),
+        recipe({
+          id: '2',
+          title: 'Paprika-Hähnchen',
+          recipeType: 'cooking',
+          dietaryRestrictions: ['vegan'],
+          status: { favorite: false, cookState: true },
+        }),
+      ],
+      loading: false,
+      error: null,
+    });
+    render(<RecipeList />);
+    expect(screen.getByText('Suppe')).toBeInTheDocument();
+    expect(screen.queryByText('Paprika-Hähnchen')).toBeNull();
+  });
+
+  it('offers relevance as the default sort and keeps explicit alphabetical sorting', () => {
+    mockUseRecipes.mockReturnValue({
+      recipes: [recipe({ id: '2', title: 'Zucchini' }), recipe({ id: '1', title: 'Apfel' })],
+      loading: false,
+      error: null,
+    });
+    render(<RecipeList />);
+    expect(screen.getByRole('option', { name: 'Relevanz' })).toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent)).toEqual(['Apfel', 'Zucchini']);
   });
 
   it('filters recipes by selected dietary restriction', () => {

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import RecipeFormBase, { type RecipeFormValues } from '../RecipeForm/RecipeFormBase';
 import type { Recipe } from '../../types/Recipe';
 import { apiFetch } from '../../utils/apiService';
-import { upsertRecipe } from '../../utils/recipesCache';
+import { removeRecipe, upsertRecipe } from '../../utils/recipesCache';
 import { useToast } from '../../context/ToastContext';
 import Toast from '../Toast';
 
@@ -71,6 +71,7 @@ const EditRecipe: React.FC = () => {
     });
 
     if (response.ok) {
+      if (id) removeRecipe(id);
       toast.success('Rezept gelöscht');
       navigate('/');
     } else {

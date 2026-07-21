@@ -1,5 +1,6 @@
 import type { Recipe } from '../types/Recipe';
-import { apiFetch, ApiError } from './apiService';
+import { ApiError, apiFetch } from './apiService';
+import { recipeSearchIndex } from './recipeSearch';
 
 const KEY = 'recipes-cache-v1';
 
@@ -15,6 +16,11 @@ export function readCache(): Recipe[] | null {
 
 /** Write to cache, ignore any errors */
 export function writeCache(data: Recipe[]): void {
+  recipeSearchIndex.replaceAll(data);
+  persistCache(data);
+}
+
+function persistCache(data: Recipe[]): void {
   try {
     localStorage.setItem(KEY, JSON.stringify(data));
     /* wake up any other tabs */
@@ -46,7 +52,15 @@ export function upsertRecipe(recipe: Recipe) {
   const idx = list.findIndex((r) => r.id === recipe.id);
   if (idx >= 0) list[idx] = recipe;
   else list.push(recipe);
-  writeCache(list);
+  recipeSearchIndex.upsert(recipe);
+  persistCache(list);
+}
+
+/** Remove one recipe from the cache and the derived in-memory search index. */
+export function removeRecipe(id: string): void {
+  const list = (readCache() ?? []).filter((recipe) => recipe.id !== id);
+  recipeSearchIndex.remove(id);
+  persistCache(list);
 }
 
 /** Fetch a single recipe, write-through the cache, return it */

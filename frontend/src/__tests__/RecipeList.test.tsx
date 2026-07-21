@@ -54,8 +54,8 @@ const sampleRecipes: Recipe[] = [
 ];
 
 const defaultFilters = {
-  titleFilter: '',
-  setTitleFilter: vi.fn(),
+  searchQuery: '',
+  setSearchQuery: vi.fn(),
   selectedTypes: [],
   setSelectedTypes: vi.fn(),
   typeMode: 'or' as const,
@@ -68,7 +68,7 @@ const defaultFilters = {
   setFavFilter: vi.fn(),
   cookFilter: null,
   setCookFilter: vi.fn(),
-  sortMode: 'alpha-asc' as const,
+  sortMode: 'relevance' as const,
   setSortMode: vi.fn(),
   resetFilters: vi.fn(),
 };

@@ -3,31 +3,38 @@ import React, { createContext, useContext, useState } from 'react';
 const SESSION_KEY = 'recipeFilters';
 
 interface PersistedFilters {
-  titleFilter: string;
+  searchQuery: string;
   selectedTypes: string[];
   typeMode: 'or' | 'and';
   selectedDietary: string[];
   dietaryMode: 'or' | 'and';
   favFilter: boolean;
   cookFilter: 'cooked' | 'uncooked' | null;
-  sortMode: 'favorites' | 'alpha-asc' | 'alpha-desc' | 'random';
+  sortMode: 'relevance' | 'favorites' | 'alpha-asc' | 'alpha-desc' | 'random';
 }
 
 const defaults: PersistedFilters = {
-  titleFilter: '',
+  searchQuery: '',
   selectedTypes: [],
   typeMode: 'or',
   selectedDietary: [],
   dietaryMode: 'or',
   favFilter: false,
   cookFilter: null,
-  sortMode: 'alpha-asc',
+  sortMode: 'relevance',
 };
 
 function loadFromSession(): PersistedFilters {
   try {
     const raw = sessionStorage.getItem(SESSION_KEY);
-    if (raw) return { ...defaults, ...JSON.parse(raw) };
+    if (raw) {
+      const parsed = JSON.parse(raw) as Partial<PersistedFilters> & { titleFilter?: string };
+      return {
+        ...defaults,
+        ...parsed,
+        searchQuery: parsed.searchQuery ?? parsed.titleFilter ?? '',
+      };
+    }
   } catch {
     /* ignore malformed sessionStorage */
   }
@@ -54,8 +61,8 @@ function usePersistedState<T>(key: keyof PersistedFilters, initial: T) {
 }
 
 interface RecipeFiltersContextValue {
-  titleFilter: string;
-  setTitleFilter: (v: string) => void;
+  searchQuery: string;
+  setSearchQuery: (v: string) => void;
   selectedTypes: string[];
   setSelectedTypes: React.Dispatch<React.SetStateAction<string[]>>;
   typeMode: 'or' | 'and';
@@ -68,8 +75,8 @@ interface RecipeFiltersContextValue {
   setFavFilter: React.Dispatch<React.SetStateAction<boolean>>;
   cookFilter: 'cooked' | 'uncooked' | null;
   setCookFilter: React.Dispatch<React.SetStateAction<'cooked' | 'uncooked' | null>>;
-  sortMode: 'favorites' | 'alpha-asc' | 'alpha-desc' | 'random';
-  setSortMode: (m: 'favorites' | 'alpha-asc' | 'alpha-desc' | 'random') => void;
+  sortMode: 'relevance' | 'favorites' | 'alpha-asc' | 'alpha-desc' | 'random';
+  setSortMode: (m: 'relevance' | 'favorites' | 'alpha-asc' | 'alpha-desc' | 'random') => void;
   resetFilters: () => void;
 }
 
@@ -78,32 +85,35 @@ const RecipeFiltersContext = createContext<RecipeFiltersContextValue | null>(nul
 export const RecipeFiltersProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const saved = loadFromSession();
 
-  const [titleFilter, setTitleFilter] = usePersistedState<string>('titleFilter', saved.titleFilter);
+  const [searchQuery, setSearchQuery] = usePersistedState<string>('searchQuery', saved.searchQuery);
   const [selectedTypes, setSelectedTypes] = usePersistedState<string[]>('selectedTypes', saved.selectedTypes);
   const [typeMode, setTypeMode] = usePersistedState<'or' | 'and'>('typeMode', saved.typeMode);
   const [selectedDietary, setSelectedDietary] = usePersistedState<string[]>('selectedDietary', saved.selectedDietary);
   const [dietaryMode, setDietaryMode] = usePersistedState<'or' | 'and'>('dietaryMode', saved.dietaryMode);
   const [favFilter, setFavFilter] = usePersistedState<boolean>('favFilter', saved.favFilter);
   const [cookFilter, setCookFilter] = usePersistedState<'cooked' | 'uncooked' | null>('cookFilter', saved.cookFilter);
-  const [sortMode, setSortMode] = usePersistedState<'favorites' | 'alpha-asc' | 'alpha-desc' | 'random'>('sortMode', saved.sortMode);
+  const [sortMode, setSortMode] = usePersistedState<'relevance' | 'favorites' | 'alpha-asc' | 'alpha-desc' | 'random'>(
+    'sortMode',
+    saved.sortMode,
+  );
 
   const resetFilters = () => {
     sessionStorage.removeItem(SESSION_KEY);
-    setTitleFilter('');
+    setSearchQuery('');
     setSelectedTypes([]);
     setTypeMode('or');
     setSelectedDietary([]);
     setDietaryMode('or');
     setFavFilter(false);
     setCookFilter(null);
-    setSortMode('alpha-asc');
+    setSortMode('relevance');
   };
 
   return (
     <RecipeFiltersContext.Provider
       value={{
-        titleFilter,
-        setTitleFilter,
+        searchQuery,
+        setSearchQuery,
         selectedTypes,
         setSelectedTypes,
         typeMode,

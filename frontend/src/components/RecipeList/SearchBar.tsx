@@ -11,7 +11,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChange }) => {
       <i className="fa-solid fa-magnifying-glass pointer-events-none absolute left-[0.9rem] text-base text-fg-muted" />
       <input
         type="text"
-        placeholder="Rezepte suchen..."
+        placeholder="Titel, Zutaten oder Gewürze suchen..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="box-border w-full rounded-[0.4rem] border border-line bg-surface py-2 pl-[2.4rem] pr-10 text-base text-fg focus:border-accent focus:shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-accent)_20%,transparent)] focus:outline-none"

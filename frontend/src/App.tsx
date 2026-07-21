@@ -16,7 +16,8 @@ import { apiFetch } from './utils/apiService';
 import RequireLogin from './components/RequireLogin';
 import ProtectedRoute from './components/ProtectedRoute';
 import Config from './components/Config';
-import { fetchAndCache } from './utils/recipesCache';
+import { upsertRecipe } from './utils/recipesCache';
+import type { Recipe } from './types/Recipe';
 import { RecipeFiltersProvider } from './context/RecipeFiltersContext';
 import { useToast } from './context/ToastContext';
 import { NextUpProvider } from './context/NextUpContext';
@@ -42,7 +43,12 @@ const App: React.FC = () => {
     });
 
     if (response.ok) {
-      await fetchAndCache();
+      try {
+        const created: Recipe = await response.clone().json();
+        upsertRecipe(created);
+      } catch {
+        // A later list revalidation will refresh the cache if the response has no JSON body.
+      }
       toast.success('Rezept erstellt');
     } else {
       toast.error('Rezept konnte nicht erstellt werden');
