@@ -95,6 +95,28 @@ const ingredientHeavyRecipe = {
   status: { favorite: false, cookState: false },
 };
 
+// Recipes differing only in the emphasis markers on one step, so the rendered content
+// streams can be compared against each other.
+const emphasisRecipes = (
+  [
+    ['md-plain', 'Zwiebeln fein würfeln.'],
+    ['md-bold', '**Zwiebeln** fein würfeln.'],
+    ['md-italic', '*Zwiebeln* fein würfeln.'],
+    ['md-both', '***Zwiebeln*** fein würfeln.'],
+    ['md-underline', '__Zwiebeln__ fein würfeln.'],
+    ['md-bold-underline', '__**Zwiebeln**__ fein würfeln.'],
+  ] as const
+).map(([id, step]) => ({
+  id,
+  title: 'Betonung',
+  image: '',
+  // No comma "specifications" or notes — those are styled oblique independently of
+  // markdown and would pollute the slant count.
+  ingredient_sections: [{ ingredients: [{ name: 'Zwiebeln', amount: 2 }] }],
+  instructions: [step],
+  status: { favorite: false, cookState: false },
+}));
+
 /** Every page's decompressed content stream, in page order. */
 function pageStreams(pdf: Buffer): string[] {
   const raw = pdf.toString('latin1');
@@ -150,6 +172,19 @@ function strokedPaths(stream: string): Rect[] {
  * (zero height) and tag pills (~16pt). */
 const cardBorders = (stream: string): Rect[] => strokedPaths(stream).filter((r) => r.bottom - r.top > 40);
 
+/** How many text runs are slanted. pdfkit renders `oblique` as a skew *transform*
+ * (`1 0 <skew> 1 tx 0 cm`), not as part of the text matrix. */
+const slantedRuns = (stream: string): number =>
+  [...stream.matchAll(/^1 0 (-?[\d.]+) 1 -?[\d.]+ -?[\d.]+ cm$/gm)].filter((m) => Number(m[1]) !== 0).length;
+
+/** Whether the page uses PDF text render mode 2 (fill + stroke) anywhere — the
+ * standard way to thicken glyphs when a font has no real bold face. */
+const usesFillStroke = (stream: string): boolean => /^2 Tr$/m.test(stream);
+
+/** Count of flat horizontal stroked lines: the heading rules, plus one per underlined
+ * run (pdfkit draws `underline` as a real line, not a font style). */
+const horizontalRules = (stream: string): number => strokedPaths(stream).filter((r) => Math.abs(r.bottom - r.top) < 0.01).length;
+
 // Collect the binary response body into a Buffer (supertest has no PDF parser).
 const collectPdf = (path: string) =>
   agent
@@ -171,7 +206,7 @@ async function renderPages(path: string): Promise<string[]> {
 }
 
 beforeEach(() => {
-  fs.__setRecipeData({ recipes: [...seedRecipes, longRecipe, ingredientHeavyRecipe] } as never);
+  fs.__setRecipeData({ recipes: [...seedRecipes, longRecipe, ingredientHeavyRecipe, ...emphasisRecipes] } as never);
 });
 
 describe('GET /api/recipe/:id/pdf', () => {
@@ -277,6 +312,55 @@ describe('GET /api/recipe/:id/pdf — multi-page layout', () => {
       }
     });
     expect(checked, 'no card borders were examined').toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe('GET /api/recipe/:id/pdf — inline markdown emphasis', () => {
+  const page = async (id: string): Promise<string> => (await renderPages(`/api/recipe/${id}/pdf`))[0];
+
+  it('renders **bold** differently from *italic*', async () => {
+    const [bold, italic] = await Promise.all([page('md-bold'), page('md-italic')]);
+    expect(bold).not.toBe(italic);
+  });
+
+  it('does not slant **bold** text', async () => {
+    const [plain, bold] = await Promise.all([page('md-plain'), page('md-bold')]);
+    // The plain recipe is the baseline: no markdown, so nothing should be slanted.
+    expect(slantedRuns(plain)).toBe(0);
+    expect(slantedRuns(bold)).toBe(0);
+  });
+
+  it('still slants *italic* text', async () => {
+    expect(slantedRuns(await page('md-italic'))).toBeGreaterThan(0);
+  });
+
+  it('thickens **bold** text with fill+stroke, and leaves plain and italic alone', async () => {
+    const [plain, bold, italic] = await Promise.all([page('md-plain'), page('md-bold'), page('md-italic')]);
+    expect(usesFillStroke(bold)).toBe(true);
+    expect(usesFillStroke(plain)).toBe(false);
+    expect(usesFillStroke(italic)).toBe(false);
+  });
+
+  it('renders ***bold+italic*** as both thickened and slanted', async () => {
+    const both = await page('md-both');
+    expect(usesFillStroke(both)).toBe(true);
+    expect(slantedRuns(both)).toBeGreaterThan(0);
+  });
+
+  it('draws __underline__ as a real line, not a font style', async () => {
+    const [plain, underline] = await Promise.all([page('md-plain'), page('md-underline')]);
+    expect(horizontalRules(underline)).toBe(horizontalRules(plain) + 1);
+    // Underline is its own thing: neither slanted nor thickened.
+    expect(slantedRuns(underline)).toBe(0);
+    expect(usesFillStroke(underline)).toBe(false);
+  });
+
+  it('keeps the underline when the run is also bold', async () => {
+    const [plain, boldUnderline] = await Promise.all([page('md-plain'), page('md-bold-underline')]);
+    // pdfkit only falls back to the fill colour for the underline when the run isn't
+    // stroked; a bold run *is*, so the stroke colour has to be set to match.
+    expect(horizontalRules(boldUnderline)).toBe(horizontalRules(plain) + 1);
+    expect(usesFillStroke(boldUnderline)).toBe(true);
   });
 });
 

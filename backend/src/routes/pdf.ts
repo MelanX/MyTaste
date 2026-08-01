@@ -71,9 +71,10 @@ export function recipeTags(recipe: Recipe): RecipeTag[] {
 
 // Delius (the app's handwritten brand font) is used for body/section text, and
 // Indie Flower for the recipe title — mirroring the app (App.css `h1`). Delius
-// ships a single weight, so markdown emphasis is faked: italic/bold via pdfkit's
-// `oblique` slant, underline via the real underline. Each font falls back to
-// Helvetica if its asset is missing. Set per-request before the (sync) render.
+// ships a single weight, so markdown emphasis is faked: italic via pdfkit's `oblique`
+// slant, bold by also stroking the glyph outline in the fill colour (PDF text render
+// mode 2), underline via the real underline. Each font falls back to Helvetica if its
+// asset is missing. Set per-request before the (sync) render.
 const DELIUS = 'Delius';
 const INDIE_FLOWER = 'IndieFlower';
 let titleFont = 'Helvetica-Bold';
@@ -161,12 +162,28 @@ function parseRuns(text: string, base: Omit<Run, 'text'> = {}): Run[] {
   return runs.filter((r) => r.text.length > 0);
 }
 
+/** Faux-bold stroke weight. Delius has no bold face, so bold glyphs are filled *and*
+ * outlined; the outline thickens the strokes. Scales with the font size — a fixed
+ * width would smear the small ingredient text and barely show on the title. */
+const BOLD_STROKE = 0.028;
+
 function renderRuns(doc: PDFKit.PDFDocument, runs: Run[], x: number, y: number, width: number, fontSize: number): number {
   if (runs.length === 0) return y;
   runs.forEach((run, i) => {
     doc.font(bodyFont).fontSize(fontSize).fillColor(INK);
-    // Delius has one weight → slant (oblique) stands in for bold/italic; underline is real.
-    const opts = { width, continued: i < runs.length - 1, underline: !!run.underline, oblique: run.italic || run.bold ? 10 : 0 };
+    // Delius has one weight, so bold is faked by stroking the glyph outline in the fill
+    // colour (pdfkit emits text render mode 2 for fill+stroke) and italic by slanting.
+    // They have to stay distinguishable: folding both into `oblique` made **bold**
+    // render identically to *italic*.
+    if (run.bold) doc.strokeColor(INK).lineWidth(fontSize * BOLD_STROKE);
+    const opts = {
+      width,
+      continued: i < runs.length - 1,
+      underline: !!run.underline,
+      oblique: run.italic ? 10 : 0,
+      fill: true,
+      stroke: !!run.bold,
+    };
     if (i === 0) doc.text(run.text, x, y, opts);
     else doc.text(run.text, opts);
   });
