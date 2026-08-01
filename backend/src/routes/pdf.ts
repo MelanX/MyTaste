@@ -28,6 +28,9 @@ const pdfLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: 'Zu viele PDF-Anfragen. Bitte kurz warten.',
+  // The layout tests render several PDFs back to back; throttling them would turn
+  // real assertions into silent 429s.
+  skip: () => process.env.NODE_ENV === 'test',
 });
 
 // Palette mirrors the app's print tokens.
@@ -170,6 +173,103 @@ function renderRuns(doc: PDFKit.PDFDocument, runs: Run[], x: number, y: number, 
   return doc.y;
 }
 
+// ── Page-aware column flow ──────────────────────────────────────────────────
+// The layout is two independent columns of stacked blocks, each wrapped in a card
+// border. pdfkit auto-inserts a page break when a `text()` call crosses the bottom
+// margin, which used to leave the y bookkeeping pointing at the previous page and the
+// card border stroked onto the wrong one. So instead: every block is measured before
+// it is drawn, page breaks are taken deliberately, and a card that spans pages is
+// remembered as one segment per page and stroked at the end.
+
+const CARD_RADIUS = 8;
+const CARD_PAD = 12;
+
+interface CardSegment {
+  page: number;
+  top: number;
+  bottom: number;
+}
+
+interface Flow {
+  /** Index of the page this column is currently writing to. */
+  page: number;
+  /** Next free y on that page. */
+  y: number;
+  /** Top edge of the card segment on that page. */
+  segTop: number;
+  /** Gap between the last block and the card's bottom edge. */
+  tailPad: number;
+  /** Card segments already closed on earlier pages. */
+  segments: CardSegment[];
+}
+
+const contentBottom = (doc: PDFKit.PDFDocument): number => doc.page.height - doc.page.margins.bottom;
+
+/** Switch to page `index`, appending pages until it exists. Requires `bufferPages`. */
+function goToPage(doc: PDFKit.PDFDocument, index: number): void {
+  while (doc.bufferedPageRange().count <= index) doc.addPage();
+  doc.switchToPage(index);
+}
+
+const newFlow = (page: number, top: number, tailPad: number): Flow => ({
+  page,
+  y: top + CARD_PAD,
+  segTop: top,
+  tailPad,
+  segments: [],
+});
+
+/** Close the current card segment and continue the column at the top of the next page. */
+function breakFlow(doc: PDFKit.PDFDocument, flow: Flow): void {
+  flow.segments.push({ page: flow.page, top: flow.segTop, bottom: flow.y + flow.tailPad });
+  flow.page += 1;
+  goToPage(doc, flow.page);
+  flow.segTop = doc.page.margins.top;
+  flow.y = flow.segTop + CARD_PAD;
+}
+
+/** Make room for a block `needed` points tall, breaking to a new page if it doesn't
+ * fit. A block taller than a whole page can never fit, so it is placed as-is instead
+ * of breaking forever. */
+function reserve(doc: PDFKit.PDFDocument, flow: Flow, needed: number): void {
+  if (flow.y + needed <= contentBottom(doc)) return;
+  if (flow.y <= doc.page.margins.top + CARD_PAD + 0.5) return; // already at the top
+  breakFlow(doc, flow);
+}
+
+/** Re-sync a flow after pdfkit broke a page on its own (a block taller than a page).
+ * Returns true when that happened. */
+function resyncAfterOverflow(doc: PDFKit.PDFDocument, flow: Flow, pagesBefore: number): boolean {
+  const pagesAfter = doc.bufferedPageRange().count;
+  if (pagesAfter === pagesBefore) return false;
+  flow.segments.push({ page: flow.page, top: flow.segTop, bottom: contentBottom(doc) });
+  for (let p = pagesBefore; p < pagesAfter - 1; p += 1) {
+    flow.segments.push({ page: p, top: doc.page.margins.top, bottom: contentBottom(doc) });
+  }
+  flow.page = pagesAfter - 1;
+  flow.segTop = doc.page.margins.top;
+  return true;
+}
+
+/** Stroke the card border: one rounded rect per page the column spans. */
+function strokeCard(doc: PDFKit.PDFDocument, flow: Flow, x: number, width: number): void {
+  const segments = [...flow.segments, { page: flow.page, top: flow.segTop, bottom: flow.y + flow.tailPad }];
+  for (const seg of segments) {
+    const height = seg.bottom - seg.top;
+    if (height <= CARD_PAD) continue; // nothing of this column landed on that page
+    goToPage(doc, seg.page);
+    doc.roundedRect(x, seg.top, width, height, CARD_RADIUS).lineWidth(0.75).strokeColor(LINE).stroke();
+  }
+}
+
+/** Height the runs will occupy once wrapped — they all share one font and size, so
+ * measuring the concatenation matches how `renderRuns` chains them with `continued`. */
+const runsHeight = (doc: PDFKit.PDFDocument, runs: Run[], width: number, fontSize: number): number =>
+  doc
+    .font(bodyFont)
+    .fontSize(fontSize)
+    .heightOfString(runs.map((r) => r.text).join(''), { width });
+
 function heading(doc: PDFKit.PDFDocument, text: string, x: number, y: number, width: number): number {
   doc.fillColor(INK).font(brandFont).fontSize(15).text(text, x, y, { width });
   const bottom = doc.y + 2;
@@ -221,23 +321,23 @@ function renderRecipe(doc: PDFKit.PDFDocument, recipe: Recipe, img: Sized | null
   const titleBottom = doc.y;
 
   const columnsTop = Math.max(topY, titleBottom + 14);
-  const pad = 12;
-  const RADIUS = 8;
+  const pad = CARD_PAD;
+  const startPage = doc.bufferedPageRange().count - 1;
 
   // ── Right card: image + ingredients + spices ──
   const rightTop = topY + (qrSize / 6) * 5;
   const rx = rightX + pad;
   const rw = rightWidth - 2 * pad;
-  let rc = rightTop + pad;
+  const rightFlow = newFlow(startPage, rightTop, pad);
   if (img) {
     const imgW = Math.min(rw, 150);
     const displayH = Math.min(imgW * (img.h / img.w), 150);
     const imgX = rx + (rw - imgW) / 2;
     doc.save();
-    doc.roundedRect(imgX, rc, imgW, displayH, 6).clip();
-    doc.image(img.buf, imgX, rc, { width: imgW, height: displayH });
+    doc.roundedRect(imgX, rightFlow.y, imgW, displayH, 6).clip();
+    doc.image(img.buf, imgX, rightFlow.y, { width: imgW, height: displayH });
     doc.restore();
-    rc += displayH + 14;
+    rightFlow.y += displayH + 14;
   }
 
   // Tags (recipe type + dietary restrictions) as pills, above "Zutaten" like the app.
@@ -249,99 +349,111 @@ function renderRecipe(doc: PDFKit.PDFDocument, recipe: Recipe, img: Sized | null
       const w = doc.widthOfString(tag.label) + 14;
       if (tx > rx && tx + w > rx + rw) {
         tx = rx;
-        rc += 20;
+        rightFlow.y += 20;
       }
       const diet = tag.kind === 'dietary';
       doc
-        .roundedRect(tx, rc, w, 16, 8)
+        .roundedRect(tx, rightFlow.y, w, 16, 8)
         .lineWidth(0.6)
         .fillAndStroke(diet ? DIET_BG : TAG_BG, diet ? DIET_LINE : LINE);
-      doc.fillColor(diet ? DIET_FG : TAG_FG).text(tag.label, tx + 7, rc + 2.5);
+      doc.fillColor(diet ? DIET_FG : TAG_FG).text(tag.label, tx + 7, rightFlow.y + 2.5);
       tx += w + 4;
     }
-    rc += 24;
+    rightFlow.y += 24;
   }
 
-  rc = heading(doc, 'Zutaten', rx, rc, rw);
+  rightFlow.y = heading(doc, 'Zutaten', rx, rightFlow.y, rw);
+  const amtW = 56;
+  const nameX = rx + amtW;
+  const nameW = rw - amtW;
   for (const section of recipe.ingredient_sections ?? []) {
     if (section.title) {
-      doc.font(brandFont).fontSize(11).fillColor(ACCENT).text(section.title, rx, rc, { width: rw });
-      rc = doc.y + 3;
+      doc.font(brandFont).fontSize(11);
+      reserve(doc, rightFlow, doc.heightOfString(section.title, { width: rw }));
+      doc.fillColor(ACCENT).text(section.title, rx, rightFlow.y, { width: rw });
+      rightFlow.y = doc.y + 3;
     }
     for (const ing of section.ingredients ?? []) {
       const amount = `${formatAmount(ing.amount)}${ing.unit ? ` ${ing.unit}` : ''}`.trim();
-      const amtW = 56;
-      const nameX = rx + amtW;
-      const nameW = rw - amtW;
-      const yStart = rc;
+      // Split the comma "specification" into italic grey, mirroring the app's ingredient rows.
+      const [primary, ...rest] = ing.name.split(',');
+      const spec = rest.join(',').trim();
+      doc.font(bodyFont).fontSize(9.5);
+      const rowH = Math.max(
+        doc.heightOfString(amount, { width: amtW - 4 }),
+        doc.heightOfString(spec ? `${primary.trim()}  ${spec}` : primary.trim(), { width: nameW }),
+      );
+      const noteH = ing.note ? doc.fontSize(9).heightOfString(ing.note, { width: nameW }) : 0;
+      reserve(doc, rightFlow, rowH + noteH);
+
+      const yStart = rightFlow.y;
       doc
         .font(bodyFont)
         .fontSize(9.5)
         .fillColor('#555555')
         .text(amount, rx, yStart, { width: amtW - 4 });
       const afterAmt = doc.y;
-      // Split the comma "specification" into italic grey, mirroring the app's ingredient rows.
-      const [primary, ...rest] = ing.name.split(',');
-      const spec = rest.join(',').trim();
       doc.font(bodyFont).fontSize(9.5).fillColor(INK).text(primary.trim(), nameX, yStart, { width: nameW, continued: !!spec });
       if (spec) doc.font(bodyFont).fontSize(9.5).fillColor(GREY).text(`  ${spec}`, { continued: false, oblique: 10 });
-      rc = Math.max(afterAmt, doc.y);
+      rightFlow.y = Math.max(afterAmt, doc.y);
       if (ing.note) {
-        doc.font(bodyFont).fontSize(9).fillColor(GREY).text(ing.note, nameX, rc, { width: nameW, oblique: 10 });
-        rc = doc.y;
+        doc.font(bodyFont).fontSize(9).fillColor(GREY).text(ing.note, nameX, rightFlow.y, { width: nameW, oblique: 10 });
+        rightFlow.y = doc.y;
       }
-      rc += 4;
+      rightFlow.y += 4;
     }
   }
 
   if (recipe.spices && recipe.spices.length > 0) {
-    rc += 6;
-    rc = heading(doc, 'Gewürze', rx, rc, rw);
+    rightFlow.y += 6;
+    reserve(doc, rightFlow, 26 + 16);
+    rightFlow.y = heading(doc, 'Gewürze', rx, rightFlow.y, rw);
     doc.font(bodyFont).fontSize(9);
     let sx = rx;
     for (const spice of recipe.spices) {
       const w = doc.widthOfString(spice) + 14;
       if (sx + w > rx + rw) {
         sx = rx;
-        rc += 21;
+        rightFlow.y += 21;
+        reserve(doc, rightFlow, 16);
       }
-      doc.roundedRect(sx, rc, w, 16, 8).lineWidth(0.6).strokeColor(LINE).stroke();
-      doc.fillColor('#333333').text(spice, sx + 7, rc + 3);
+      doc.roundedRect(sx, rightFlow.y, w, 16, 8).lineWidth(0.6).strokeColor(LINE).stroke();
+      doc.fillColor('#333333').text(spice, sx + 7, rightFlow.y + 3);
       sx += w + 6;
     }
-    rc += 16;
+    rightFlow.y += 16;
   }
-  doc
-    .roundedRect(rightX, rightTop, rightWidth, rc + pad - rightTop, RADIUS)
-    .lineWidth(0.75)
-    .strokeColor(LINE)
-    .stroke();
 
   // ── Left: "Zubereitung" heading, then a card around the steps ──
-  let ly = heading(doc, 'Zubereitung', left, columnsTop, leftWidth);
-  const lCardTop = ly;
+  goToPage(doc, startPage); // the right column may have run onto later pages
+  const lCardTop = heading(doc, 'Zubereitung', left, columnsTop, leftWidth);
+  const leftFlow = newFlow(startPage, lCardTop, pad - 10);
   const lx = left + pad;
   const lw = leftWidth - 2 * pad;
-  ly = lCardTop + pad;
   const r = 9; // step-number circle radius
   const textX = lx + 2 * r + 10;
   const textW = lw - 2 * r - 10;
   recipe.instructions.forEach((step, i) => {
-    const top = ly;
+    const runs = parseRuns(step);
+    reserve(doc, leftFlow, Math.max(runsHeight(doc, runs, textW, 10.5), 2 * r));
+
+    const top = leftFlow.y;
     doc.circle(lx + r, top + r - 2.5, r).fill(ACCENT);
     doc
       .fillColor('#ffffff')
       .font(brandFont)
       .fontSize(9)
       .text(String(i + 1), lx, top + r - 7.5, { width: 2 * r, align: 'center' });
-    const bottom = renderRuns(doc, parseRuns(step), textX, top, textW, 10.5);
-    ly = Math.max(bottom, top + 2 * r) + 7;
+
+    const pagesBefore = doc.bufferedPageRange().count;
+    const bottom = renderRuns(doc, runs, textX, top, textW, 10.5);
+    // `top` belongs to the page the step started on, so it may only be mixed into the
+    // running y when the step did not spill onto a page of its own.
+    leftFlow.y = resyncAfterOverflow(doc, leftFlow, pagesBefore) ? bottom + 7 : Math.max(bottom, top + 2 * r) + 7;
   });
-  doc
-    .roundedRect(left, lCardTop, leftWidth, ly - 10 + pad - lCardTop, RADIUS)
-    .lineWidth(0.75)
-    .strokeColor(LINE)
-    .stroke();
+
+  strokeCard(doc, rightFlow, rightX, rightWidth);
+  strokeCard(doc, leftFlow, left, leftWidth);
 }
 
 router.get('/recipe/:id/pdf', pdfLimiter, async (req: Request, res: Response, next: NextFunction) => {
@@ -356,7 +468,9 @@ router.get('/recipe/:id/pdf', pdfLimiter, async (req: Request, res: Response, ne
       loadLogo(),
     ]);
 
-    const doc = new PDFDocument({ size: 'A4', margin: 40, info: { Title: recipe.title } });
+    // bufferPages keeps every page addressable until `end()`, so the two columns can
+    // be laid out independently and their card borders stroked per page afterwards.
+    const doc = new PDFDocument({ size: 'A4', margin: 40, bufferPages: true, info: { Title: recipe.title } });
     if (fs.existsSync(DELIUS_PATH)) {
       doc.registerFont(DELIUS, DELIUS_PATH);
       brandFont = DELIUS;
