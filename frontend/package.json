@@ -10,7 +10,7 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-dropzone": "^20.1.1",
-    "react-router-dom": "^7.18.1",
+    "react-router-dom": "^7.18.3",
     "web-vitals": "^6.2.1"
   },
   "scripts": {
