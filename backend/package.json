@@ -29,7 +29,7 @@
     "multer": "^2.4.0",
     "pdfkit": "^0.20.1",
     "qrcode": "^1.5.4",
-    "sharp": "^0.35.3"
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@types/compression": "^1.8.1",
